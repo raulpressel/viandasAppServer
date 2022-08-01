@@ -8,18 +8,5 @@ type User struct {
 	Apellidos string `json:"apellidos"`
 	Password  string `json:"password"`
 	Email     string `json:"email"`
-
-	/* FechaNacimiento time.Time          `bson:"fechaNacimiento" json:"fechaNacimiento,omitempty"` */
-
+	/* FechaNacimiento time.Time `json:"fechaNacimiento"` */
 }
-
-/* func MigrateUser() {
-	_db := db.ConnectDB()
-	if _db.Migrator().HasTable(User{}) {
-		fmt.Println("ya existe la tabla")
-	} else {
-		_db.AutoMigrate(User{})
-	}
-
-}
-*/
