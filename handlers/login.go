@@ -1,12 +1,12 @@
-package routes
+package handlers
 
 import (
 	"encoding/json"
 	"net/http"
 	"time"
 	"viandasApp/db"
+	"viandasApp/dtos"
 	"viandasApp/jwt"
-	"viandasApp/models"
 )
 
 /* login realiza el login */
@@ -14,33 +14,34 @@ import (
 func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("content-type", "application/json")
 
-	var t models.User
+	//var t models.User
 
-	
-	err := json.NewDecoder(r.Body).Decode(&t)
+	var loginReq dtos.LoginRequest
+
+	err := json.NewDecoder(r.Body).Decode(&loginReq)
 	if err != nil {
-		http.Error(w, "User or Pass incorrectos"+err.Error(), 400)
+		http.Error(w, "Decode error"+err.Error(), 400)
 		return
 	}
-	if len(t.Email) == 0 {
+	/* 	if len(loginReq.Email) == 0 {
 		http.Error(w, "email requerido si o si", 400)
 		return
-	}
+	} */
 
-	documento, existe := db.TryLogin(t.Email, t.Password)
+	user, exist := db.GetLogin(loginReq.Email, loginReq.Password)
 
-	if !existe {
+	if !exist {
 		http.Error(w, "User or Pass incorrectos", 400)
 		return
 	}
 
-	jwtKey, err := jwt.GeneroJWT(documento)
+	jwtKey, err := jwt.GenerateJWT(user)
 	if err != nil {
 		http.Error(w, "ocurrio un error al intentar generar el token correspondiente"+err.Error(), 400)
 		return
 	}
 
-	resp := models.RespuestaLogin{
+	resp := dtos.LoginResponse{
 		Token: jwtKey,
 	}
 

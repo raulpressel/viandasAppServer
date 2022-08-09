@@ -19,10 +19,15 @@ func CheckExistUser(email string) (models.User, bool, string) {
 	   	condicion := bson.M{"email": email} */
 
 	//var resultado models.User
+
+	var db = ConnectDB()
+	sqlDB, _ := db.DB()
+	defer sqlDB.Close()
+
 	user := models.User{}
 
 	//err := MysqlCN.First(&user, email)
-	err := MysqlCN.Where("email = ?", email).First(&user)
+	err := db.Where("email = ?", email).First(&user)
 	ID := strconv.FormatInt(user.ID, 10)
 
 	if err.Error != nil {

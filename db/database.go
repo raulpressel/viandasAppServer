@@ -9,9 +9,9 @@ import (
 
 //realiza la conexion
 var dsn = "root:Aerolavelarata66@tcp(localhost:3306)/viandas_db?charset=utf8mb4&parseTime=True&loc=Local" //falta pass
-var MysqlCN = ConnectDB()
+//var MysqlCN = ConnectDB()
 
-func ConnectDB() (db *gorm.DB) {
+func ConnectDB() *gorm.DB {
 	if db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{}); err != nil {
 		fmt.Println("error en la conexion", err)
 		panic(err)
@@ -22,7 +22,9 @@ func ConnectDB() (db *gorm.DB) {
 }
 
 func CheckConnection() int {
-	sqlDB, _ := MysqlCN.DB()
+	var db = ConnectDB()
+	sqlDB, _ := db.DB()
+	defer sqlDB.Close()
 	err := sqlDB.Ping()
 	if err != nil {
 		return 0

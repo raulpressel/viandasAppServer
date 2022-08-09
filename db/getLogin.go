@@ -8,24 +8,24 @@ import (
 
 /*IntentoLogin realiza el chequeo de login a la bd*/
 
-func TryLogin(email string, password string) (models.User, bool) {
+func GetLogin(email string, password string) (models.User, bool) {
 
-	usu, encontrado, _ := CheckExistUser(email)
+	user, find, _ := CheckExistUser(email)
 
-	if !encontrado {
-		return usu, false
+	if !find {
+		return user, false
 	}
 
 	passwordBytes := []byte(password)
-	passwordBD := []byte(usu.Password)
+	passwordBD := []byte(user.Password)
 
 	err := bcrypt.CompareHashAndPassword(passwordBD, passwordBytes)
 
 	if err != nil {
 
-		return usu, false
+		return user, false
 	}
 
-	return usu, true
+	return user, true
 
 }

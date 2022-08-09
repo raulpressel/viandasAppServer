@@ -1,8 +1,7 @@
-package routes
+package handlers
 
 import (
 	"errors"
-	"strconv"
 	"strings"
 
 	"viandasApp/db"
@@ -15,17 +14,17 @@ import (
 var Email string
 
 /* IDUsuario es el ID devuelto del modelo, que se usara en todos los EndPoints*/
-var IDUsuario string
+//var IDUsuario string
 
 /*ProcesoToken proceso token para extraer sus valores*/
-func ProcessToken(tk string) (*models.Claim, bool, string, error) {
+func ProcessToken(tk string) (*models.Claim, bool, error) {
 	miClave := []byte("Master")
 	claims := &models.Claim{}
 
 	splitToken := strings.Split(tk, "Bearer")
 
 	if len(splitToken) != 2 {
-		return claims, false, string(""), errors.New("formato de token invalido")
+		return claims, false, errors.New("formato de token invalido")
 	}
 	tk = strings.TrimSpace(splitToken[1])
 
@@ -36,14 +35,14 @@ func ProcessToken(tk string) (*models.Claim, bool, string, error) {
 		_, encontrado, _ := db.CheckExistUser(claims.Email)
 		if encontrado {
 			Email = claims.Email
-			IDUsuario = strconv.FormatInt(claims.ID, 10)
+			//IDUsuario = strconv.FormatInt(claims.ID, 10)
 		}
-		return claims, encontrado, IDUsuario, nil
+		return claims, encontrado, nil
 	}
 	if !tkn.Valid {
-		return claims, false, string(""), errors.New("token invalido")
+		return claims, false, errors.New("token invalido")
 	}
 
-	return claims, false, string(""), err
+	return claims, false, err
 
 }
