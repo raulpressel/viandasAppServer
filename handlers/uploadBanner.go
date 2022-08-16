@@ -55,13 +55,13 @@ func UploadBanner(w http.ResponseWriter, r *http.Request) {
 
 	var bannerModel models.Banner
 
-	bannerModel.Title = r.FormValue("titulo")
-	bannerModel.DateStart, err = time.Parse("Mon, 02 Jan 2006 15:04:05 MST", r.FormValue("fechaDesde"))
+	bannerModel.Title = r.FormValue("title")
+	bannerModel.DateStart, err = time.Parse("Mon, 02 Jan 2006 15:04:05 MST", r.FormValue("dateStart"))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	bannerModel.DateEnd, err = time.Parse("Mon, 02 Jan 2006 15:04:05 MST", r.FormValue("fechaHasta"))
+	bannerModel.DateEnd, err = time.Parse("Mon, 02 Jan 2006 15:04:05 MST", r.FormValue("dateEnd"))
 	if err != nil {
 		fmt.Println(err)
 		return

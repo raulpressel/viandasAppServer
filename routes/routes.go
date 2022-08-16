@@ -19,6 +19,7 @@ func Routes() {
 	router.HandleFunc("/login", middlew.CheckDB(handlers.Login)).Methods("POST")
 
 	router.HandleFunc("/uploadBanner", middlew.CheckDB(middlew.ValidateJWT(handlers.UploadBanner))).Methods("POST")
+	//	router.HandleFunc("/getBanners", middlew.CheckDB(middlew.ValidateJWT(handlers.UploadBanner))).Methods("POST")
 	//router.HandleFunc("/obtenerAvatar", middlew.ChequeoBD(middlew.ValidoJWT(routes.ObtenerAvatar))).Methods("GET")
 
 	PORT := os.Getenv("PORT")
