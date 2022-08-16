@@ -1,6 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type LocationImg struct {
-	ID       int
+	gorm.Model
+	ID       uint `gorm:"primary_key"`
 	Location string
 }

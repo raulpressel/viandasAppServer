@@ -23,10 +23,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Decode error"+err.Error(), 400)
 		return
 	}
-	/* 	if len(loginReq.Email) == 0 {
-		http.Error(w, "email requerido si o si", 400)
-		return
-	} */
 
 	user, exist := db.GetLogin(loginReq.Email, loginReq.Password)
 
