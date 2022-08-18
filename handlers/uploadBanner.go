@@ -1,13 +1,10 @@
 package handlers
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 	"viandasApp/db"
 	"viandasApp/models"
@@ -25,20 +22,22 @@ func UploadBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer file.Close()
+	//defer file.Close()
 
-	filename := md5.New()
+	/* 	filename := md5.New()
 
-	_, err = io.Copy(filename, file) //funcion que copia el hash de file a la variable filename
-	if err != nil {
-		panic(err)
-	}
+	   	_, err = io.Copy(filename, file) //funcion que copia el hash de file a la variable filename
+	   	if err != nil {
+	   		panic(err)
+	   	} */
 
-	var extension = strings.Split(handle.Filename, ".")[1] //saco la extension del archivo de imagen
+	//var extension = strings.Split(handle.Filename, ".")[1] //saco la extension del archivo de imagen
 
-	hash := filename.Sum(nil) // guardo el valor de hash md5 en la varialbe hash
+	//hash := filename.Sum(nil) // guardo el valor de hash md5 en la varialbe hash
 
-	locationModel.Location = "uploads/banners/" + hex.EncodeToString(hash[:]) + "." + extension //la ubicacion esta compuesta por el la ruta + el hash convertido a string + la extension del archivo
+	//locationModel.Location = "uploads/banners/" + hex.EncodeToString(filename.Sum(nil)) + "." + extension
+
+	locationModel.Location = "uploads/banners/" + handle.Filename
 
 	f, err := os.OpenFile(locationModel.Location, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
@@ -52,6 +51,10 @@ func UploadBanner(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error al copiar  banner "+err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	defer file.Close()
+
+	locationModel.Location = GetHash(locationModel.Location)
 
 	var bannerModel models.Banner
 

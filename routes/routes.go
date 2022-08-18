@@ -20,7 +20,7 @@ func Routes() {
 
 	router.HandleFunc("/uploadBanner", middlew.CheckDB(middlew.ValidateJWT(handlers.UploadBanner))).Methods("POST")
 	//	router.HandleFunc("/getBanners", middlew.CheckDB(middlew.ValidateJWT(handlers.UploadBanner))).Methods("POST")
-	//router.HandleFunc("/obtenerAvatar", middlew.ChequeoBD(middlew.ValidoJWT(routes.ObtenerAvatar))).Methods("GET")
+	router.HandleFunc("/getBanners", middlew.CheckDB(middlew.ValidateJWT(handlers.GetBanners))).Methods("GET")
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
