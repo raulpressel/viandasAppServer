@@ -17,14 +17,12 @@ func Routes() {
 
 	router.HandleFunc("/isAuthorizated", handlers.IsAuthorizated).Methods("GET")
 
-	router.HandleFunc("/registro", middlew.CheckDB(handlers.Register)).Methods("POST")
+	router.HandleFunc("/register", middlew.CheckDB(handlers.Register)).Methods("POST")
 	router.HandleFunc("/login", middlew.CheckDB(handlers.Login)).Methods("POST")
 
 	router.HandleFunc("/uploadBanner", middlew.CheckDB(middlew.ValidateJWT(handlers.UploadBanner))).Methods("POST")
-	//	router.HandleFunc("/getBanners", middlew.CheckDB(middlew.ValidateJWT(handlers.UploadBanner))).Methods("POST")
-	router.HandleFunc("/getBanners", middlew.CheckDB(middlew.ValidateJWT(handlers.GetBanners))).Methods("GET")
 
-
+	router.HandleFunc("/getBanners", middlew.CheckDB(middlew.ValidateJWT(handlers.GetBanners))).Methods("POST")
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
