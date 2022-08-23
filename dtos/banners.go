@@ -2,13 +2,13 @@ package dtos
 
 import "time"
 
-type BannersRequest struct {
-	OnlyActive bool `json:"onlyActive"`
+type BannersResponse struct {
+	Location string `json:"urlImage"`
 
 	//LocationImg LocationImg `gorm:"foreignKey:Location,constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
-type BannersResponse struct {
+type AllBannersResponse struct {
 	ID        uint      `json:"id"`
 	Title     string    `json:"title"`
 	DateStart time.Time `json:"dateStart"`

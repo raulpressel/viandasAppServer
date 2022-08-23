@@ -8,7 +8,7 @@ import (
 )
 
 //realiza la conexion
-var dsn = "root:Aerolavelarata66@tcp(localhost:3306)/viandas_db?charset=utf8mb4&parseTime=True&loc=Local" //falta pass
+var dsn = "root:v1anda5@tcp(localhost:33060)/viandas_db" //falta pass
 
 func ConnectDB() *gorm.DB {
 	if db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{}); err != nil {

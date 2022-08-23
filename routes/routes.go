@@ -22,11 +22,12 @@ func Routes() {
 
 	router.HandleFunc("/uploadBanner", middlew.CheckDB(middlew.ValidateJWT(handlers.UploadBanner))).Methods("POST")
 
-	router.HandleFunc("/getBanners", middlew.CheckDB(middlew.ValidateJWT(handlers.GetBanners))).Methods("POST")
+	router.HandleFunc("/carrousel/getBannersIndex", middlew.CheckDB(handlers.GetBanners)).Methods("GET")
+	router.HandleFunc("/carrousel/getBanners", middlew.CheckDB(middlew.ValidateJWT(handlers.GetAllBanners))).Methods("GET")
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
-		PORT = "8080"
+		PORT = "3000"
 	}
 	handler := cors.AllowAll().Handler(router)
 	log.Fatal(http.ListenAndServe(":"+PORT, handler))

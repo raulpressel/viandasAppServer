@@ -8,9 +8,12 @@ import (
 
 /*Obtenerbanner envia el banner al http*/
 
-func GetBanners(rw http.ResponseWriter, r *http.Request) {
+func GetAllBanners(rw http.ResponseWriter, r *http.Request) {
 
-
+	/* 	if len(r.URL.Query().Get("pagina")) < 1 {
+		http.Error(rw, "debe enviar el parametro pagina", http.StatusBadRequest)
+		return
+	} */
 
 	/* 	err := json.NewDecoder(r.Body).Decode(&onlyActiveModel) //body es un obj string de solo lectura, una vez q se utiliza body se destruye
 	   	if err != nil {
@@ -20,7 +23,7 @@ func GetBanners(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(rw).Encode(db.GetBanners())
+	json.NewEncoder(rw).Encode(db.GetAllBanners())
 	/* output, _ := json.Marshal(db.GetBanners(onlyActiveModel.OnlyActive))
 	fmt.Fprintln(rw, string(output)) */
 
