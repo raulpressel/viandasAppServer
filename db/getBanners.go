@@ -16,7 +16,7 @@ func GetBanners() []dtos.BannersResponse {
 	var dateTime time.Time = time.Now()
 
 	err := db.Table("location_imgs").
-		Select("banners.id, banners.title, banners.date_start, banners.date_end, location_imgs.location").
+		Select("location_imgs.location").
 		Joins("JOIN banners ON banners.location_id = location_imgs.id").
 		Where("? BETWEEN banners.date_start AND banners.date_end", dateTime).
 		Scan(&responseModel).Error
