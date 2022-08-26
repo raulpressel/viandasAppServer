@@ -10,8 +10,6 @@ func ExistTable(model interface{}) {
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 
-	//user := userDto.ToModelUser()
-
 	if db.Migrator().HasTable(model) {
 		fmt.Println("ya existe la tabla", model)
 

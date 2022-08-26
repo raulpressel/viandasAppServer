@@ -1,20 +1,45 @@
 package handlers
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strings"
 	"time"
+	"viandasApp/db"
+	"viandasApp/models"
 )
 
 /*subir el avatar al servidor*/
 func UploadBanner(w http.ResponseWriter, r *http.Request) {
-	file, handler, err := r.FormFile("banner")
-	var extension = strings.Split(handler.Filename, ".")[1]
-	var archivo string = "uploads/banners/" + time.Now().String() + "." + extension
 
-	f, err := os.OpenFile(archivo, os.O_WRONLY|os.O_CREATE, 0666)
+	var locationModel models.LocationImg
+
+	w.Header().Add("content-type", "application/json")
+
+	file, handle, err := r.FormFile("banner")
+	if err != nil {
+		return
+	}
+
+	//defer file.Close()
+
+	/* 	filename := md5.New()
+
+	   	_, err = io.Copy(filename, file) //funcion que copia el hash de file a la variable filename
+	   	if err != nil {
+	   		panic(err)
+	   	} */
+
+	//var extension = strings.Split(handle.Filename, ".")[1] //saco la extension del archivo de imagen
+
+	//hash := filename.Sum(nil) // guardo el valor de hash md5 en la varialbe hash
+
+	//locationModel.Location = "uploads/banners/" + hex.EncodeToString(filename.Sum(nil)) + "." + extension
+
+	locationModel.Location = "uploads/banners/" + handle.Filename
+
+	f, err := os.OpenFile(locationModel.Location, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		http.Error(w, "error al subir banner "+err.Error(), http.StatusBadRequest)
 		return
@@ -27,17 +52,38 @@ func UploadBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
-		
-	/*	var usuario models.Usuario
-		var status bool
+	defer file.Close()
 
-		usuario.Banner = IDUsuario + "." + extension
-		status, err = bd.ModificoRegistro(usuario, IDUsuario)
-		if err != nil || !status {
-			http.Error(w, "error al grabar en la bd banner"+err.Error(), http.StatusBadRequest)
-			return
-		} */
+	locationModel.Location = GetHash(locationModel.Location)
+
+	var bannerModel models.Banner
+
+	bannerModel.Title = r.FormValue("title")
+	bannerModel.DateStart, err = time.Parse("Mon, 02 Jan 2006 15:04:05 MST", r.FormValue("dateStart"))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	bannerModel.DateEnd, err = time.Parse("Mon, 02 Jan 2006 15:04:05 MST", r.FormValue("dateEnd"))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	bannerModel.Status = true
+
+	db.ExistTable(bannerModel)
+	db.ExistTable(locationModel)
+
+	status, err := db.UploadBanner(bannerModel, locationModel)
+	if err != nil {
+		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
+		return
+	}
+
+	if !status { //esto es igual a !status == false
+		http.Error(w, "no se ha logrado insertar el registro  // status = false ", 400)
+		return
+	}
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)

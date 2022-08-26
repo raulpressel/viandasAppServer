@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"viandasApp/models"
-	//"go.mongodb.org/mongo-driver/bson"
 )
 
 /* ChequeoYaExisteUsuario recibe un email de parametro y chequea si ya*/
@@ -12,13 +11,6 @@ import (
 func CheckExistUser(email string) (models.User, bool, string) {
 	//ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	//defer cancel()
-
-	/* 	db := MysqlCN.Database("twittor")
-	   	col := db.Collection("usuarios")
-
-	   	condicion := bson.M{"email": email} */
-
-	//var resultado models.User
 
 	var db = ConnectDB()
 	sqlDB, _ := db.DB()
