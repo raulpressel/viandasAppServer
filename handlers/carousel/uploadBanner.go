@@ -3,15 +3,23 @@ package handlers
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 	"viandasApp/db"
+	carouseldb "viandasApp/db/carousel"
+	"viandasApp/handlers"
 	"viandasApp/models"
 )
 
 /*subir el avatar al servidor*/
 func UploadBanner(w http.ResponseWriter, r *http.Request) {
+
+	if err := os.MkdirAll("/var/www/default/htdocs/public/banners", os.ModePerm); err != nil {
+		log.Fatal(err)
+	}
 
 	var locationModel models.LocationImg
 
@@ -22,22 +30,7 @@ func UploadBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//defer file.Close()
-
-	/* 	filename := md5.New()
-
-	   	_, err = io.Copy(filename, file) //funcion que copia el hash de file a la variable filename
-	   	if err != nil {
-	   		panic(err)
-	   	} */
-
-	//var extension = strings.Split(handle.Filename, ".")[1] //saco la extension del archivo de imagen
-
-	//hash := filename.Sum(nil) // guardo el valor de hash md5 en la varialbe hash
-
-	//locationModel.Location = "uploads/banners/" + hex.EncodeToString(filename.Sum(nil)) + "." + extension
-
-	locationModel.Location = "uploads/banners/" + handle.Filename
+	locationModel.Location = "/var/www/default/htdocs/public/banners/" + handle.Filename
 
 	f, err := os.OpenFile(locationModel.Location, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
@@ -54,9 +47,11 @@ func UploadBanner(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
-	locationModel.Location = GetHash(locationModel.Location)
+	locationModel.Location = handlers.GetHash(locationModel.Location)
 
 	var bannerModel models.Banner
+
+	bannerModel.ID, _ = strconv.Atoi(r.FormValue("id"))
 
 	bannerModel.Title = r.FormValue("title")
 	bannerModel.DateStart, err = time.Parse("Mon, 02 Jan 2006 15:04:05 MST", r.FormValue("dateStart"))
@@ -69,12 +64,12 @@ func UploadBanner(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	bannerModel.Status = true
+	bannerModel.Active = true
 
 	db.ExistTable(bannerModel)
 	db.ExistTable(locationModel)
 
-	status, err := db.UploadBanner(bannerModel, locationModel)
+	status, err := carouseldb.UploadBanner(bannerModel, locationModel)
 	if err != nil {
 		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
 		return

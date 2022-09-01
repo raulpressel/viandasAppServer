@@ -1,6 +1,8 @@
 package db
 
 import (
+	"viandasApp/db"
+
 	"viandasApp/models"
 )
 
@@ -13,7 +15,7 @@ func InsertRegistry(userModel models.User) (bool, error) {
 	/* db := MysqlCN.Database("twittor")
 	col := db.Collection("usuarios") */
 
-	var db = ConnectDB()
+	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 

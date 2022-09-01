@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"viandasApp/db"
+	db "viandasApp/db/user"
 	"viandasApp/models"
 
 	"github.com/golang-jwt/jwt"

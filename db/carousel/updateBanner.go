@@ -1,12 +1,13 @@
 package db
 
 import (
+	"viandasApp/db"
 	"viandasApp/models"
 )
 
-func UploadBanner(bannerModel models.Banner, locationModel models.LocationImg) (bool, error) {
+func UpdateBanner(bannerModel models.Banner, locationModel models.LocationImg) (bool, error) {
 
-	var db = ConnectDB()
+	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 
@@ -25,8 +26,6 @@ func UploadBanner(bannerModel models.Banner, locationModel models.LocationImg) (
 		tx.Rollback()
 		return false, err
 	}
-
-	bannerModel.LocationID = locationModel.ID
 
 	if err := tx.Save(&bannerModel).Error; err != nil {
 		tx.Rollback()

@@ -3,27 +3,25 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"viandasApp/db"
+	db "viandasApp/db/categories"
+	"viandasApp/dtos"
 )
 
 /*Obtenerbanner envia el banner al http*/
 
-func GetAllBanners(rw http.ResponseWriter, r *http.Request) {
+func GetAllCategories(rw http.ResponseWriter, r *http.Request) {
 
-	/* 	if len(r.URL.Query().Get("pagina")) < 1 {
-		http.Error(rw, "debe enviar el parametro pagina", http.StatusBadRequest)
+	var responseModel []dtos.AllCategoryResponse
+
+	responseModel, err := db.GetAllCategory()
+
+	if err != nil {
+		http.Error(rw, "no se pudo recuperar los ba no encontrado", http.StatusBadRequest)
 		return
-	} */
-
-	/* 	err := json.NewDecoder(r.Body).Decode(&onlyActiveModel) //body es un obj string de solo lectura, una vez q se utiliza body se destruye
-	   	if err != nil {
-	   		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
-	   		return
-	   	} */
-
+	}
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(rw).Encode(db.GetAllBanners())
+	json.NewEncoder(rw).Encode(responseModel)
 	/* output, _ := json.Marshal(db.GetBanners(onlyActiveModel.OnlyActive))
 	fmt.Fprintln(rw, string(output)) */
 

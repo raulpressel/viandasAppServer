@@ -3,6 +3,7 @@ package db
 import (
 	"strconv"
 
+	"viandasApp/db"
 	"viandasApp/models"
 )
 
@@ -12,7 +13,7 @@ func CheckExistUser(email string) (models.User, bool, string) {
 	//ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	//defer cancel()
 
-	var db = ConnectDB()
+	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 

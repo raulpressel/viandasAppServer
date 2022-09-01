@@ -16,11 +16,11 @@ func GenerateJWT(user models.User) (string, error) {
 
 	payload := jwt.MapClaims{
 		"email":     user.Email,
-		"nombre":    user.Nombre,
-		"apellidos": user.Apellidos,
+		"nombre":    user.Name,
+		"apellidos": user.LastName,
 		/* "fecha_nacimiento": t.FechaNacimiento, */
 		"_id": strconv.FormatInt(user.ID, 10),
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"exp": time.Now().Add(time.Hour * 168).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)

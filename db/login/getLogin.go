@@ -1,6 +1,7 @@
 package db
 
 import (
+	user "viandasApp/db/user"
 	"viandasApp/models"
 
 	"golang.org/x/crypto/bcrypt"
@@ -10,7 +11,7 @@ import (
 
 func GetLogin(email string, password string) (models.User, bool) {
 
-	user, find, _ := CheckExistUser(email)
+	user, find, _ := user.CheckExistUser(email)
 
 	if !find {
 		return user, false

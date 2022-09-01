@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	"viandasApp/db"
+	login "viandasApp/db/login"
 	"viandasApp/dtos"
 	"viandasApp/jwt"
 )
@@ -24,7 +24,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, exist := db.GetLogin(loginReq.Email, loginReq.Password)
+	user, exist := login.GetLogin(loginReq.Email, loginReq.Password)
 
 	if !exist {
 		http.Error(w, "User or Pass incorrectos", 400)

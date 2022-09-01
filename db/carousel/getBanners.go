@@ -1,13 +1,13 @@
 package db
 
 import (
-	"fmt"
 	"time"
+	"viandasApp/db"
 	"viandasApp/dtos"
 )
 
-func GetBanners() []dtos.BannersResponse {
-	var db = ConnectDB()
+func GetBanners() ([]dtos.BannersResponse, error) {
+	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 
@@ -21,11 +21,6 @@ func GetBanners() []dtos.BannersResponse {
 		Where("? BETWEEN banners.date_start AND banners.date_end", dateTime).
 		Scan(&responseModel).Error
 
-	if err != nil {
-		fmt.Println(err)
-		return responseModel
-	}
-
-	return responseModel
+	return responseModel, err
 
 }

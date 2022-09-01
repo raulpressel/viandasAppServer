@@ -9,7 +9,7 @@ type BannersResponse struct {
 }
 
 type AllBannersResponse struct {
-	ID        uint      `json:"id"`
+	ID        int       `json:"id"`
 	Title     string    `json:"title"`
 	DateStart time.Time `json:"dateStart"`
 	DateEnd   time.Time `json:"dateEnd"`

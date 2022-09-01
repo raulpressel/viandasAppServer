@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"viandasApp/db"
+	register "viandasApp/db/register"
+	userdb "viandasApp/db/user"
 	"viandasApp/dtos"
 )
 
@@ -27,13 +29,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	db.ExistTable(user)
 
-	_, find, _ := db.CheckExistUser(user.Email)
+	_, find, _ := userdb.CheckExistUser(user.Email)
 	if find {
 		http.Error(w, "Email ya registrado ", 400)
 		return
 	}
 
-	status, err := db.InsertRegistry(*user)
+	status, err := register.InsertRegistry(*user)
 	if err != nil {
 		http.Error(w, "Ocurrio un error al intentar realizar el registro de usuario "+err.Error(), 400)
 		return

@@ -22,13 +22,15 @@ func GetHash(path string) string {
 		log.Fatal(err)
 	}
 
-	var extension = strings.Split(path, ".")[1] //saco la extension del archivo de imagen
+	var path_aux = strings.Split(path, "/var/www/default/htdocs/")[1]
 
-	dst := "uploads/banners/" + hex.EncodeToString(h.Sum(nil)) + "." + extension
+	var folder = strings.Split(path_aux, "/")[1]
 
-	//path = "C:/Users/Raul/Documents/github.com/raulpressel/viandasAppServer/" + path
+	path_aux = path_aux[(len(path_aux) - 5):]
 
-	//os.Rename(path, dst)
+	var extension = strings.Split(path_aux, ".")[1] //saco la extension del archivo de imagen
+
+	dst := "/var/www/default/htdocs/public/" + folder + "/" + hex.EncodeToString(h.Sum(nil)) + "." + extension
 
 	// read original file
 	origFile, _ := os.ReadFile(path)
@@ -43,7 +45,8 @@ func GetHash(path string) string {
 	if err != nil {
 		fmt.Println("no se pudo borrar la imagen " + err.Error())
 	}
+	dest := strings.Split(dst, "/var/www/default/htdocs")[1]
 
-	return dst
+	return dest
 
 }
