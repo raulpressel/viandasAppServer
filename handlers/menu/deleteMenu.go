@@ -3,36 +3,28 @@ package handlers
 import (
 	"net/http"
 	"strconv"
-	db "viandasApp/db/carousel"
+	db "viandasApp/db/food"
 	"viandasApp/models"
 )
 
 /*subir el avatar al servidor*/
-func DeleteBanner(w http.ResponseWriter, r *http.Request) {
+func DeleteMenu(w http.ResponseWriter, r *http.Request) {
 
-	ID := r.URL.Query().Get("idBanner")
+	ID := r.URL.Query().Get("idFood")
 	if len(ID) < 1 {
 		http.Error(w, "El parametro ID es obligatorio", http.StatusBadRequest)
 		return
 	}
 
-	var bannerModel models.Banner
+	var foodModel models.Food
 
-	_ID, err := strconv.Atoi(ID)
-	if err != nil {
-		http.Error(w, "No se pudo convertir ID "+err.Error(), 400)
-		return
-	}
+	_ID, _ := strconv.Atoi(ID)
 
-	bannerModel, err = db.GetBannerById(_ID)
-	if err != nil {
-		http.Error(w, "No se pudo obtener el banner "+err.Error(), 400)
-		return
-	}
+	foodModel, _ = db.GetFoodById(_ID)
 
-	bannerModel.Active = false
+	foodModel.Active = false
 
-	status, err := db.DeleteBanner(bannerModel)
+	status, err := db.DeleteFood(foodModel)
 	if err != nil {
 		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
 		return

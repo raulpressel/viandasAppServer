@@ -11,6 +11,7 @@ import (
 	categories "viandasApp/handlers/categories"
 	food "viandasApp/handlers/food"
 	login "viandasApp/handlers/login"
+	menu "viandasApp/handlers/menu"
 	register "viandasApp/handlers/register"
 
 	"viandasApp/middlew"
@@ -43,9 +44,20 @@ func Routes() {
 
 	router.HandleFunc("/category/getCategory", middlew.CheckDB(middlew.ValidateJWT(categories.GetAllCategories))).Methods("GET")
 
+	router.HandleFunc("/menu/uploadMenu", middlew.CheckDB(middlew.ValidateJWT(menu.UploadMenu))).Methods("POST")
+	router.HandleFunc("/menu/editMenu", middlew.CheckDB(middlew.ValidateJWT(menu.UpdateMenu))).Methods("PUT")
+	router.HandleFunc("/menu/deleteMenu", middlew.CheckDB(middlew.ValidateJWT(menu.DeleteMenu))).Methods("DELETE")
+	router.HandleFunc("/menu/getMenu", middlew.CheckDB(middlew.ValidateJWT(menu.GetMenu))).Methods("GET")
+
 	var category models.Category
 
+	var turnMenu models.TurnMenu
+
+	var dayModel models.DayMenu
+
 	db.ExistTable(category)
+	db.ExistTable(turnMenu)
+	db.ExistTable(dayModel)
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {

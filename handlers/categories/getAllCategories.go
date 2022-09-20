@@ -16,7 +16,7 @@ func GetAllCategories(rw http.ResponseWriter, r *http.Request) {
 	responseModel, err := db.GetAllCategory()
 
 	if err != nil {
-		http.Error(rw, "no se pudo recuperar los ba no encontrado", http.StatusBadRequest)
+		http.Error(rw, "no fue posible recuperar las categorias", http.StatusBadRequest)
 		return
 	}
 	rw.Header().Set("Content-Type", "aplication/json")

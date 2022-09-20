@@ -3,26 +3,26 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	db "viandasApp/db/food"
+	db "viandasApp/db/menu"
 	"viandasApp/dtos"
 )
 
 /*Obtenerbanner envia el banner al http*/
 
-func GetAllFood(rw http.ResponseWriter, r *http.Request) {
+func GetMenu(rw http.ResponseWriter, r *http.Request) {
 
-	responseModelFood := []dtos.AllFoodResponse{}
+	responseMenuFood := []dtos.MenuResponse{}
 
-	responseModelFood, err := db.GetAllFood()
+	responseMenuFood, err := db.GetMenuActive()
 
 	if err != nil {
-		http.Error(rw, "no fue posible recuperar los platos", http.StatusBadRequest)
+		http.Error(rw, "Menu no encontrado", http.StatusBadRequest)
 		return
 	}
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(rw).Encode(responseModelFood)
+	json.NewEncoder(rw).Encode(responseMenuFood)
 	/* output, _ := json.Marshal(db.GetBanners(onlyActiveModel.OnlyActive))
 	fmt.Fprintln(rw, string(output)) */
 

@@ -18,7 +18,7 @@ func GetBanners() ([]dtos.BannersResponse, error) {
 	err := db.Table("location_imgs").
 		Select("location_imgs.location").
 		Joins("JOIN banners ON banners.location_id = location_imgs.id").
-		Where("? BETWEEN banners.date_start AND banners.date_end", dateTime).
+		Where("banners.active = 1 and ? BETWEEN banners.date_start AND banners.date_end", dateTime).
 		Scan(&responseModel).Error
 
 	return responseModel, err
