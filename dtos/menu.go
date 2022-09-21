@@ -13,8 +13,12 @@ type WeekMenuRequest struct {
 	Menu      []MenuRequest `json:"menu"`
 } */
 
+type TurnMenuRequest struct {
+	Menu []MenuRequest `json:"turns"`
+}
+
 type MenuRequest struct {
-	TurnId    int              `json:"turnId"`
+	TurnId    int              `json:"id"`
 	DateStart string           `json:"dateStart"`
 	DateEnd   string           `json:"dateEnd"`
 	DayMenu   []DayMenuRequest `json:"days"`
@@ -22,7 +26,7 @@ type MenuRequest struct {
 
 type DayMenuRequest struct {
 	Date string `json:"date"`
-	Food int    `json:"foodId"`
+	Food int    `json:"idFood"`
 }
 
 type MenuResponse struct {
