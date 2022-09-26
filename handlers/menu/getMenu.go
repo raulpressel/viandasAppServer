@@ -11,7 +11,7 @@ import (
 
 func GetMenu(rw http.ResponseWriter, r *http.Request) {
 
-	responseMenuFood := []dtos.MenuResponse{}
+	responseMenuFood := dtos.MenuViewer{}
 
 	responseMenuFood, err := db.GetMenuActive()
 

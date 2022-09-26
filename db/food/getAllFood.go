@@ -10,7 +10,7 @@ func GetAllFood() ([]dtos.AllFoodResponse, error) {
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 
-	ModelFood := []dtos.AllFood{}
+	modelFood := []dtos.AllFood{}
 
 	responseModelFood := []dtos.AllFoodResponse{}
 
@@ -19,9 +19,9 @@ func GetAllFood() ([]dtos.AllFoodResponse, error) {
 		Joins("left JOIN location_imgs ON foods.location_id = location_imgs.id").
 		Joins("left JOIN categories ON foods.category_id = categories.id").
 		Where("foods.active = 1").
-		Scan(&ModelFood).Error
+		Scan(&modelFood).Error
 
-	for _, valor := range ModelFood {
+	for _, valor := range modelFood {
 		responseModelFood = append(responseModelFood, *valor.ToModelResponse())
 	}
 

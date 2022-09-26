@@ -10,16 +10,18 @@ type AllFood struct {
 }
 
 type AllFoodResponse struct {
-	ID          int      `json:"id"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Location    string   `json:"urlImage"`
-	Category    Category `json:"category"`
+	ID          int              `json:"id"`
+	Title       string           `json:"title"`
+	Description string           `json:"description"`
+	Location    string           `json:"urlImage"`
+	Category    CategoryResponse `json:"category"`
 }
 
-type Category struct {
-	ID          int    `json:"id"`
-	Description string `json:"description"`
+type CategoryResponse struct {
+	ID          int     `json:"id"`
+	Description string  `json:"description"`
+	Title       string  `json:"title"`
+	Price       float32 `json:"price"`
 }
 
 func (allFood AllFood) ToModelResponse() *AllFoodResponse {
@@ -29,7 +31,7 @@ func (allFood AllFood) ToModelResponse() *AllFoodResponse {
 		Description: allFood.Description,
 		Title:       allFood.Title,
 		Location:    allFood.Location,
-		Category: Category{
+		Category: CategoryResponse{
 			ID:          allFood.Category,
 			Description: allFood.Categorydescription,
 		},

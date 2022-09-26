@@ -1,22 +1,9 @@
 package db
 
 import (
-	"time"
 	"viandasApp/db"
 	"viandasApp/models"
-
-	"gorm.io/gorm"
 )
-
-type test struct {
-	gorm.Model
-	ID     int `gorm:"primary_key"`
-	Date   time.Time
-	FoodID int
-	Food   models.Food `gorm:"foreignKey:FoodID"`
-	MenuID int
-	Menu   models.Menu `gorm:"foreignKey:MenuID"`
-}
 
 func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu) (bool, error) {
 
