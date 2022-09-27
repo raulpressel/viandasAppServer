@@ -45,7 +45,7 @@ func Routes() {
 
 	router.HandleFunc("/category/getCategory", middlew.CheckDB(middlew.ValidateJWT(categories.GetAllCategories))).Methods("GET")
 	router.HandleFunc("/category/uploadCategory", middlew.CheckDB(middlew.ValidateJWT(categories.UploadCategory))).Methods("POST")
-	router.HandleFunc("/category/updateCategory", middlew.CheckDB(middlew.ValidateJWT(categories.UpdateCategory))).Methods("PUT")
+	router.HandleFunc("/category/editCategory", middlew.CheckDB(middlew.ValidateJWT(categories.UpdateCategory))).Methods("PUT")
 	router.HandleFunc("/category/deleteCategory", middlew.CheckDB(middlew.ValidateJWT(categories.DeelteCategory))).Methods("Delete")
 
 	router.HandleFunc("/menu/uploadMenu", middlew.CheckDB(middlew.ValidateJWT(menu.UploadMenu))).Methods("POST")
