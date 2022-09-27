@@ -1,28 +1,36 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
+	"strconv"
 	dbCategories "viandasApp/db/categories"
-	"viandasApp/dtos"
 	"viandasApp/models"
 )
 
 /*subir el avatar al servidor*/
 func DeelteCategory(w http.ResponseWriter, r *http.Request) {
 
-	var categoryDto dtos.CategoryDeleteRequest
+	//var categoryDto dtos.CategoryDeleteRequest
 
-	err := json.NewDecoder(r.Body).Decode(&categoryDto)
+	//err := json.NewDecoder(r.Body).Decode(&categoryDto)
 
-	if err != nil {
-		http.Error(w, "Error en los datos recibidos "+err.Error(), 400)
+	ID := r.URL.Query().Get("idCategory")
+
+	if len(ID) < 1 {
+		http.Error(w, "debe enviar el parametro id", http.StatusBadRequest)
 		return
 	}
 
+	idCategory, _ := strconv.Atoi(ID)
+
+	/* 	if err != nil {
+		http.Error(w, "Error en los datos recibidos "+err.Error(), 400)
+		return
+	} */
+
 	var categoryModel models.Category
 
-	categoryModel, _ = dbCategories.GetCategoryById(categoryDto.ID)
+	categoryModel, _ = dbCategories.GetCategoryById(idCategory)
 
 	categoryModel.Active = false
 

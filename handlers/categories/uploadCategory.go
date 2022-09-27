@@ -10,7 +10,7 @@ import (
 
 func UploadCategory(w http.ResponseWriter, r *http.Request) {
 
-	var categoryDto dtos.CategoryRequest
+	var categoryDto dtos.Category
 
 	err := json.NewDecoder(r.Body).Decode(&categoryDto)
 

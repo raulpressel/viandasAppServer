@@ -13,7 +13,7 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("content-type", "application/json")
 
-	var categoryDto dtos.CategoryRequest
+	var categoryDto dtos.Category
 
 	err := json.NewDecoder(r.Body).Decode(&categoryDto)
 
@@ -24,18 +24,18 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 
 	var categoryModel models.Category
 
-	categoryModel, _ = dbCategories.GetCategoryById(categoryDto.ID)
+	categoryModel, _ = dbCategories.GetCategoryById(categoryDto.Category.ID)
 
-	if categoryDto.Description != categoryModel.Description {
-		categoryModel.Description = categoryDto.Description
+	if categoryDto.Category.Description != categoryModel.Description {
+		categoryModel.Description = categoryDto.Category.Description
 	}
 
-	if categoryDto.Title != categoryModel.Title {
-		categoryModel.Title = categoryDto.Title
+	if categoryDto.Category.Title != categoryModel.Title {
+		categoryModel.Title = categoryDto.Category.Title
 	}
 
-	if categoryDto.Price != categoryModel.Price {
-		categoryModel.Price = categoryDto.Price
+	if categoryDto.Category.Price != categoryModel.Price {
+		categoryModel.Price = categoryDto.Category.Price
 	}
 
 	categoryModel.Active = true

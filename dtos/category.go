@@ -16,17 +16,17 @@ type CategoryRequest struct {
 	Price       float32 `json:"price"`
 }
 
-type CategoryDeleteRequest struct {
-	ID int `json:"id"`
+type Category struct {
+	Category CategoryRequest `json:"category"`
 }
 
-func (categoryRequest CategoryRequest) ToModelCategory() *models.Category {
+func (categoryRequest Category) ToModelCategory() *models.Category {
 
 	modelCategory := models.Category{
-		ID:          categoryRequest.ID,
-		Description: categoryRequest.Description,
-		Title:       categoryRequest.Title,
-		Price:       categoryRequest.Price,
+		ID:          categoryRequest.Category.ID,
+		Description: categoryRequest.Category.Description,
+		Title:       categoryRequest.Category.Title,
+		Price:       categoryRequest.Category.Price,
 	}
 
 	return &modelCategory
