@@ -7,6 +7,8 @@ type AllFood struct {
 	Location            string
 	Category            int
 	Categorydescription string
+	Categorytitle       string
+	Categoryprice       float32
 }
 
 type AllFoodResponse struct {
@@ -34,6 +36,8 @@ func (allFood AllFood) ToModelResponse() *AllFoodResponse {
 		Category: CategoryResponse{
 			ID:          allFood.Category,
 			Description: allFood.Categorydescription,
+			Title:       allFood.Title,
+			Price:       allFood.Categoryprice,
 		},
 	}
 

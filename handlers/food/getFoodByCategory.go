@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	db "viandasApp/db/menu"
+	db "viandasApp/db/food"
 	"viandasApp/dtos"
 )
 
 /*Obtenerbanner envia el banner al http*/
 
-func GetMenuByCategory(rw http.ResponseWriter, r *http.Request) {
+func GetFoodByCategory(rw http.ResponseWriter, r *http.Request) {
 
 	ID := r.URL.Query().Get("idCategory")
 
@@ -19,20 +19,20 @@ func GetMenuByCategory(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	responseModelFood := []dtos.AllFoodResponse{}
+
 	idCategory, _ := strconv.Atoi(ID)
 
-	responseMenuFood := dtos.MenuViewer{}
-
-	responseMenuFood, err := db.GetMenuByCategory(idCategory)
+	responseModelFood, err := db.GetFoodByCategory(idCategory)
 
 	if err != nil {
-		http.Error(rw, "Menu no encontrado", http.StatusBadRequest)
+		http.Error(rw, "no fue posible recuperar los platos", http.StatusBadRequest)
 		return
 	}
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(rw).Encode(responseMenuFood)
+	json.NewEncoder(rw).Encode(responseModelFood)
 	/* output, _ := json.Marshal(db.GetBanners(onlyActiveModel.OnlyActive))
 	fmt.Fprintln(rw, string(output)) */
 
