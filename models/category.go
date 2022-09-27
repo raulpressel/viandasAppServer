@@ -12,5 +12,7 @@ type Category struct {
 	Description string
 	Title       string
 	Price       float32
+	Active      bool
+
 	//LocationImg LocationImg `gorm:"foreignKey:Location,constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

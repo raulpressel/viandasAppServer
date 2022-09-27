@@ -6,7 +6,7 @@ import (
 	"viandasApp/dtos"
 )
 
-func GetMenuActive() (dtos.MenuViewer, error) {
+func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
@@ -35,7 +35,7 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 
 		err = db.Table("categories").
 			Select("categories.id as category, categories.description as categorydescription, categories.title as categorytitle, categories.price as categoryprice ").
-			Where("categories.active = 1").
+			Where("categories.active = 1 and categories.id =  ?", cat).
 			Scan(&categoryMenu).Error
 
 		menu := valor.ID

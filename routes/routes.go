@@ -43,19 +43,20 @@ func Routes() {
 	router.HandleFunc("/food/getFood", middlew.CheckDB(middlew.ValidateJWT(food.GetAllFood))).Methods("GET")
 
 	router.HandleFunc("/category/getCategory", middlew.CheckDB(middlew.ValidateJWT(categories.GetAllCategories))).Methods("GET")
+	router.HandleFunc("/category/uploadCategory", middlew.CheckDB(middlew.ValidateJWT(categories.UploadCategory))).Methods("POST")
+	router.HandleFunc("/category/updateCategory", middlew.CheckDB(middlew.ValidateJWT(categories.UpdateCategory))).Methods("PUT")
+	router.HandleFunc("/category/deleteCategory", middlew.CheckDB(middlew.ValidateJWT(categories.DeelteCategory))).Methods("Delete")
 
 	router.HandleFunc("/menu/uploadMenu", middlew.CheckDB(middlew.ValidateJWT(menu.UploadMenu))).Methods("POST")
 	router.HandleFunc("/menu/editMenu", middlew.CheckDB(middlew.ValidateJWT(menu.UpdateMenu))).Methods("PUT")
 	router.HandleFunc("/menu/deleteMenu", middlew.CheckDB(middlew.ValidateJWT(menu.DeleteMenu))).Methods("DELETE")
 	router.HandleFunc("/menu/getMenu", middlew.CheckDB(menu.GetMenu)).Methods("GET")
-
-	var category models.Category
+	router.HandleFunc("/menu/getMenuByCategory", middlew.CheckDB(menu.GetMenuByCategory)).Methods("GET")
 
 	var turnMenu models.TurnMenu
 
 	var dayModel models.DayMenu
 
-	db.ExistTable(category)
 	db.ExistTable(turnMenu)
 	db.ExistTable(dayModel)
 
