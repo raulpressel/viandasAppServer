@@ -100,68 +100,9 @@ type FoodViewer struct {
 }
 
 type DayMenuEditRequest struct {
-	Date     string `json:"date"`
-	IdFood   int    `json:"idFood"`
-	Category int    `json:"idCategory"`
+	IdDayMenu int `json:"idDay"`
+	IdFood    int `json:"idFood"`
 }
-
-/* func (dayMenuDto DayMenuDateDto) ToModelDayMenu() *models.DayMenu {
-
-	dayModel := models.DayMenu{
-		ID:     dayMenuDto.ID,
-		Date:   dayMenuDto.Date,
-		FoodID: dayMenuDto.Foodid,
-		MenuID: dayMenuDto.Menuid,
-	}
-
-	return &dayModel
-} */
-
-/*
-
-{
-
-	"ID": 69,
-	"Date": "2022-09-22T00:00:00-03:00",
-	"food": {
-		"id": 2,
-        "title": "pruebaedit",
-        "description": "probando editar",
-        "urlImage": "/public/food/41f65f75cb0b41db6fe44ab4b074bacc.png",
-        "category": {
-            "id": 4,
-            "description": "Veggie",
-            "title": "pruebaedit",
-            "price": 0
-        }
-	}
-
-
-}
-
-*/
-
-/*
-modelMenu := AllMenuResponse{
-	ID: allMenu.ID,
-	TurnRespone: TurnResponse{
-		ID:          allMenu.Turnid,
-		Description: allMenu.Descriptionturn,
-		CategoryTurn: CategoryTurn{
-			Category: Category,
-			Days: Day{
-				Date: allMenu.Datefood,
-				//Food: FoodsAux,
-
-				Food: FoodResponse{
-					ID:          allMenu.Foodid,
-					Title:       allMenu.Foodtitle,
-					Description: allMenu.Fooddescription,
-					UrlImage:    allMenu.Foodurl,
-				},
-			},
-		},
-	}, */
 
 type DayMenuResponse struct {
 	ID   int                 `json:"id"`
