@@ -96,21 +96,4 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 
 	return allMenu, err
 
-	/*
-		err := db.Table("day_menus").
-			Select("menus.id as id, menus.turn_id as turnid, turn_menus.description as descriptionturn,
-			categories.id as category, categories.description as categorydescription,
-			day_menus.date as datefood,  day_menus.food_id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
-			Joins("left JOIN foods ON foods.id = day_menus.food_id").
-			Joins("left JOIN categories ON foods.category_id = categories.id").
-			Joins("left JOIN menus on day_menus.menu_id = menus.id").
-			Joins("left JOIN turn_menus on menus.turn_id = turn_menus.id").
-			Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
-			Where("? BETWEEN menus.date_start and menus.date_end", dateTime). //datetime sin horas minutos y segundos
-			Scan(&modelMenu).Error */
-
-	/* for _, valor := range modelMenu {
-		responseModel = append(responseModel, *valor.ToModelResponse())
-	} */
-
 }

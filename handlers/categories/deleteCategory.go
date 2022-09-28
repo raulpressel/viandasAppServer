@@ -8,7 +8,7 @@ import (
 )
 
 /*subir el avatar al servidor*/
-func DeelteCategory(w http.ResponseWriter, r *http.Request) {
+func DeleteCategory(w http.ResponseWriter, r *http.Request) {
 
 	//var categoryDto dtos.CategoryDeleteRequest
 

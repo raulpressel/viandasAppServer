@@ -1,7 +1,21 @@
 package dtos
 
-import "time"
+import (
+	"time"
+)
 
+type DayMenuDateDto struct {
+	ID                  int
+	Date                time.Time
+	Foodid              int
+	Foodtitle           string
+	Fooddescription     string
+	Foodlocation        string
+	Categoryid          int
+	Categorydescription string
+	Categorytitle       string
+	Categoryprice       float32
+}
 type AllMenu struct {
 	ID              int
 	Turnid          int
@@ -51,6 +65,10 @@ type DayMenuRequest struct {
 	Food int    `json:"idFood"`
 }
 
+type DayDateMenuRequest struct {
+	Date string `json:"date"`
+}
+
 //////////////////////////////RESPONSE
 
 type MenuViewer struct {
@@ -81,63 +99,47 @@ type FoodViewer struct {
 	UrlImage    string `json:"urlImage"`
 }
 
-func (allMenu AllMenu) ToModelResponse() *MenuViewer {
-
-	/* 	Food := FoodResponse{
-		ID:          allMenu.Foodid,
-		Title:       allMenu.Foodtitle,
-		Description: allMenu.Fooddescription,
-		UrlImage:    allMenu.Foodurl,
-	} */
-
-	/* 	Day := DayResponse{
-	   		Date: allMenu.Datefood,
-	   		Food: FoodResponse{
-	   			ID:          allMenu.Foodid,
-	   			Title:       allMenu.Foodtitle,
-	   			Description: allMenu.Fooddescription,
-	   			UrlImage:    allMenu.Foodurl,
-	   		},
-	   	}
-
-	   	Category := CategoryResponse{
-	   		ID:          allMenu.Category,
-	   		Description: allMenu.Categorydescription,
-	   	}
-		var Days []DayResponse
-
-	   	Days = append(Days, Day)
-
-	   	CategoryTurn := CategoryTurnResponse{
-	   		Category,
-	   		Days,
-	   	}
-	*/
-	/*
-
-		var CategoryTurns []CategoryTurnResponse
-
-		CategoryTurns = append(CategoryTurns, CategoryTurn)
-
-		Turn := TurnResponse{
-			allMenu.Turnid,
-			allMenu.Descriptionturn,
-			CategoryTurns,
-		}
-
-		var Turns []TurnResponse
-
-		Turns = append(Turns, Turn)
-
-		modelMenu := AllMenuResponse{
-			ID:          allMenu.ID,
-			TurnRespone: Turns,
-		}
-
-		return &modelMenu */
-
-	return nil
+type DayMenuEditRequest struct {
+	Date     string `json:"date"`
+	IdFood   int    `json:"idFood"`
+	Category int    `json:"idCategory"`
 }
+
+/* func (dayMenuDto DayMenuDateDto) ToModelDayMenu() *models.DayMenu {
+
+	dayModel := models.DayMenu{
+		ID:     dayMenuDto.ID,
+		Date:   dayMenuDto.Date,
+		FoodID: dayMenuDto.Foodid,
+		MenuID: dayMenuDto.Menuid,
+	}
+
+	return &dayModel
+} */
+
+/*
+
+{
+
+	"ID": 69,
+	"Date": "2022-09-22T00:00:00-03:00",
+	"food": {
+		"id": 2,
+        "title": "pruebaedit",
+        "description": "probando editar",
+        "urlImage": "/public/food/41f65f75cb0b41db6fe44ab4b074bacc.png",
+        "category": {
+            "id": 4,
+            "description": "Veggie",
+            "title": "pruebaedit",
+            "price": 0
+        }
+	}
+
+
+}
+
+*/
 
 /*
 modelMenu := AllMenuResponse{
@@ -160,3 +162,45 @@ modelMenu := AllMenuResponse{
 			},
 		},
 	}, */
+
+type DayMenuResponse struct {
+	ID   int                 `json:"id"`
+	Date time.Time           `json:"date"`
+	Food DayFoodMenuResponse `json:"food"`
+}
+type DayFoodMenuResponse struct {
+	ID          int                     `json:"id"`
+	Title       string                  `json:"title"`
+	Description string                  `json:"description"`
+	Location    string                  `json:"urlImage"`
+	Category    DayCategoryMenuResponse `json:"category"`
+}
+
+type DayCategoryMenuResponse struct {
+	ID          int     `json:"id"`
+	Description string  `json:"description"`
+	Title       string  `json:"title"`
+	Price       float32 `json:"price"`
+}
+
+func (dayMenuDateDto DayMenuDateDto) ToDayMenuDateResponse() *DayMenuResponse {
+
+	dayMenuResponse := DayMenuResponse{
+		ID:   dayMenuDateDto.ID,
+		Date: dayMenuDateDto.Date,
+		Food: DayFoodMenuResponse{
+			ID:          dayMenuDateDto.Foodid,
+			Title:       dayMenuDateDto.Foodtitle,
+			Description: dayMenuDateDto.Fooddescription,
+			Location:    dayMenuDateDto.Foodlocation,
+			Category: DayCategoryMenuResponse{
+				ID:          dayMenuDateDto.Categoryid,
+				Description: dayMenuDateDto.Categorydescription,
+				Title:       dayMenuDateDto.Categorytitle,
+				Price:       dayMenuDateDto.Categoryprice,
+			},
+		},
+	}
+
+	return &dayMenuResponse
+}

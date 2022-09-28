@@ -36,7 +36,7 @@ func (allFood AllFood) ToModelResponse() *AllFoodResponse {
 		Category: CategoryResponse{
 			ID:          allFood.Category,
 			Description: allFood.Categorydescription,
-			Title:       allFood.Title,
+			Title:       allFood.Categorytitle,
 			Price:       allFood.Categoryprice,
 		},
 	}
