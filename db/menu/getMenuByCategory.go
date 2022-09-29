@@ -48,6 +48,7 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 				Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
 				Joins("left JOIN categories ON categories.id = foods.category_id").
 				Where("categories.id = ? and day_menus.menu_id = ?", valor.Category, menu).
+				Order("day_menus.date asc").
 				Scan(&foodMenu).Error
 
 			var Days []dtos.DayViewer
