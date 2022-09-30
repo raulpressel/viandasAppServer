@@ -18,6 +18,8 @@ func UploadMenu(w http.ResponseWriter, r *http.Request) {
 
 	var menuModel models.Menu
 
+	var turnMenuModel models.TurnMenu
+
 	var dayModel []models.DayMenu
 
 	var dModel models.DayMenu
@@ -36,7 +38,8 @@ func UploadMenu(w http.ResponseWriter, r *http.Request) {
 	   	last := menuDto[len(menuDto)-1].DayMenu[len(menuDto[len(menuDto)-1].DayMenu)-1] */
 
 	for _, menu := range turnDto.Menu {
-		menuModel.TurnId = menu.TurnId
+		//menuModel.TurnId =
+		turnMenuModel.TurnId = menu.TurnId
 
 		menuModel.DateStart, err = time.Parse(time.RFC3339, menu.DateStart)
 		if err != nil {
@@ -50,13 +53,13 @@ func UploadMenu(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, day := range menu.DayMenu {
-			dModel.MenuID = menuModel.ID
+			dModel.TurnID = menu.TurnId
 			dModel.FoodID = day.Food
 			dModel.Date, _ = time.Parse(time.RFC3339, day.Date)
 			dayModel = append(dayModel, dModel)
 		}
 	}
-	dbMenu.UploadMenu(dayModel, menuModel)
+	dbMenu.UploadMenu(dayModel, menuModel, turnMenuModel)
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)

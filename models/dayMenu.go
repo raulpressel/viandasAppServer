@@ -14,6 +14,8 @@ type DayMenu struct {
 	Date   time.Time
 	FoodID int
 	Food   Food `gorm:"foreignKey:FoodID"`
+	TurnID int
+	Turn   Turn `gorm:"foreignKey:TurnID"`
 	MenuID int
 	Menu   Menu `gorm:"foreignKey:MenuID"`
 }

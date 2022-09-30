@@ -5,7 +5,7 @@ import (
 	"viandasApp/models"
 )
 
-func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu) (bool, error) {
+func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu, turnMenuModel models.TurnMenu) (bool, error) {
 
 	//var dayModel []models.DayMenu
 
@@ -24,14 +24,26 @@ func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu) (bool, error) 
 		return false, err
 	}
 
-	if err := tx.Save(&menuModel).Error; err != nil {
-		tx.Rollback()
-		return false, err
+	menuModel.ID, _ = GetIdMenuActive()
+
+	if menuModel.ID == 0 {
+
+		if err := tx.Save(&menuModel).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
 	}
 
 	for i, _ := range dayModel {
 
 		dayModel[i].MenuID = menuModel.ID
+	}
+
+	turnMenuModel.MenuID = menuModel.ID
+
+	if err := tx.Save(&turnMenuModel).Error; err != nil {
+		tx.Rollback()
+		return false, err
 	}
 
 	if err := tx.CreateInBatches(&dayModel, len(dayModel)).Error; err != nil {

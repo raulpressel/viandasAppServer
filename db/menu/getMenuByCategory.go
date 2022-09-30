@@ -17,8 +17,6 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 
 	foodMenu := []dtos.FoodMenu{}
 
-	var CategoryViewer []dtos.CategoryViewer
-
 	var Turns []dtos.TurnViewer
 
 	var allMenu dtos.MenuViewer
@@ -26,9 +24,11 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 	var dateTime time.Time = time.Now()
 
 	err := db.Table("menus").
-		Select("menus.id as id, menus.turn_id as turnid, turn_menus.description as descriptionturn").
+		Select("menus.id as menuid, turns.id as turnid, turns.description as descriptionturn  ").
 		Where("? BETWEEN menus.date_start and menus.date_end", dateTime.Format("2006-01-02")).
-		Joins("left JOIN turn_menus on menus.turn_id = turn_menus.id").
+		Joins("left JOIN turn_menus on menus.id = turn_menus.menu_id").
+		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
+		Order("turns.id asc").
 		Scan(&modelMenu).Error
 
 	for _, valor := range modelMenu {
@@ -38,7 +38,9 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 			Where("categories.active = 1 and categories.id =  ?", cat).
 			Scan(&categoryMenu).Error
 
-		menu := valor.ID
+		turn := valor.Turnid
+
+		var CategoryViewer []dtos.CategoryViewer
 
 		for _, valor := range categoryMenu {
 
@@ -47,7 +49,7 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 				Joins("left JOIN foods ON foods.id = day_menus.food_id").
 				Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
 				Joins("left JOIN categories ON categories.id = foods.category_id").
-				Where("categories.id = ? and day_menus.menu_id = ?", valor.Category, menu).
+				Where("categories.id = ? and day_menus.menu_id = ?", valor.Category, turn).
 				Order("day_menus.date asc").
 				Scan(&foodMenu).Error
 
@@ -89,7 +91,7 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 		Turns = append(Turns, Turn)
 
 		allMenu = dtos.MenuViewer{
-			ID:         valor.ID,
+			ID:         valor.Menuid,
 			TurnViewer: Turns,
 		}
 

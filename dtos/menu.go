@@ -17,7 +17,7 @@ type DayMenuDateDto struct {
 	Categoryprice       float32
 }
 type AllMenu struct {
-	ID              int
+	Menuid          int
 	Turnid          int
 	Descriptionturn string
 }

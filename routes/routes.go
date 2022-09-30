@@ -55,11 +55,16 @@ func Routes() {
 	router.HandleFunc("/menu/getMenuByCategory", middlew.CheckDB(menu.GetMenuByCategory)).Methods("GET")
 	router.HandleFunc("/menu/getDayMenu", middlew.CheckDB(menu.GetDayMenuByDate)).Methods("POST")
 
-	var turnMenu models.TurnMenu
+	var turnMenuModel models.TurnMenu
+	var turnModel models.Turn
 
 	var dayModel models.DayMenu
 
-	db.ExistTable(turnMenu)
+	if db.ExistTable(turnModel) {
+		var turns = []models.Turn{{ID: 1, Description: "Mediodia"}, {ID: 2, Description: "Noche"}}
+		db.ConnectDB().Create(&turns)
+	}
+	db.ExistTable(turnMenuModel)
 	db.ExistTable(dayModel)
 
 	PORT := os.Getenv("PORT")

@@ -14,6 +14,6 @@ type Menu struct {
 
 	DateStart time.Time
 	DateEnd   time.Time
-	TurnId    int
-	TurnMenu  TurnMenu `gorm:"foreignKey:TurnId"`
+	/* TurnId    int
+	TurnMenu  TurnMenu `gorm:"foreignKey:TurnId"` */
 }
