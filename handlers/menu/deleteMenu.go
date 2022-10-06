@@ -3,39 +3,42 @@ package handlers
 import (
 	"net/http"
 	"strconv"
-	db "viandasApp/db/food"
-	"viandasApp/models"
+	db "viandasApp/db/menu"
 )
 
 /*subir el avatar al servidor*/
 func DeleteMenu(w http.ResponseWriter, r *http.Request) {
 
-	ID := r.URL.Query().Get("idFood")
-	if len(ID) < 1 {
-		http.Error(w, "El parametro ID es obligatorio", http.StatusBadRequest)
+	idMenu := r.URL.Query().Get("idMenu")
+	if len(idMenu) < 1 {
+		http.Error(w, "El parametro IDMENU es obligatorio", http.StatusBadRequest)
 		return
 	}
 
-	var foodModel models.Food
+	idTurn := r.URL.Query().Get("idTurn")
+	if len(idTurn) < 1 {
+		http.Error(w, "El parametro IDTURN es obligatorio", http.StatusBadRequest)
+		return
+	}
 
-	_ID, _ := strconv.Atoi(ID)
+	_IDMenu, _ := strconv.Atoi(idMenu)
 
-	foodModel, _ = db.GetFoodById(_ID)
+	_IDTurn, _ := strconv.Atoi(idTurn)
 
-	foodModel.Active = false
 
-	status, err := db.DeleteFood(foodModel)
+	status, err := db.DeleteTurnMenu(_IDMenu, _IDTurn)
+
 	if err != nil {
-		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
+		http.Error(w, "No se pudo borrar el TURN MENU de la base de datos "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if !status { //esto es igual a !status == false
-		http.Error(w, "no se ha logrado insertar el registro  // status = false ", 400)
+	if !status {
+		http.Error(w, "No se pudo borrar el TURN MENU de la base de datos", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusAccepted)
 
 }
