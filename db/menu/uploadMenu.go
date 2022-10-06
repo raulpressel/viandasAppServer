@@ -8,7 +8,6 @@ import (
 func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu, turnMenuModel models.TurnMenu) (bool, error) {
 
 	//var dayModel []models.DayMenu
-
 	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
@@ -24,7 +23,13 @@ func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu, turnMenuModel 
 		return false, err
 	}
 
-	menuModel.ID, _ = GetIdMenuActive(menuModel.DateStart, menuModel.DateEnd)
+	id, err := GetIdMenuActiveByDate(menuModel.DateStart, menuModel.DateEnd)
+	if err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	menuModel.ID = id
 
 	if menuModel.ID == 0 {
 
@@ -34,16 +39,27 @@ func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu, turnMenuModel 
 		}
 	}
 
-	for i, _ := range dayModel {
-
-		dayModel[i].MenuID = menuModel.ID
-	}
-
 	turnMenuModel.MenuID = menuModel.ID
 
-	if err := tx.Save(&turnMenuModel).Error; err != nil {
+	idTurnMenu, err := ValidateTurnMenu(turnMenuModel.MenuID, turnMenuModel.TurnId)
+	if err != nil {
 		tx.Rollback()
 		return false, err
+	}
+
+	if idTurnMenu == 0 {
+		if err := tx.Save(&turnMenuModel).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
+	} else {
+		tx.Rollback()
+		return false, err
+	}
+
+	for i, _ := range dayModel {
+
+		dayModel[i].TurnMenuID = turnMenuModel.ID
 	}
 
 	if err := tx.CreateInBatches(&dayModel, len(dayModel)).Error; err != nil {

@@ -16,7 +16,7 @@ type DayMenuDateDto struct {
 	Categorytitle       string
 	Categoryprice       float32
 }
-type AllMenu struct {
+type Menu struct {
 	Menuid          int
 	Turnid          int
 	Descriptionturn string
@@ -35,19 +35,6 @@ type FoodMenu struct {
 	Fooddescription string
 	Foodurl         string
 }
-
-/* type MonthMenuRequest struct {
-	ID     int               `json:"id"`
-	Active bool              `json:"active"`
-	Week   []WeekMenuRequest `json:"weeks"`
-}
-
-type WeekMenuRequest struct {
-	Name      string        `json:"name"`
-	DateStart string        `json:"dateStart"`
-	DateEnd   string        `json:"dateEnd"`
-	Menu      []MenuRequest `json:"menu"`
-} */
 
 type ValidateDateMenuRequest struct {
 	DateStart string `json:"dateStart"`
@@ -152,4 +139,42 @@ func (dayMenuDateDto DayMenuDateDto) ToDayMenuDateResponse() *DayMenuResponse {
 	}
 
 	return &dayMenuResponse
+}
+
+type AllMenu struct {
+	Menuid          int
+	Menudatestart   time.Time
+	Menudateend     time.Time
+	Turnid          int
+	IsCurrent       bool
+	Turndescription string
+}
+
+type AllMenuResponse struct {
+	ID        int              `json:"menuId"`
+	DateStart time.Time        `json:"dateStart"`
+	DateEnd   time.Time        `json:"dateEnd"`
+	IsCurrent bool             `json:"isCurrent"`
+	Turn      TurnMenuResponse `json:"turn"`
+}
+
+type TurnMenuResponse struct {
+	ID          int    `json:"id"`
+	Description string `json:"description"`
+}
+
+func (allMenu AllMenu) ToAllMenuResponse() *AllMenuResponse {
+
+	allMenuResponse := AllMenuResponse{
+		ID:        allMenu.Menuid,
+		DateStart: allMenu.Menudatestart,
+		DateEnd:   allMenu.Menudateend,
+		IsCurrent: allMenu.IsCurrent,
+		Turn: TurnMenuResponse{
+			ID:          allMenu.Turnid,
+			Description: allMenu.Turndescription,
+		},
+	}
+
+	return &allMenuResponse
 }

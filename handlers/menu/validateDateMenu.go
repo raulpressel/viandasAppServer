@@ -32,7 +32,7 @@ func ValidateDateMenu(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := dbMenu.GetIdMenuActive(dateStart, dateEnd)
+	id, err := dbMenu.GetIdMenuActiveByDate(dateStart, dateEnd)
 	if err != nil {
 		http.Error(rw, "Ocurrio un error en la BD "+err.Error(), http.StatusInternalServerError)
 		return

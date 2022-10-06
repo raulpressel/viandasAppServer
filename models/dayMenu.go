@@ -10,12 +10,10 @@ import (
 
 type DayMenu struct {
 	gorm.Model
-	ID     int `gorm:"primary_key"`
-	Date   time.Time
-	FoodID int
-	Food   Food `gorm:"foreignKey:FoodID"`
-	TurnID int
-	Turn   Turn `gorm:"foreignKey:TurnID"`
-	MenuID int
-	Menu   Menu `gorm:"foreignKey:MenuID"`
+	ID         int `gorm:"primary_key"`
+	Date       time.Time
+	FoodID     int
+	Food       Food `gorm:"foreignKey:FoodID"`
+	TurnMenuID int
+	TurnMenu   TurnMenu `gorm:"foreignKey:TurnMenuID"`
 }

@@ -10,10 +10,8 @@ import (
 
 type Menu struct {
 	gorm.Model
-	ID int `gorm:"primary_key"`
-
+	ID        int `gorm:"primary_key"`
 	DateStart time.Time
 	DateEnd   time.Time
-	/* TurnId    int
-	TurnMenu  TurnMenu `gorm:"foreignKey:TurnId"` */
+	Active    bool
 }

@@ -38,6 +38,16 @@ func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 
 	for _, menu := range turnDto.Menu {
 
+		id, err := dbMenu.ValidateTurnId(menu.TurnId)
+		if err != nil {
+			http.Error(rw, "Ocurrio un error al intentar modificar el menu "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if id == 0 {
+			http.Error(rw, "El turno no existe ", http.StatusBadRequest)
+			return
+		}
+
 		turnMenuModel.TurnId = menu.TurnId
 
 		menuModel.DateStart, err = time.Parse(time.RFC3339, menu.DateStart)
@@ -51,8 +61,10 @@ func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		menuModel.Active = true
+
 		for _, day := range menu.DayMenu {
-			dModel.TurnID = menu.TurnId
+			//dModel.TurnID = menu.TurnId
 			dModel.FoodID = day.Food
 			dModel.Date, _ = time.Parse(time.RFC3339, day.Date)
 			dayModel = append(dayModel, dModel)
@@ -66,7 +78,7 @@ func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if !status {
-		http.Error(rw, "no se ha logrado moficar el registro  ", http.StatusInternalServerError)
+		http.Error(rw, "no se ha logrado cargar el menu en la BD", http.StatusInternalServerError)
 		return
 	}
 
