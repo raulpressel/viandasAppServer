@@ -49,6 +49,7 @@ func Routes() {
 	router.HandleFunc("/category/deleteCategory", middlew.CheckDB(middlew.ValidateJWT(categories.DeleteCategory))).Methods("Delete")
 
 	router.HandleFunc("/menu/uploadMenu", middlew.CheckDB(middlew.ValidateJWT(menu.UploadMenu))).Methods("POST")
+	router.HandleFunc("/menu/validateDateMenu", middlew.CheckDB(middlew.ValidateJWT(menu.ValidateDateMenu))).Methods("POST")
 	router.HandleFunc("/menu/editMenu", middlew.CheckDB(middlew.ValidateJWT(menu.UpdateMenu))).Methods("PUT")
 	router.HandleFunc("/menu/deleteMenu", middlew.CheckDB(middlew.ValidateJWT(menu.DeleteMenu))).Methods("DELETE")
 	router.HandleFunc("/menu/getMenu", middlew.CheckDB(menu.GetMenu)).Methods("GET")

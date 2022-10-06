@@ -26,7 +26,7 @@ func UpdateMenu(w http.ResponseWriter, r *http.Request) {
 	status, err := dbMenu.UpdateDayMenu(dayMenuModel)
 
 	if err != nil {
-		http.Error(w, "Ocurrio un error al intentar modificar el menu "+err.Error(), 400)
+		http.Error(w, "Ocurrio un error al intentar modificar el menu "+err.Error(), 500)
 		return
 	}
 

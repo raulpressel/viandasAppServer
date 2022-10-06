@@ -3,10 +3,10 @@ package dtos
 import "viandasApp/models"
 
 type AllCategoryResponse struct {
-	ID          int    `json:"id"`
-	Description string `json:"description"`
-	Title       string `json:"title"`
-	Price       string `json:"price"`
+	ID          int     `json:"id"`
+	Description string  `json:"description"`
+	Title       string  `json:"title"`
+	Price       float32 `json:"price"`
 }
 
 type CategoryRequest struct {

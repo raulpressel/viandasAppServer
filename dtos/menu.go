@@ -49,6 +49,14 @@ type WeekMenuRequest struct {
 	Menu      []MenuRequest `json:"menu"`
 } */
 
+type ValidateDateMenuRequest struct {
+	DateStart string `json:"dateStart"`
+	DateEnd   string `json:"dateEnd"`
+}
+
+type ValidateDateMenuRespone struct {
+	ValidDateMenu bool `json:"validDateMenu"`
+}
 type TurnMenuRequest struct {
 	Menu []MenuRequest `json:"turns"`
 }

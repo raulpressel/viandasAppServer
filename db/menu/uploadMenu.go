@@ -24,7 +24,7 @@ func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu, turnMenuModel 
 		return false, err
 	}
 
-	menuModel.ID, _ = GetIdMenuActive()
+	menuModel.ID, _ = GetIdMenuActive(menuModel.DateStart, menuModel.DateEnd)
 
 	if menuModel.ID == 0 {
 

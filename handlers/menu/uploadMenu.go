@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 	"viandasApp/db"
@@ -12,7 +11,7 @@ import (
 )
 
 /*subir el avatar al servidor*/
-func UploadMenu(w http.ResponseWriter, r *http.Request) {
+func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 
 	var turnDto dtos.TurnMenuRequest
 
@@ -27,7 +26,7 @@ func UploadMenu(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&turnDto)
 
 	if err != nil {
-		http.Error(w, "Error en los datos recibidos "+err.Error(), 400)
+		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -38,17 +37,17 @@ func UploadMenu(w http.ResponseWriter, r *http.Request) {
 	   	last := menuDto[len(menuDto)-1].DayMenu[len(menuDto[len(menuDto)-1].DayMenu)-1] */
 
 	for _, menu := range turnDto.Menu {
-		//menuModel.TurnId =
+
 		turnMenuModel.TurnId = menu.TurnId
 
 		menuModel.DateStart, err = time.Parse(time.RFC3339, menu.DateStart)
 		if err != nil {
-			fmt.Println(err)
+			http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
 			return
 		}
 		menuModel.DateEnd, err = time.Parse(time.RFC3339, menu.DateEnd)
 		if err != nil {
-			fmt.Println(err)
+			http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -59,9 +58,19 @@ func UploadMenu(w http.ResponseWriter, r *http.Request) {
 			dayModel = append(dayModel, dModel)
 		}
 	}
-	dbMenu.UploadMenu(dayModel, menuModel, turnMenuModel)
+	status, err := dbMenu.UploadMenu(dayModel, menuModel, turnMenuModel)
 
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	if err != nil {
+		http.Error(rw, "Ocurrio un error al intentar modificar el menu "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if !status {
+		http.Error(rw, "no se ha logrado moficar el registro  ", http.StatusInternalServerError)
+		return
+	}
+
+	rw.Header().Set("Content-type", "application/json")
+	rw.WriteHeader(http.StatusCreated)
 
 }
