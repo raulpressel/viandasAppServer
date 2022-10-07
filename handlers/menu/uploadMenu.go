@@ -61,8 +61,6 @@ func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		menuModel.Active = true
-
 		for _, day := range menu.DayMenu {
 			//dModel.TurnID = menu.TurnId
 			dModel.FoodID = day.Food

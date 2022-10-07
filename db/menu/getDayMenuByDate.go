@@ -22,7 +22,7 @@ func GetDayMenuByDate(date time.Time) ([]dtos.DayMenuDateDto, error) {
 		Joins("left JOIN foods on foods.id = day_menus.food_id").
 		Joins("left JOIN categories on foods.category_id = categories.id").
 		Joins("left JOIN location_imgs ON foods.location_id = location_imgs.id").
-		Where("day_menus.date = ? and ? BETWEEN menus.date_start and menus.date_end and menus.active = 1", date.Format("2006-01-02"), dateTime.Format("2006-01-02")).
+		Where("day_menus.date = ? and ? BETWEEN menus.date_start and menus.date_end", date.Format("2006-01-02"), dateTime.Format("2006-01-02")).
 		Scan(&dayMenuDto).Error
 
 	return dayMenuDto, err

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	db "viandasApp/db/menu"
-	"viandasApp/dtos"
 )
 
 func GetMenuByCategory(rw http.ResponseWriter, r *http.Request) {
@@ -19,12 +18,15 @@ func GetMenuByCategory(rw http.ResponseWriter, r *http.Request) {
 
 	idCategory, _ := strconv.Atoi(ID)
 
-	responseMenuFood := dtos.MenuViewer{}
-
 	responseMenuFood, err := db.GetMenuByCategory(idCategory)
 
 	if err != nil {
 		http.Error(rw, "Menu no encontrado", http.StatusBadRequest)
+		return
+	}
+
+	if responseMenuFood.ID == 0 {
+		http.Error(rw, "No hay menus en la BD", http.StatusNotFound)
 		return
 	}
 

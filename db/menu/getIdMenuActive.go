@@ -17,7 +17,7 @@ func GetIdMenuActive(idMenu int) (int, error) {
 
 	err := db.Table("menus").
 		Select("menus.id as menuid").
-		Where("? BETWEEN menus.date_start and menus.date_end AND menus.id = ?  AND menus.active = 1", dateTime.Format("2006-01-02"), idMenu).
+		Where("? BETWEEN menus.date_start and menus.date_end AND menus.id = ? ", dateTime.Format("2006-01-02"), idMenu).
 		Scan(&modelMenu).Error
 
 	return modelMenu.Menuid, err

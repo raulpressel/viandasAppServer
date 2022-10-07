@@ -6,15 +6,11 @@ import (
 
 func DeleteTurnMenu(idMenu int, idTurn int) (bool, error) {
 
-	//var modelTurnMenu models.TurnMenu
-
-	//var modelDayMenu models.DayMenu
+	var count int64
 
 	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
-
-	//return err.Error
 
 	tx := db.Begin()
 	defer func() {
@@ -46,6 +42,19 @@ func DeleteTurnMenu(idMenu int, idTurn int) (bool, error) {
 	if err := tx.Exec("DELETE FROM turn_menus WHERE turn_menus.menu_id = ? AND turn_menus.turn_id = ?", idMenu, idTurn).Error; err != nil {
 		tx.Rollback()
 		return false, err
+	}
+
+	if err := tx.Table("turn_menus").Count(&count).Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	if count == 0 {
+		
+		if err := tx.Exec("DELETE FROM menus WHERE menus.id = ?", idMenu).Error; err != nil {		
+			tx.Rollback()
+			return false, err
+		}
 	}
 
 	return true, tx.Commit().Error
