@@ -44,14 +44,14 @@ func DeleteTurnMenu(idMenu int, idTurn int) (bool, error) {
 		return false, err
 	}
 
-	if err := tx.Table("turn_menus").Count(&count).Error; err != nil {
+	if err := tx.Table("turn_menus").Where("turn_menus.menu_id = ?", idMenu).Count(&count).Error; err != nil {
 		tx.Rollback()
 		return false, err
 	}
 
 	if count == 0 {
-		
-		if err := tx.Exec("DELETE FROM menus WHERE menus.id = ?", idMenu).Error; err != nil {		
+
+		if err := tx.Exec("DELETE FROM menus WHERE menus.id = ?", idMenu).Error; err != nil {
 			tx.Rollback()
 			return false, err
 		}
