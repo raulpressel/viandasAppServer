@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 	db "viandasApp/db/menu"
@@ -16,13 +15,13 @@ func GetDayMenuByDate(rw http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&dayDateMenuDto)
 
 	if err != nil {
-		http.Error(rw, "Error en los datos recibidos "+err.Error(), 400)
+		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	date, err := time.Parse(time.RFC3339, dayDateMenuDto.Date)
 	if err != nil {
-		fmt.Println(err)
+		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
