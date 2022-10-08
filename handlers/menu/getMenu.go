@@ -6,8 +6,6 @@ import (
 	db "viandasApp/db/menu"
 )
 
-/*Obtenerbanner envia el banner al http*/
-
 func GetMenu(rw http.ResponseWriter, r *http.Request) {
 
 	responseMenuFood, err := db.GetMenuActive()

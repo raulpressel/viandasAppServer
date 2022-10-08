@@ -62,12 +62,12 @@ func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, day := range menu.DayMenu {
-			//dModel.TurnID = menu.TurnId
 			dModel.FoodID = day.Food
 			dModel.Date, _ = time.Parse(time.RFC3339, day.Date)
 			dayModel = append(dayModel, dModel)
 		}
 	}
+
 	status, err := dbMenu.UploadMenu(dayModel, menuModel, turnMenuModel)
 
 	if err != nil {

@@ -16,7 +16,12 @@ func GetMenuByCategory(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idCategory, _ := strconv.Atoi(ID)
+	idCategory, err := strconv.Atoi(ID)
+
+	if err != nil {
+		http.Error(rw, "Error al convertir el ID", http.StatusInternalServerError)
+		return
+	}
 
 	responseMenuFood, err := db.GetMenuByCategory(idCategory)
 

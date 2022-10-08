@@ -6,7 +6,6 @@ import (
 	db "viandasApp/db/menu"
 )
 
-/*subir el avatar al servidor*/
 func DeleteMenu(w http.ResponseWriter, r *http.Request) {
 
 	idMenu := r.URL.Query().Get("idMenu")
@@ -24,7 +23,6 @@ func DeleteMenu(w http.ResponseWriter, r *http.Request) {
 	_IDMenu, _ := strconv.Atoi(idMenu)
 
 	_IDTurn, _ := strconv.Atoi(idTurn)
-
 
 	status, err := db.DeleteTurnMenu(_IDMenu, _IDTurn)
 

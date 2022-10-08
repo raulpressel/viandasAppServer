@@ -57,7 +57,7 @@ func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu, turnMenuModel 
 		return false, err
 	}
 
-	for i, _ := range dayModel {
+	for i := range dayModel {
 
 		dayModel[i].TurnMenuID = turnMenuModel.ID
 	}
