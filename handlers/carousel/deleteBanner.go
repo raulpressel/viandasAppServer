@@ -19,6 +19,10 @@ func DeleteBanner(w http.ResponseWriter, r *http.Request) {
 	var bannerModel models.Banner
 
 	_ID, err := strconv.Atoi(ID)
+	if err != nil {
+		http.Error(w, "No se pudo convertir ID "+err.Error(), 400)
+		return
+	}
 
 	bannerModel, err = db.GetBannerById(_ID)
 	if err != nil {

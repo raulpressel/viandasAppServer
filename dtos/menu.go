@@ -1,0 +1,180 @@
+package dtos
+
+import (
+	"time"
+)
+
+type DayMenuDateDto struct {
+	ID                  int
+	Date                time.Time
+	Foodid              int
+	Foodtitle           string
+	Fooddescription     string
+	Foodlocation        string
+	Categoryid          int
+	Categorydescription string
+	Categorytitle       string
+	Categoryprice       float32
+}
+type Menu struct {
+	Menuid          int
+	Turnid          int
+	Descriptionturn string
+}
+type CategoryMenu struct {
+	Category            int
+	Categorydescription string
+	Categorytitle       string
+	Categoryprice       float32
+}
+
+type FoodMenu struct {
+	Datefood        time.Time
+	Foodid          int
+	Foodtitle       string
+	Fooddescription string
+	Foodurl         string
+}
+
+type ValidateDateMenuRequest struct {
+	DateStart string `json:"dateStart"`
+	DateEnd   string `json:"dateEnd"`
+}
+
+type ValidateDateMenuRespone struct {
+	ValidDateMenu bool `json:"validDateMenu"`
+}
+type TurnMenuRequest struct {
+	Menu []MenuRequest `json:"turns"`
+}
+
+type MenuRequest struct {
+	TurnId    int              `json:"id"`
+	DateStart string           `json:"dateStart"`
+	DateEnd   string           `json:"dateEnd"`
+	DayMenu   []DayMenuRequest `json:"days"`
+}
+
+type DayMenuRequest struct {
+	Date string `json:"date"`
+	Food int    `json:"idFood"`
+}
+
+type DayDateMenuRequest struct {
+	Date string `json:"date"`
+}
+
+//////////////////////////////RESPONSE
+
+type MenuViewer struct {
+	ID         int          `json:"id"`
+	TurnViewer []TurnViewer `json:"turnsViewer"`
+}
+
+type TurnViewer struct {
+	ID             int              `json:"id"`
+	Description    string           `json:"description"`
+	CategoryViewer []CategoryViewer `json:"categoryViewer"`
+}
+
+type CategoryViewer struct {
+	Category CategoryResponse `json:"category"`
+	Days     []DayViewer      `json:"daysViewer"`
+}
+
+type DayViewer struct {
+	Date time.Time  `json:"date"`
+	Food FoodViewer `json:"foodViewer"`
+}
+
+type FoodViewer struct {
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	UrlImage    string `json:"urlImage"`
+}
+
+type DayMenuEditRequest struct {
+	IdDayMenu int `json:"idDay"`
+	IdFood    int `json:"idFood"`
+}
+
+type DayMenuResponse struct {
+	ID   int                 `json:"id"`
+	Date time.Time           `json:"date"`
+	Food DayFoodMenuResponse `json:"food"`
+}
+type DayFoodMenuResponse struct {
+	ID          int                     `json:"id"`
+	Title       string                  `json:"title"`
+	Description string                  `json:"description"`
+	Location    string                  `json:"urlImage"`
+	Category    DayCategoryMenuResponse `json:"category"`
+}
+
+type DayCategoryMenuResponse struct {
+	ID          int     `json:"id"`
+	Description string  `json:"description"`
+	Title       string  `json:"title"`
+	Price       float32 `json:"price"`
+}
+
+func (dayMenuDateDto DayMenuDateDto) ToDayMenuDateResponse() *DayMenuResponse {
+
+	dayMenuResponse := DayMenuResponse{
+		ID:   dayMenuDateDto.ID,
+		Date: dayMenuDateDto.Date,
+		Food: DayFoodMenuResponse{
+			ID:          dayMenuDateDto.Foodid,
+			Title:       dayMenuDateDto.Foodtitle,
+			Description: dayMenuDateDto.Fooddescription,
+			Location:    dayMenuDateDto.Foodlocation,
+			Category: DayCategoryMenuResponse{
+				ID:          dayMenuDateDto.Categoryid,
+				Description: dayMenuDateDto.Categorydescription,
+				Title:       dayMenuDateDto.Categorytitle,
+				Price:       dayMenuDateDto.Categoryprice,
+			},
+		},
+	}
+
+	return &dayMenuResponse
+}
+
+type AllMenu struct {
+	Menuid          int
+	Menudatestart   time.Time
+	Menudateend     time.Time
+	Turnid          int
+	IsCurrent       bool
+	Turndescription string
+}
+
+type AllMenuResponse struct {
+	ID        int              `json:"menuId"`
+	DateStart time.Time        `json:"dateStart"`
+	DateEnd   time.Time        `json:"dateEnd"`
+	IsCurrent bool             `json:"isCurrent"`
+	Turn      TurnMenuResponse `json:"turn"`
+}
+
+type TurnMenuResponse struct {
+	ID          int    `json:"id"`
+	Description string `json:"description"`
+}
+
+func (allMenu AllMenu) ToAllMenuResponse() *AllMenuResponse {
+
+	allMenuResponse := AllMenuResponse{
+		ID:        allMenu.Menuid,
+		DateStart: allMenu.Menudatestart,
+		DateEnd:   allMenu.Menudateend,
+		IsCurrent: allMenu.IsCurrent,
+		Turn: TurnMenuResponse{
+			ID:          allMenu.Turnid,
+			Description: allMenu.Turndescription,
+		},
+	}
+
+	return &allMenuResponse
+}

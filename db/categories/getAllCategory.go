@@ -13,7 +13,8 @@ func GetAllCategory() ([]dtos.AllCategoryResponse, error) {
 	var responseModel []dtos.AllCategoryResponse
 
 	err := db.Table("categories").
-		Select("categories.id, categories.description").
+		Select("categories.id, categories.description, categories.title, categories.price").
+		Where("categories.active = 1").
 		Scan(&responseModel).Error
 
 	return responseModel, err
