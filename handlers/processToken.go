@@ -28,6 +28,7 @@ func ProcessToken(tk string) (*models.Claim, bool, error) {
 	}
 	tk = strings.TrimSpace(splitToken[1])
 
+	
 	tkn, err := jwt.ParseWithClaims(tk, claims, func(token *jwt.Token) (interface{}, error) {
 		return miClave, nil
 	})
