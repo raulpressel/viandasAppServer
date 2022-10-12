@@ -21,9 +21,9 @@ func GetFoodByCategory(cat int) ([]dtos.AllFoodResponse, error) {
 		Where("foods.active = 1 and foods.category_id = ?", cat).
 		Scan(&modelFood).Error
 
-	for _, valor := range modelFood {
+	/* for _, valor := range modelFood {
 		responseModelFood = append(responseModelFood, *valor.ToModelResponse())
-	}
+	} */
 
 	return responseModelFood, err
 
