@@ -5,7 +5,7 @@ import (
 	"viandasApp/models"
 )
 
-func UploadFood(foodModel models.Food, locationModel models.LocationImg) (bool, error) {
+func UploadFood(foodModel models.Food, locationModel models.LocationImg, foodCategoryModel []models.FoodCategory) (bool, error) {
 
 	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
@@ -30,6 +30,16 @@ func UploadFood(foodModel models.Food, locationModel models.LocationImg) (bool, 
 	foodModel.LocationID = locationModel.ID
 
 	if err := tx.Save(&foodModel).Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	for i := range foodCategoryModel {
+
+		foodCategoryModel[i].FoodID = foodModel.ID
+	}
+
+	if err := tx.CreateInBatches(&foodCategoryModel, len(foodCategoryModel)).Error; err != nil {
 		tx.Rollback()
 		return false, err
 	}

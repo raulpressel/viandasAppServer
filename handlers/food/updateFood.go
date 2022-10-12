@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	db "viandasApp/db/food"
 	imgdb "viandasApp/db/img"
 	"viandasApp/handlers"
@@ -54,12 +55,28 @@ func UpdateFood(w http.ResponseWriter, r *http.Request) {
 
 	foodModel.Title = r.FormValue("title")
 	foodModel.Description = r.FormValue("description")
-	foodModel.CategoryID, _ = strconv.Atoi(r.FormValue("category"))
+	//foodModel.CategoryID, _ = strconv.Atoi(r.FormValue("category"))
 	foodModel.Active = true
 
 	locationModel.ID = foodModel.LocationID
 
-	status, err := db.UpdateFood(foodModel, locationModel)
+	cat := (r.FormValue("categories"))
+
+	categoryArray := strings.Split(cat, ", ")
+
+	var foodCategoryModel models.FoodCategory
+
+	var foodCategoriesModel []models.FoodCategory
+
+	//foodModel.CategoryID, _ = strconv.Atoi(r.FormValue("category"))
+
+	for _, value := range categoryArray {
+		foodCategoryModel.CategoryID, _ = strconv.Atoi(value)
+		foodCategoryModel.FoodID = foodModel.ID
+		foodCategoriesModel = append(foodCategoriesModel, foodCategoryModel)
+	}
+
+	status, err := db.UpdateFood(foodModel, locationModel, foodCategoriesModel)
 	if err != nil {
 		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
 		return
