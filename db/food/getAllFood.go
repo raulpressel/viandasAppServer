@@ -20,33 +20,29 @@ func GetAllFood() ([]dtos.AllFoodResponse, error) {
 
 	var allFood dtos.AllFoodResponse
 
-	err := db.Table("foods").
+	if err := db.Table("foods").
 		Select("foods.id, foods.title, foods.description, location_imgs.location").
 		Joins("left JOIN location_imgs ON foods.location_id = location_imgs.id").
 		Where("foods.active = 1").
-		Scan(&modelFood).Error
-	if err != nil {
+		Scan(&modelFood).Error; err != nil {
 		return nil, err
 	}
-		
 
-	err = db.Table("categories").
+	if err := db.Table("categories").
 		Select("categories.id as category, categories.description as categorydescription, categories.title as categorytitle, categories.price as categoryprice ").
 		Where("categories.active = 1").
-		Scan(&categoryMenu).Error
-		if err != nil {
-			return nil, err
-		}
+		Scan(&categoryMenu).Error; err != nil {
+		return nil, err
+	}
 
 	for _, valor := range modelFood {
 
-		err = db.Table("food_categories").
+		if err := db.Table("food_categories").
 			Select("food_categories.id as category, food_categories.food_id as foodid, food_categories.category_id as categoryid ").
 			Where("food_categories.food_id = ?", valor.ID).
-			Scan(&foodCategory).Error
-			if err != nil {
-				return nil, err
-			}
+			Scan(&foodCategory).Error; err != nil {
+			return nil, err
+		}
 
 		var categoryFood dtos.CategoryResponse
 		var categoriesFood []dtos.CategoryResponse
@@ -83,6 +79,6 @@ func GetAllFood() ([]dtos.AllFoodResponse, error) {
 
 	}
 
-	return responseModelFood, err
+	return responseModelFood, nil
 
 }

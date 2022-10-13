@@ -72,8 +72,6 @@ func UploadFood(w http.ResponseWriter, r *http.Request) {
 
 	db.ExistTable(foodCategoryModel)
 
-	//foodModel.CategoryID, _ = strconv.Atoi(r.FormValue("category"))
-
 	for _, value := range categoryArray {
 		foodCategoryModel.CategoryID, _ = strconv.Atoi(value)
 		foodCategoryModel.FoodID = foodModel.ID
@@ -86,12 +84,10 @@ func UploadFood(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !status { //esto es igual a !status == false
+	if !status {
 		http.Error(w, "no se ha logrado insertar el registro  // status = false ", 400)
 		return
 	}
-
-	//foodModel.CategoryID, _ = strconv.Atoi(r.FormValue("category"))
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)

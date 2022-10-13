@@ -13,7 +13,7 @@ func GetAllFood(rw http.ResponseWriter, r *http.Request) {
 	responseModelFood, err := db.GetAllFood()
 
 	if err != nil {
-		http.Error(rw, "no fue posible recuperar los platos", http.StatusBadRequest)
+		http.Error(rw, "no fue posible recuperar los platos", http.StatusInternalServerError)
 		return
 	}
 
