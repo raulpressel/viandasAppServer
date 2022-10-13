@@ -19,7 +19,7 @@ type AllFoodResponse struct {
 	Title       string             `json:"title"`
 	Description string             `json:"description"`
 	Location    string             `json:"urlImage"`
-	Category    []CategoryResponse `json:"category"`
+	Category    []CategoryResponse `json:"categories"`
 }
 
 type CategoryResponse struct {
