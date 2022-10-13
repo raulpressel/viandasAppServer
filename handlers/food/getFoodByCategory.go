@@ -7,8 +7,6 @@ import (
 	db "viandasApp/db/food"
 )
 
-/*Obtenerbanner envia el banner al http*/
-
 func GetFoodByCategory(rw http.ResponseWriter, r *http.Request) {
 
 	ID := r.URL.Query().Get("idCategory")
@@ -18,12 +16,17 @@ func GetFoodByCategory(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idCategory, _ := strconv.Atoi(ID)
+	idCategory, err := strconv.Atoi(ID)
+
+	if err != nil {
+		http.Error(rw, "Error al convertir el ID", http.StatusInternalServerError)
+		return
+	}
 
 	responseModelFood, err := db.GetFoodByCategory(idCategory)
 
 	if err != nil {
-		http.Error(rw, "no fue posible recuperar los platos", http.StatusBadRequest)
+		http.Error(rw, "no fue posible recuperar los platos", http.StatusInternalServerError)
 		return
 	}
 

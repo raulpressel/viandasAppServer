@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"viandasApp/db"
 	dbfood "viandasApp/db/food"
 	"viandasApp/handlers"
@@ -56,19 +57,34 @@ func UploadFood(w http.ResponseWriter, r *http.Request) {
 
 	foodModel.Title = r.FormValue("title")
 	foodModel.Description = r.FormValue("description")
-	foodModel.CategoryID, _ = strconv.Atoi(r.FormValue("category"))
 	foodModel.Active = true
+
+	cat := (r.FormValue("categories"))
+
+	categoryArray := strings.Split(cat, ", ")
 
 	db.ExistTable(foodModel)
 	db.ExistTable(locationModel)
 
-	status, err := dbfood.UploadFood(foodModel, locationModel)
+	var foodCategoryModel models.FoodCategory
+
+	var foodCategoriesModel []models.FoodCategory
+
+	db.ExistTable(foodCategoryModel)
+
+	for _, value := range categoryArray {
+		foodCategoryModel.CategoryID, _ = strconv.Atoi(value)
+		foodCategoryModel.FoodID = foodModel.ID
+		foodCategoriesModel = append(foodCategoriesModel, foodCategoryModel)
+	}
+
+	status, err := dbfood.UploadFood(foodModel, locationModel, foodCategoriesModel)
 	if err != nil {
 		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
 		return
 	}
 
-	if !status { //esto es igual a !status == false
+	if !status {
 		http.Error(w, "no se ha logrado insertar el registro  // status = false ", 400)
 		return
 	}

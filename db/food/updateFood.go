@@ -5,7 +5,7 @@ import (
 	"viandasApp/models"
 )
 
-func UpdateFood(foodModel models.Food, locationModel models.LocationImg) (bool, error) {
+func UpdateFood(foodModel models.Food, locationModel models.LocationImg, foodCategoryModel []models.FoodCategory) (bool, error) {
 
 	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
@@ -22,12 +22,22 @@ func UpdateFood(foodModel models.Food, locationModel models.LocationImg) (bool, 
 		return false, err
 	}
 
+	if err := tx.Exec("DELETE FROM food_categories WHERE food_id = ?", foodModel.ID).Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
 	if err := tx.Save(&locationModel).Error; err != nil {
 		tx.Rollback()
 		return false, err
 	}
 
 	if err := tx.Save(&foodModel).Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.CreateInBatches(&foodCategoryModel, len(foodCategoryModel)).Error; err != nil {
 		tx.Rollback()
 		return false, err
 	}

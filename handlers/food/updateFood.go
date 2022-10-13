@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	db "viandasApp/db/food"
 	imgdb "viandasApp/db/img"
 	"viandasApp/handlers"
@@ -13,19 +14,33 @@ import (
 )
 
 /*subir el imagen comida al servidor*/
-func UpdateFood(w http.ResponseWriter, r *http.Request) {
+func UpdateFood(rw http.ResponseWriter, r *http.Request) {
 
 	var locationModel models.LocationImg
 
 	var foodModel models.Food
 
-	foodModel.ID, _ = strconv.Atoi(r.FormValue("id"))
+	_ID, err := strconv.Atoi(r.FormValue("id"))
 
-	w.Header().Add("content-type", "application/json")
+	if _ID < 1 {
+		http.Error(rw, "debe enviar el parametro id", http.StatusBadRequest)
+		return
+	}
+
+	if err != nil {
+		http.Error(rw, "Error al convertir el ID", http.StatusInternalServerError)
+		return
+	}
+
+	rw.Header().Add("content-type", "application/json")
+
+	foodModel, err = db.GetFoodById(_ID)
+	if err != nil {
+		http.Error(rw, "no fue posible recuperar el plato por ID", http.StatusInternalServerError)
+		return
+	}
 
 	file, handle, err := r.FormFile("image")
-
-	foodModel, _ = db.GetFoodById(foodModel.ID)
 
 	switch err {
 	case nil:
@@ -33,14 +48,14 @@ func UpdateFood(w http.ResponseWriter, r *http.Request) {
 
 		f, err := os.OpenFile(locationModel.Location, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
-			http.Error(w, "error al subir imagen comida "+err.Error(), http.StatusBadRequest)
+			http.Error(rw, "error al subir imagen comida "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		_, err = io.Copy(f, file)
 
 		if err != nil {
-			http.Error(w, "error al copiar  imagen comida "+err.Error(), http.StatusBadRequest)
+			http.Error(rw, "error al copiar  imagen comida "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -54,23 +69,37 @@ func UpdateFood(w http.ResponseWriter, r *http.Request) {
 
 	foodModel.Title = r.FormValue("title")
 	foodModel.Description = r.FormValue("description")
-	foodModel.CategoryID, _ = strconv.Atoi(r.FormValue("category"))
+
 	foodModel.Active = true
 
 	locationModel.ID = foodModel.LocationID
 
-	status, err := db.UpdateFood(foodModel, locationModel)
+	cat := (r.FormValue("categories"))
+
+	categoryArray := strings.Split(cat, ", ")
+
+	var foodCategoryModel models.FoodCategory
+
+	var foodCategoriesModel []models.FoodCategory
+
+	for _, value := range categoryArray {
+		foodCategoryModel.CategoryID, _ = strconv.Atoi(value)
+		foodCategoryModel.FoodID = foodModel.ID
+		foodCategoriesModel = append(foodCategoriesModel, foodCategoryModel)
+	}
+
+	status, err := db.UpdateFood(foodModel, locationModel, foodCategoriesModel)
 	if err != nil {
-		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
+		http.Error(rw, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
 		return
 	}
 
 	if !status {
-		http.Error(w, "no se ha logrado insertar el registro  // status = false ", 400)
+		http.Error(rw, "no se ha logrado insertar el registro  // status = false ", 400)
 		return
 	}
 
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	rw.Header().Set("Content-type", "application/json")
+	rw.WriteHeader(http.StatusCreated)
 
 }

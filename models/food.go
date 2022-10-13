@@ -11,8 +11,6 @@ type Food struct {
 	ID          int `gorm:"primary_key"`
 	Title       string
 	Description string
-	CategoryID  int
-	Category    Category `gorm:"foreignKey:CategoryID"`
 	Active      bool
 	LocationID  int
 	LocationImg LocationImg `gorm:"foreignKey:LocationID"`
