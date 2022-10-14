@@ -14,6 +14,7 @@ type CategoryRequest struct {
 	Description string  `json:"description"`
 	Title       string  `json:"title"`
 	Price       float32 `json:"price"`
+	
 }
 
 type Category struct {

@@ -47,31 +47,28 @@ func GetFoodByCategory(cat int) ([]dtos.AllFoodResponse, error) {
 		var categoryFood dtos.CategoryResponse
 		var categoriesFood []dtos.CategoryResponse
 
-		categoryFood = dtos.CategoryResponse{
-			ID:          categoryMenu.Category,
-			Description: categoryMenu.Categorydescription,
-			Title:       categoryMenu.Categorytitle,
-			Price:       categoryMenu.Categoryprice,
-			Checked:     false,
-		}
-
 		for _, fc := range foodCategory {
 			if fc.Categoryid == categoryMenu.Category {
-				categoryFood.Checked = true
+				categoryFood = dtos.CategoryResponse{
+					ID:          categoryMenu.Category,
+					Description: categoryMenu.Categorydescription,
+					Title:       categoryMenu.Categorytitle,
+					Price:       categoryMenu.Categoryprice,
+					Checked:     true,
+				}
+				categoriesFood = append(categoriesFood, categoryFood)
+
+				allFood = dtos.AllFoodResponse{
+					ID:          valor.ID,
+					Title:       valor.Title,
+					Description: valor.Description,
+					Location:    valor.Location,
+					Category:    categoriesFood,
+				}
+
+				responseModelFood = append(responseModelFood, allFood)
 			}
 		}
-
-		categoriesFood = append(categoriesFood, categoryFood)
-
-		allFood = dtos.AllFoodResponse{
-			ID:          valor.ID,
-			Title:       valor.Title,
-			Description: valor.Description,
-			Location:    valor.Location,
-			Category:    categoriesFood,
-		}
-
-		responseModelFood = append(responseModelFood, allFood)
 
 	}
 
