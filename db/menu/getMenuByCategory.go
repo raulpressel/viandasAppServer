@@ -46,12 +46,12 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 		for _, valor := range categoryMenu {
 
 			err = db.Table("day_menus").
-				Select("day_menus.date as datefood,  day_menus.food_id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
-				Joins("left JOIN foods ON foods.id = day_menus.food_id").
+				Select("day_menus.date as datefood,  foods.id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
+				Joins("left JOIN food_categories ON food_categories.id = day_menus.food_category_id").
+				Joins("left JOIN foods ON foods.id = food_categories.food_id").
 				Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
-				Joins("left JOIN categories ON categories.id = foods.category_id").
 				Joins("left JOIN turn_menus ON turn_menus.id = day_menus.turn_menu_id").
-				Where("categories.id = ? and turn_menus.turn_id = ? and turn_menus.menu_id = ? ", valor.Category, turn, menu).
+				Where("food_categories.category_id = ? and turn_menus.turn_id = ? and turn_menus.menu_id = ? ", valor.Category, turn, menu).
 				Order("day_menus.date asc").
 				Scan(&foodMenu).Error
 
@@ -62,9 +62,9 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 					Date: valor.Datefood,
 					Food: dtos.FoodViewer{
 						ID:          valor.Foodid,
-					/* 	Title:       valor.Foodtitle,
+						Title:       valor.Foodtitle,
 						Description: valor.Fooddescription,
-						UrlImage:    valor.Foodurl, */
+						UrlImage:    valor.Foodurl,
 					},
 				}
 				Days = append(Days, Day)
@@ -100,22 +100,5 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 	}
 
 	return allMenu, err
-
-	/*
-		err := db.Table("day_menus").
-			Select("menus.id as id, menus.turn_id as turnid, turn_menus.description as descriptionturn,
-			categories.id as category, categories.description as categorydescription,
-			day_menus.date as datefood,  day_menus.food_id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
-			Joins("left JOIN foods ON foods.id = day_menus.food_id").
-			Joins("left JOIN categories ON foods.category_id = categories.id").
-			Joins("left JOIN menus on day_menus.menu_id = menus.id").
-			Joins("left JOIN turn_menus on menus.turn_id = turn_menus.id").
-			Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
-			Where("? BETWEEN menus.date_start and menus.date_end", dateTime). //datetime sin horas minutos y segundos
-			Scan(&modelMenu).Error */
-
-	/* for _, valor := range modelMenu {
-		responseModel = append(responseModel, *valor.ToModelResponse())
-	} */
 
 }
