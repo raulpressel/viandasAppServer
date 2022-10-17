@@ -62,9 +62,9 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 					Date: valor.Datefood,
 					Food: dtos.FoodViewer{
 						ID:          valor.Foodid,
-						Title:       valor.Foodtitle,
+					/* 	Title:       valor.Foodtitle,
 						Description: valor.Fooddescription,
-						UrlImage:    valor.Foodurl,
+						UrlImage:    valor.Foodurl, */
 					},
 				}
 				Days = append(Days, Day)
