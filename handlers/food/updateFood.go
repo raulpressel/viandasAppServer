@@ -62,7 +62,7 @@ func UpdateFood(rw http.ResponseWriter, r *http.Request) {
 		locationModel.Location = handlers.GetHash(locationModel.Location)
 		file.Close()
 	case http.ErrMissingFile:
-		locationModel, _ = imgdb.GetLocationImgById(foodModel.LocationID)
+		locationModel, _ = imgdb.GetLocationImgById(*foodModel.LocationID)
 	default:
 		log.Println(err)
 	}
@@ -72,7 +72,7 @@ func UpdateFood(rw http.ResponseWriter, r *http.Request) {
 
 	foodModel.Active = true
 
-	locationModel.ID = foodModel.LocationID
+	locationModel.ID = *foodModel.LocationID
 
 	cat := (r.FormValue("categories"))
 

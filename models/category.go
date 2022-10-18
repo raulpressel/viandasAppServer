@@ -13,6 +13,6 @@ type Category struct {
 	Title       string
 	Price       float32
 	Active      bool
-	LocationID  int
+	LocationID  *int
 	LocationImg LocationImg `gorm:"foreignKey:LocationID"`
 }

@@ -12,7 +12,7 @@ type Food struct {
 	Title       string
 	Description string
 	Active      bool
-	LocationID  int
+	LocationID  *int
 	LocationImg LocationImg `gorm:"foreignKey:LocationID"`
 	//LocationImg LocationImg `gorm:"foreignKey:Location,constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

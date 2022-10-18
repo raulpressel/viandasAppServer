@@ -22,12 +22,14 @@ func UploadCategory(categoryModel models.Category, locationModel models.Location
 		return false, err
 	}
 
-	if err := tx.Save(&locationModel).Error; err != nil {
-		tx.Rollback()
-		return false, err
-	}
+	if locationModel.Location != "" {
+		if err := tx.Save(&locationModel).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
+		categoryModel.LocationID = &locationModel.ID
 
-	categoryModel.LocationID = locationModel.ID
+	}
 
 	if err := tx.Save(&categoryModel).Error; err != nil {
 		tx.Rollback()
@@ -35,18 +37,5 @@ func UploadCategory(categoryModel models.Category, locationModel models.Location
 	}
 
 	return true, tx.Commit().Error
-
-	/* 	var db = db.ConnectDB()
-	   	sqlDB, _ := db.DB()
-	   	defer sqlDB.Close()
-
-	   	//userModel.Password, _ = EncryptPassword(userModel.Password)
-
-	   	err := db.Save(&categoryModel)
-
-	   	if err.Error != nil {
-	   		return false, err.Error
-	   	}
-	   	return true, err.Error */
 
 }

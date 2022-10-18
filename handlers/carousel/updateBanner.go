@@ -49,7 +49,7 @@ func UpdateBanner(w http.ResponseWriter, r *http.Request) {
 		locationModel.Location = handlers.GetHash(locationModel.Location)
 		file.Close()
 	case http.ErrMissingFile:
-		locationModel, _ = imgdb.GetLocationImgById(bannerModel.LocationID)
+		locationModel, _ = imgdb.GetLocationImgById(*bannerModel.LocationID)
 	default:
 		log.Println(err)
 	}
@@ -67,7 +67,7 @@ func UpdateBanner(w http.ResponseWriter, r *http.Request) {
 	}
 	bannerModel.Active = true
 
-	locationModel.ID = bannerModel.LocationID
+	locationModel.ID = *bannerModel.LocationID
 
 	status, err := carouseldb.UpdateBanner(bannerModel, locationModel)
 	if err != nil {

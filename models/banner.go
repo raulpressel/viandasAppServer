@@ -15,8 +15,7 @@ type Banner struct {
 	DateStart   time.Time
 	DateEnd     time.Time
 	Active      bool
-	LocationID  int
+	LocationID  *int
 	LocationImg LocationImg `gorm:"foreignKey:LocationID"`
 	//LocationImg LocationImg `gorm:"foreignKey:Location,constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
-
