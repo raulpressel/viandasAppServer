@@ -15,6 +15,7 @@ type DayMenuDateDto struct {
 	Categorydescription string
 	Categorytitle       string
 	Categoryprice       float32
+	Foodcategory        int
 }
 type Menu struct {
 	Menuid          int
@@ -102,17 +103,17 @@ type DayMenuEditRequest struct {
 }
 
 type DayMenuResponse struct {
-	ID       int                     `json:"id"`
-	Date     time.Time               `json:"date"`
-	Food     DayFoodMenuResponse     `json:"food"`
-	Category DayCategoryMenuResponse `json:"category"`
+	ID       int                 `json:"id"`
+	Date     time.Time           `json:"date"`
+	Food     DayFoodMenuResponse `json:"food"`
+	Category CategoryResponse    `json:"category"`
 }
 type DayFoodMenuResponse struct {
-	ID          int                     `json:"id"`
-	Title       string                  `json:"title"`
-	Description string                  `json:"description"`
-	Location    string                  `json:"urlImage"`
-	Category    DayCategoryMenuResponse `json:"category"`
+	ID          int                `json:"id"`
+	Title       string             `json:"title"`
+	Description string             `json:"description"`
+	Location    string             `json:"urlImage"`
+	Categories  []CategoryResponse `json:"categories"`
 }
 
 type DayCategoryMenuResponse struct {
@@ -120,34 +121,6 @@ type DayCategoryMenuResponse struct {
 	Description string  `json:"description"`
 	Title       string  `json:"title"`
 	Price       float32 `json:"price"`
-}
-
-func (dayMenuDateDto DayMenuDateDto) ToDayMenuDateResponse() *DayMenuResponse {
-
-	dayMenuResponse := DayMenuResponse{
-		ID:   dayMenuDateDto.ID,
-		Date: dayMenuDateDto.Date,
-		Category: DayCategoryMenuResponse{
-			ID:          dayMenuDateDto.Categoryid,
-			Description: dayMenuDateDto.Categorydescription,
-			Title:       dayMenuDateDto.Categorytitle,
-			Price:       dayMenuDateDto.Categoryprice,
-		},
-		Food: DayFoodMenuResponse{
-			ID:          dayMenuDateDto.Foodid,
-			Title:       dayMenuDateDto.Foodtitle,
-			Description: dayMenuDateDto.Fooddescription,
-			Location:    dayMenuDateDto.Foodlocation,
-			Category: DayCategoryMenuResponse{
-				ID:          dayMenuDateDto.Categoryid,
-				Description: dayMenuDateDto.Categorydescription,
-				Title:       dayMenuDateDto.Categorytitle,
-				Price:       dayMenuDateDto.Categoryprice,
-			},
-		},
-	}
-
-	return &dayMenuResponse
 }
 
 type AllMenu struct {

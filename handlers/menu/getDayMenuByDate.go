@@ -28,18 +28,12 @@ func GetDayMenuByDate(rw http.ResponseWriter, r *http.Request) {
 	responseMenuFood, err := db.GetDayMenuByDate(date)
 
 	if err != nil {
-		http.Error(rw, "Menu no encontrado", http.StatusBadRequest)
+		http.Error(rw, "Menu no encontrado", http.StatusInternalServerError)
 		return
-	}
-
-	var dayMenuResponse []dtos.DayMenuResponse
-
-	for _, valor := range responseMenuFood {
-		dayMenuResponse = append(dayMenuResponse, *valor.ToDayMenuDateResponse())
 	}
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(rw).Encode(dayMenuResponse)
+	json.NewEncoder(rw).Encode(responseMenuFood)
 
 }
