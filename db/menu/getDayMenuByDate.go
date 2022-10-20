@@ -54,7 +54,7 @@ func GetDayMenuByDate(date time.Time) ([]dtos.DayMenuResponse, error) {
 
 		dayFoodMenu := dtos.DayFoodMenuResponse{
 			ID:          valor.Foodid,
-			Title:       valor.Fooddescription,
+			Title:       valor.Foodtitle,
 			Description: valor.Fooddescription,
 			Location:    valor.Foodlocation,
 			Categories:  categoriesFood,

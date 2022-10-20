@@ -20,6 +20,8 @@ type DayMenuDateDto struct {
 type Menu struct {
 	Menuid          int
 	Turnid          int
+	Datestart       time.Time
+	Dateend         time.Time
 	Descriptionturn string
 }
 type CategoryMenu struct {
@@ -70,6 +72,8 @@ type DayDateMenuRequest struct {
 
 type MenuViewer struct {
 	ID         int          `json:"id"`
+	DateStart  time.Time    `json:"dateStart"`
+	DateEnd    time.Time    `json:"dateEnd"`
 	TurnViewer []TurnViewer `json:"turnsViewer"`
 }
 
