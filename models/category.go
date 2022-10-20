@@ -14,5 +14,5 @@ type Category struct {
 	Price       float32
 	Active      bool
 	LocationID  *int
-	LocationImg LocationImg `gorm:"foreignKey:LocationID"`
+	LocationImg LocationImg `gorm:"foreignKey:LocationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

@@ -40,6 +40,15 @@ func UpdateCategory(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if categoryModel.LocationID != nil {
+
+		locationModel, err = imgdb.GetLocationImgById(*categoryModel.LocationID)
+		if err != nil {
+			http.Error(rw, "no fue posible recuperar la imagen por ID", http.StatusInternalServerError)
+			return
+		}
+	}
+
 	file, handle, err := r.FormFile("image")
 	switch err {
 	case nil:
@@ -59,9 +68,23 @@ func UpdateCategory(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		locationModel.Location = handlers.GetHash(locationModel.Location)
+
+		if categoryModel.LocationID != nil {
+
+			locationModel.ID = *categoryModel.LocationID
+		} else {
+			numero := 0
+			categoryModel.LocationID = &numero
+		}
+
 		file.Close()
 	case http.ErrMissingFile:
-		locationModel, _ = imgdb.GetLocationImgById(*categoryModel.LocationID)
+		if locationModel.Location != "" {
+
+			categoryModel.LocationID = nil
+
+		}
+
 	default:
 		log.Println(err)
 	}
@@ -80,60 +103,16 @@ func UpdateCategory(rw http.ResponseWriter, r *http.Request) {
 
 	status, err := dbcategory.UpdateCategory(categoryModel, locationModel)
 	if err != nil {
-		http.Error(rw, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
+		http.Error(rw, "No se pudo guardar actualizar la categoria en la base de datos "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if !status {
-		http.Error(rw, "no se ha logrado insertar el registro  // status = false ", 400)
+		http.Error(rw, "No se pudo guardar actualizar la categoria en la base de datos ", http.StatusInternalServerError)
 		return
 	}
 
 	rw.Header().Set("Content-type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
 
-	/* 	w.Header().Add("content-type", "application/json")
-
-	   	var categoryDto dtos.Category
-
-	   	err := json.NewDecoder(r.Body).Decode(&categoryDto)
-
-	   	if err != nil {
-	   		http.Error(w, "Error en los datos recibidos "+err.Error(), 400)
-	   		return
-	   	}
-
-	   	var categoryModel models.Category
-
-	   	categoryModel, _ = dbCategories.GetCategoryById(categoryDto.Category.ID)
-
-	   	if categoryDto.Category.Description != categoryModel.Description {
-	   		categoryModel.Description = categoryDto.Category.Description
-	   	}
-
-	   	if categoryDto.Category.Title != categoryModel.Title {
-	   		categoryModel.Title = categoryDto.Category.Title
-	   	}
-
-	   	if categoryDto.Category.Price != categoryModel.Price {
-	   		categoryModel.Price = categoryDto.Category.Price
-	   	}
-
-	   	categoryModel.Active = true
-
-	   	status, err := dbCategories.UpdateCategory(categoryModel)
-
-	   	if err != nil {
-	   		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
-	   		return
-	   	}
-
-	   	if !status {
-	   		http.Error(w, "no se ha logrado insertar el registro  // status = false ", 400)
-	   		return
-	   	}
-
-	   	w.Header().Set("Content-type", "application/json")
-	   	w.WriteHeader(http.StatusCreated)
-	*/
 }

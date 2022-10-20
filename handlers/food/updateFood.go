@@ -40,6 +40,15 @@ func UpdateFood(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if foodModel.LocationID != nil {
+
+		locationModel, err = imgdb.GetLocationImgById(*foodModel.LocationID)
+		if err != nil {
+			http.Error(rw, "no fue posible recuperar la imagen por ID", http.StatusInternalServerError)
+			return
+		}
+	}
+
 	file, handle, err := r.FormFile("image")
 
 	switch err {
@@ -60,9 +69,22 @@ func UpdateFood(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		locationModel.Location = handlers.GetHash(locationModel.Location)
+
+		if foodModel.LocationID != nil {
+
+			locationModel.ID = *foodModel.LocationID
+		} else {
+			numero := 0
+			foodModel.LocationID = &numero
+		}
+
 		file.Close()
 	case http.ErrMissingFile:
-		locationModel, _ = imgdb.GetLocationImgById(*foodModel.LocationID)
+		if locationModel.Location != "" {
+
+			foodModel.LocationID = nil
+
+		}
 	default:
 		log.Println(err)
 	}
@@ -71,8 +93,6 @@ func UpdateFood(rw http.ResponseWriter, r *http.Request) {
 	foodModel.Description = r.FormValue("description")
 
 	foodModel.Active = true
-
-	locationModel.ID = *foodModel.LocationID
 
 	cat := (r.FormValue("categories"))
 

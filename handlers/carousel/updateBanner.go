@@ -15,17 +15,39 @@ import (
 )
 
 /*subir el avatar al servidor*/
-func UpdateBanner(w http.ResponseWriter, r *http.Request) {
+func UpdateBanner(rw http.ResponseWriter, r *http.Request) {
 
 	var locationModel models.LocationImg
 
 	var bannerModel models.Banner
 
-	bannerModel.ID, _ = strconv.Atoi(r.FormValue("id"))
+	_ID, err := strconv.Atoi(r.FormValue("id"))
+	if _ID < 1 {
+		http.Error(rw, "debe enviar el parametro id", http.StatusBadRequest)
+		return
+	}
 
-	bannerModel, _ = carouseldb.GetBannerById(bannerModel.ID)
+	if err != nil {
+		http.Error(rw, "Error al convertir el ID", http.StatusInternalServerError)
+		return
+	}
 
-	w.Header().Add("content-type", "application/json")
+	bannerModel, err = carouseldb.GetBannerById(_ID)
+	if err != nil {
+		http.Error(rw, "no fue posible recuperar el banner por ID", http.StatusInternalServerError)
+		return
+	}
+
+	if bannerModel.LocationID != nil {
+
+		locationModel, err = imgdb.GetLocationImgById(*bannerModel.LocationID)
+		if err != nil {
+			http.Error(rw, "no fue posible recuperar la imagen por ID", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	rw.Header().Add("content-type", "application/json")
 
 	file, handle, err := r.FormFile("banner")
 
@@ -35,21 +57,33 @@ func UpdateBanner(w http.ResponseWriter, r *http.Request) {
 
 		f, err := os.OpenFile(locationModel.Location, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
-			http.Error(w, "error al subir banner "+err.Error(), http.StatusBadRequest)
+			http.Error(rw, "error al subir banner "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		_, err = io.Copy(f, file)
 
 		if err != nil {
-			http.Error(w, "error al copiar  banner "+err.Error(), http.StatusBadRequest)
+			http.Error(rw, "error al copiar  banner "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		locationModel.Location = handlers.GetHash(locationModel.Location)
+
+		if bannerModel.LocationID != nil {
+
+			locationModel.ID = *bannerModel.LocationID
+		} else {
+			numero := 0
+			bannerModel.LocationID = &numero
+		}
 		file.Close()
 	case http.ErrMissingFile:
-		locationModel, _ = imgdb.GetLocationImgById(*bannerModel.LocationID)
+		if locationModel.Location != "" {
+
+			bannerModel.LocationID = nil
+
+		}
 	default:
 		log.Println(err)
 	}
@@ -67,20 +101,18 @@ func UpdateBanner(w http.ResponseWriter, r *http.Request) {
 	}
 	bannerModel.Active = true
 
-	locationModel.ID = *bannerModel.LocationID
-
 	status, err := carouseldb.UpdateBanner(bannerModel, locationModel)
 	if err != nil {
-		http.Error(w, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
+		http.Error(rw, "No se pudo guardar el mensaje en la base de datos "+err.Error(), 400)
 		return
 	}
 
 	if !status {
-		http.Error(w, "no se ha logrado insertar el registro  // status = false ", 400)
+		http.Error(rw, "no se ha logrado insertar el registro  // status = false ", 400)
 		return
 	}
 
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	rw.Header().Set("Content-type", "application/json")
+	rw.WriteHeader(http.StatusCreated)
 
 }
