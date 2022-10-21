@@ -54,7 +54,8 @@ func Routes() {
 	router.HandleFunc("/menu/deleteMenu", middlew.CheckDB(middlew.ValidateJWT(menu.DeleteMenu))).Methods("DELETE")
 	router.HandleFunc("/menu/getAllMenu", middlew.CheckDB(middlew.ValidateJWT(menu.GetAllMenu))).Methods("GET")
 	router.HandleFunc("/menu/getMenu", middlew.CheckDB(menu.GetMenu)).Methods("GET")
-	router.HandleFunc("/menu/getMenuByCategory", middlew.CheckDB(menu.GetMenuByCategory)).Methods("GET")
+	router.HandleFunc("/menu/getMenuByID", middlew.CheckDB(menu.GetMenu)).Methods("GET")
+	router.HandleFunc("/menu/getMenuByCategory", middlew.CheckDB(menu.GetMenuById)).Methods("GET")
 	router.HandleFunc("/menu/getDayMenu", middlew.CheckDB(menu.GetDayMenuByDate)).Methods("POST")
 
 	var turnMenuModel models.TurnMenu

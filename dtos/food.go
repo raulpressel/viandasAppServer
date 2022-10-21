@@ -27,6 +27,7 @@ type CategoryResponse struct {
 	Description string  `json:"description"`
 	Title       string  `json:"title"`
 	Price       float32 `json:"price"`
+	Location    string  `json:"urlImage"`
 	Checked     bool    `json:"checked"`
 }
 

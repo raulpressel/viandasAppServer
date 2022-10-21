@@ -6,7 +6,7 @@ import (
 	"viandasApp/dtos"
 )
 
-func GetMenuActive() (dtos.MenuViewer, error) {
+func GetMenuById(idMenu int) (dtos.MenuViewer, error) {
 	var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
@@ -28,11 +28,9 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 		Where("? BETWEEN menus.date_start and menus.date_end", dateTime.Format("2006-01-02")).
 		Joins("left JOIN turn_menus on menus.id = turn_menus.menu_id").
 		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
+		Where("menus.id = ?", idMenu).
 		Order("turns.id asc").
 		Scan(&modelMenu).Error
-
-	/* 	subQuery1 := db.Model(&models.Menu{}).Where("? BETWEEN menus.date_start and menus.date_end", dateTime.Format("2006-01-02"))
-	   	fmt.Println(subQuery1) */
 
 	for _, valor := range modelMenu {
 
@@ -77,8 +75,8 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 				ID:          valor.Category,
 				Description: valor.Categorydescription,
 				Title:       valor.Categorytitle,
-				Location:    valor.Categoryurl,
 				Price:       valor.Categoryprice,
+				Location:    valor.Categoryurl,
 			}
 
 			CategoryTurn := dtos.CategoryViewer{
