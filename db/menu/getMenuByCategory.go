@@ -36,7 +36,7 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 		err = db.Table("categories").
 			Select("categories.id as category, categories.description as categorydescription, categories.title as categorytitle, categories.price as categoryprice, location_imgs.location as categoryurl ").
 			Joins("left JOIN location_imgs on categories.location_id = location_imgs.id").
-			Where("categories.active = 1").
+			Where("categories.active = 1 and categories.id = ?", cat).
 			Scan(&categoryMenu).Error
 
 		turn := valor.Turnid
