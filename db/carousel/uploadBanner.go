@@ -21,13 +21,13 @@ func UploadBanner(bannerModel models.Banner, locationModel models.LocationImg) (
 	if err := tx.Error; err != nil {
 		return false, err
 	}
-
-	if err := tx.Save(&locationModel).Error; err != nil {
-		tx.Rollback()
-		return false, err
+	if locationModel.Location != "" {
+		if err := tx.Save(&locationModel).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
+		bannerModel.LocationID = &locationModel.ID
 	}
-
-	bannerModel.LocationID = locationModel.ID
 
 	if err := tx.Save(&bannerModel).Error; err != nil {
 		tx.Rollback()

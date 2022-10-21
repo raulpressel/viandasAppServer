@@ -22,12 +22,14 @@ func UploadFood(foodModel models.Food, locationModel models.LocationImg, foodCat
 		return false, err
 	}
 
-	if err := tx.Save(&locationModel).Error; err != nil {
-		tx.Rollback()
-		return false, err
-	}
+	if locationModel.Location != "" {
 
-	foodModel.LocationID = locationModel.ID
+		if err := tx.Save(&locationModel).Error; err != nil {
+			tx.Rollback()
+			return false, err
+		}
+		foodModel.LocationID = &locationModel.ID
+	}
 
 	if err := tx.Save(&foodModel).Error; err != nil {
 		tx.Rollback()

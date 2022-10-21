@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	dbFood "viandasApp/db/food"
 	dbMenu "viandasApp/db/menu"
 	"viandasApp/dtos"
 )
@@ -26,7 +27,17 @@ func UpdateMenu(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dayMenuModel.FoodID = dayMenuEdit.IdFood
+	_idFoodCategory, err := dbFood.GetIdFoodCategory(dayMenuEdit.IdFood, dayMenuEdit.IdCategory)
+	if _idFoodCategory < 1 {
+		http.Error(rw, "El plato con no existe "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		http.Error(rw, "no se ha recuperar el plato de la BD", http.StatusInternalServerError)
+		return
+	}
+
+	dayMenuModel.FoodCategoryID = _idFoodCategory
 
 	status, err := dbMenu.UpdateDayMenu(dayMenuModel)
 

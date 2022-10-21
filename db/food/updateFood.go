@@ -27,9 +27,25 @@ func UpdateFood(foodModel models.Food, locationModel models.LocationImg, foodCat
 		return false, err
 	}
 
-	if err := tx.Save(&locationModel).Error; err != nil {
+	/* if err := tx.Save(&locationModel).Error; err != nil {
 		tx.Rollback()
 		return false, err
+	} */
+
+	if locationModel.Location != "" {
+		if foodModel.LocationID != nil {
+			if err := tx.Save(&locationModel).Error; err != nil {
+				tx.Rollback()
+				return false, err
+			}
+			foodModel.LocationID = &locationModel.ID
+		} else {
+			err := tx.Exec("DELETE FROM location_imgs WHERE id = ?", locationModel.ID).Error
+			if err != nil {
+				db.Rollback()
+				return false, err
+			}
+		}
 	}
 
 	if err := tx.Save(&foodModel).Error; err != nil {

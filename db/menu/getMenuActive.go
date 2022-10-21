@@ -24,7 +24,7 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 	var dateTime time.Time = time.Now()
 
 	err := db.Table("menus").
-		Select("menus.id as menuid, turns.id as turnid, turns.description as descriptionturn  ").
+		Select("menus.id as menuid, menus.date_start as datestart, menus.date_end as dateend, turns.id as turnid, turns.description as descriptionturn   ").
 		Where("? BETWEEN menus.date_start and menus.date_end", dateTime.Format("2006-01-02")).
 		Joins("left JOIN turn_menus on menus.id = turn_menus.menu_id").
 		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
@@ -32,7 +32,6 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 		Scan(&modelMenu).Error
 
 	/* 	subQuery1 := db.Model(&models.Menu{}).Where("? BETWEEN menus.date_start and menus.date_end", dateTime.Format("2006-01-02"))
-
 	   	fmt.Println(subQuery1) */
 
 	for _, valor := range modelMenu {
@@ -50,12 +49,12 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 		for _, valor := range categoryMenu {
 
 			err = db.Table("day_menus").
-				Select("day_menus.date as datefood,  day_menus.food_id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
-				Joins("left JOIN foods ON foods.id = day_menus.food_id").
+				Select("day_menus.date as datefood,  foods.id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
+				Joins("left JOIN food_categories ON food_categories.id = day_menus.food_category_id").
+				Joins("left JOIN foods ON foods.id = food_categories.food_id").
 				Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
-				Joins("left JOIN categories ON categories.id = foods.category_id").
 				Joins("left JOIN turn_menus ON turn_menus.id = day_menus.turn_menu_id").
-				Where("categories.id = ? and turn_menus.turn_id = ? and turn_menus.menu_id = ? ", valor.Category, turn, menu).
+				Where("food_categories.category_id = ? and turn_menus.turn_id = ? and turn_menus.menu_id = ? ", valor.Category, turn, menu).
 				Order("day_menus.date asc").
 				Scan(&foodMenu).Error
 
@@ -98,6 +97,8 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 
 		allMenu = dtos.MenuViewer{
 			ID:         valor.Menuid,
+			DateStart:  valor.Datestart,
+			DateEnd:    valor.Dateend,
 			TurnViewer: Turns,
 		}
 
