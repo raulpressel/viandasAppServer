@@ -1,7 +1,6 @@
 package db
 
 import (
-	"time"
 	"viandasApp/db"
 	"viandasApp/dtos"
 )
@@ -21,11 +20,8 @@ func GetMenuById(idMenu int) (dtos.MenuViewer, error) {
 
 	var allMenu dtos.MenuViewer
 
-	var dateTime time.Time = time.Now()
-
 	err := db.Table("menus").
 		Select("menus.id as menuid, menus.date_start as datestart, menus.date_end as dateend, turns.id as turnid, turns.description as descriptionturn   ").
-		Where("? BETWEEN menus.date_start and menus.date_end", dateTime.Format("2006-01-02")).
 		Joins("left JOIN turn_menus on menus.id = turn_menus.menu_id").
 		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
 		Where("menus.id = ?", idMenu).
