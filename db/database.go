@@ -9,6 +9,7 @@ import (
 
 // realiza la conexion
 var dsn = "root:v1anda5@tcp(host.docker.internal:33060)/viandas_db?charset=utf8mb4&parseTime=True&loc=Local" //falta pass
+//var dsn = "root:root@tcp(host.docker.internal:3306)/viandas_db?charset=utf8mb4&parseTime=True&loc=Local" //falta pass
 //var dsn = "root:v1anda5@tcp(localhost:33060)/viandas_db?charset=utf8mb4&parseTime=True&loc=Local" //falta pass
 //var dsn = "root:Aerolavelarata66@tcp(localhost:3306)/viandas_db?charset=utf8mb4&parseTime=True&loc=Local" //falta pass
 
