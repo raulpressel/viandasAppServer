@@ -1,8 +1,6 @@
 package db
 
 import (
-	"strconv"
-
 	"viandasApp/db"
 	"viandasApp/models"
 )
@@ -13,15 +11,19 @@ func CheckExistUser(email string) (models.User, bool, string) {
 	//ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	//defer cancel()
 
-	var db = db.ConnectDB()
+	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	user := models.User{}
 
 	//err := MysqlCN.First(&user, email)
 	err := db.Where("email = ?", email).First(&user)
-	ID := strconv.FormatInt(user.ID, 10)
+	//ID := strconv.FormatInt(user.ID, 10)
+
+	var ID string
 
 	if err.Error != nil {
 

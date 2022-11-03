@@ -6,9 +6,10 @@ import (
 )
 
 func GetFoodByCategory(cat int) ([]dtos.AllFoodResponse, error) {
-	var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	/* 	var db = db.ConnectDB()
+	   	sqlDB, _ := db.DB()
+	   	defer sqlDB.Close() */
+	db := db.GetDB()
 
 	modelFood := []dtos.AllFood{}
 

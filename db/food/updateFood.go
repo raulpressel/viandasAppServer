@@ -7,9 +7,11 @@ import (
 
 func UpdateFood(foodModel models.Food, locationModel models.LocationImg, foodCategoryModel []models.FoodCategory) (bool, error) {
 
-	var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	/* 	var db = db.ConnectDB()
+	   	sqlDB, _ := db.DB()
+	   	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	tx := db.Begin()
 	defer func() {

@@ -6,9 +6,11 @@ import (
 )
 
 func GetAllCategory() ([]dtos.AllCategoryResponse, error) {
-	var db = db.ConnectDB()
+	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	var responseModel []dtos.AllCategoryResponse
 

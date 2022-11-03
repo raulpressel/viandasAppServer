@@ -1,49 +1,63 @@
 package main
 
-/* "github.com/gorilla/mux" */
-
 import (
 	"log"
 	db "viandasApp/db"
+
+	h "viandasApp/handlers"
 	"viandasApp/routes"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	if db.CheckConnection() == 0 {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		return
+	}
+
+	route, err := h.GetCert("CERT_PEM")
+	if err != nil {
+		log.Fatal("Key incorrecta")
+		return
+	}
+
+	key, err := h.GetSecretKey(route)
+	if err != nil {
+		log.Fatal("Key incorrecta")
+		return
+	}
+	if key == nil {
+		log.Fatal("Key incorrecta")
+		return
+	}
+
+	dsn, err := db.GetKeyDB("DB_CONN")
+	if err != nil {
+		log.Fatal("Key incorrecta")
+		return
+	}
+
+	db, err := db.ConnectDB(dsn)
+
+	if err != nil {
 		log.Fatal("Sin conexion a la DB")
 		return
-	} else {
-
-		/* _db := db.ConnectDB()
-		_db.AutoMigrate(banner) */
-
-		routes.Routes()
-		/* 		var model models.User
-		   		fmt.Println(getType(model))
-
-		   		Teststruct(model)
-
-		   		var model2 models.User2
-
-		   		Teststruct(model2) */
 	}
 
-}
-
-/* func getType(myvar models.User) string {
-	return reflect.TypeOf(myvar).String()
-}
-
-func Teststruct(x interface{}) {
-	// type switch
-	switch x.(type) {
-	case models.User:
-		fmt.Println("User")
-	case models.User2:
-		fmt.Println("int type")
-	default:
-		fmt.Println("Error")
+	if db == nil {
+		log.Fatal("Sin conexion a la DB")
+		return
 	}
+
+	publicDir, err := routes.GetPublicDir("PUBLIC_DIR")
+	if err != nil {
+		log.Fatal("Key incorrecta")
+		return
+	}
+
+	routes.Routes(publicDir)
+
 }
-*/

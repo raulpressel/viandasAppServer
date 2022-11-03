@@ -6,10 +6,12 @@ import (
 )
 
 func GetAllBanners() ([]dtos.AllBannersResponse, error) {
-	var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	/* 	var db = db.ConnectDB()
+	   	sqlDB, _ := db.DB()
+	   	defer sqlDB.Close()
+	*/
 
+	db := db.GetDB()
 	responseModel := []dtos.AllBannersResponse{}
 
 	err := db.Table("location_imgs").

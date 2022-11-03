@@ -7,9 +7,11 @@ import (
 
 func DeleteFood(foodModel models.Food) (bool, error) {
 
-	var db = db.ConnectDB()
+	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	tx := db.Begin()
 	defer func() {

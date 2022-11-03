@@ -7,9 +7,11 @@ import (
 )
 
 func GetIdMenuActive(idMenu int) (int, error) {
-	var db = db.ConnectDB()
+	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	var modelMenu dtos.Menu
 

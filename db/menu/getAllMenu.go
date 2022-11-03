@@ -6,10 +6,11 @@ import (
 )
 
 func GetAllMenu() ([]dtos.AllMenuResponse, error) {
-	var db = db.ConnectDB()
+	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
-
+	*/
+	db := db.GetDB()
 	modelAllMenu := []dtos.AllMenu{}
 
 	responseAllMenu := []dtos.AllMenuResponse{}

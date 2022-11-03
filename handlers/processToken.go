@@ -4,31 +4,46 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt"
 )
 
-/* Email valor de email usado en todos los EndPoint*/
-//var Email string
-
 type Rol struct {
 	Roles []string
 }
 
-/* IDUsuario es el ID devuelto del modelo, que se usara en todos los EndPoints*/
-//var IDUsuario string
+var secretKey *[]byte
+
+//var Route string
+
+func GetCert(key string) (string, error) {
+
+	keyCert := os.Getenv(key)
+	if keyCert == "" {
+		return keyCert, errors.New("missing key")
+	}
+	return keyCert, nil
+}
+
+func GetSecretKey(route string) (*[]byte, error) {
+	secretK, err := os.ReadFile(route)
+	if err != nil {
+		return &secretK, err
+	}
+	secretKey = &secretK
+	return secretKey, err
+}
+
+func GetSK() *[]byte {
+	return secretKey
+}
 
 /*ProcesoToken proceso token para extraer sus valores*/
 func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
-	var SecretKey, _ = os.ReadFile("C:/Users/Rulo/github.com/raulpressel/viandasAppServer/cert.pem")
-
-	//reqToken := strings.Split((c.Header.Get("Authorization")), "Bearer")
-
-	//reqToken := c.Header.Get("Authorization")
+	secretk := GetSK()
 
 	var admin bool
 
@@ -36,13 +51,9 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	splitToken := strings.Replace(tk, "Bearer ", "", -1)
 
-	key, er := jwt.ParseRSAPublicKeyFromPEM([]byte(SecretKey))
+	key, er := jwt.ParseRSAPublicKeyFromPEM([]byte(*secretk))
 	if er != nil {
-		fmt.Println(er)
-		/* c.Abort()
-		   c.Writer.WriteHeader(http.StatusUnauthorized)
-		   c.Writer.Write([]byte("Unauthorized")) */
-		return claims, false, errors.New("formato de token invalido")
+		return claims, false, er
 	}
 
 	token, err := jwt.ParseWithClaims(splitToken, claims, func(token *jwt.Token) (interface{}, error) {
@@ -54,15 +65,12 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 	})
 
 	if err != nil {
-		fmt.Println(err)
-		/* c.Abort()
-		   c.Writer.WriteHeader(http.StatusUnauthorized)
-		   c.Writer.Write([]byte("Unauthorized"))
-		*/return claims, admin, errors.New("formato de token invalido")
+
+		return claims, admin, err
 	}
 
-	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println("token is valid")
+	if !token.Valid {
+		return claims, admin, err
 	}
 
 	for key, val := range *claims {
@@ -71,23 +79,18 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 		}
 		if key == "realm_access" {
 
-			fmt.Printf("Key: %v, value: %v\n", key, val)
-
 			b, err := json.Marshal(val)
 			if err != nil {
-				log.Fatal(err)
+				return claims, false, err
 			}
-			test := string(b)
 
-			fmt.Println(test)
+			var rol Rol
 
-			var r Rol
-
-			if err := json.Unmarshal(b, &r); err != nil {
+			if err := json.Unmarshal(b, &rol); err != nil {
 				fmt.Println(err)
 			}
 
-			for _, v := range r.Roles {
+			for _, v := range rol.Roles {
 				if v == "admin" {
 					admin = true
 				}
@@ -97,40 +100,6 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	}
 
-	/* 	if err == nil {
-		_, encontrado, _ := db.CheckExistUser(claims.)
-		if encontrado {
-			Email = claims.Email
-			//IDUsuario = strconv.FormatInt(claims.ID, 10)
-		}
-		return claims, encontrado, nil
-	} */
-
-	/* 	miClave := []byte("Master")
-	   	claims := &models.Claim{}
-
-	   	splitToken := strings.Split(tk, "Bearer")
-
-	   	if len(splitToken) != 2 {
-	   		return claims, false, errors.New("formato de token invalido")
-	   	}
-	   	tk = strings.TrimSpace(splitToken[1])
-
-	   	tkn, err := jwt.ParseWithClaims(tk, claims, func(token *jwt.Token) (interface{}, error) {
-	   		return miClave, nil
-	   	})
-	   	if err == nil {
-	   		_, encontrado, _ := db.CheckExistUser(claims.Email)
-	   		if encontrado {
-	   			Email = claims.Email
-	   			//IDUsuario = strconv.FormatInt(claims.ID, 10)
-	   		}
-	   		return claims, encontrado, nil
-	   	}
-	   	if !tkn.Valid {
-	   		return claims, false, errors.New("token invalido")
-	   	}
-	*/
 	return claims, admin, err
 
 }

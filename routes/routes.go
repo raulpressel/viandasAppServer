@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,25 +11,26 @@ import (
 	carousel "viandasApp/handlers/carousel"
 	categories "viandasApp/handlers/categories"
 	food "viandasApp/handlers/food"
-	login "viandasApp/handlers/login"
 	menu "viandasApp/handlers/menu"
-	register "viandasApp/handlers/register"
 
 	"viandasApp/middlew"
 	"viandasApp/models"
 
 	"github.com/gorilla/mux"
+
 	"github.com/rs/cors"
 )
 
-func Routes() {
+func Routes(publicDir string) {
 
+	dbc := db.GetDB()
+	if dbc == nil {
+		fmt.Println("conexion perdida")
+		return
+	}
 	router := mux.NewRouter()
 
 	router.HandleFunc("/isAuthorizated", handlers.IsAuthorizated).Methods("GET")
-
-	router.HandleFunc("/register", middlew.CheckDB(register.Register)).Methods("POST")
-	router.HandleFunc("/login", middlew.CheckDB(login.Login)).Methods("POST")
 
 	//router.HandleFunc("/administration", middlew.CheckDB(middlew.ValidateJWTAdmin(carousel.GetAllBanners))).Methods("GET")
 
@@ -66,7 +68,8 @@ func Routes() {
 
 	if db.ExistTable(turnModel) {
 		var turns = []models.Turn{{ID: 1, Description: "Mediodia"}, {ID: 2, Description: "Noche"}}
-		db.ConnectDB().Create(&turns)
+		dbc.Create(&turns)
+
 	}
 	db.ExistTable(turnMenuModel)
 	db.ExistTable(dayModel)
@@ -75,12 +78,19 @@ func Routes() {
 	if PORT == "" {
 		PORT = "8080"
 	}
-	fmt.Println(PORT)
 
-	router.PathPrefix("/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("/var/www/default/htdocs/public/"))))
+	router.PathPrefix("/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir(publicDir))))
 
 	handler := cors.AllowAll().Handler(router)
 
 	log.Fatal(http.ListenAndServe(":"+PORT, handler))
 
+}
+
+func GetPublicDir(key string) (string, error) {
+	publicDir := os.Getenv(key)
+	if publicDir == "" {
+		return publicDir, errors.New("missing key")
+	}
+	return publicDir, nil
 }
