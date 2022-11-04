@@ -80,7 +80,7 @@ func UpdateFood(rw http.ResponseWriter, r *http.Request) {
 
 		file.Close()
 	case http.ErrMissingFile:
-		if locationModel.Location != "" {
+		if locationModel.Location == "" {
 
 			foodModel.LocationID = nil
 

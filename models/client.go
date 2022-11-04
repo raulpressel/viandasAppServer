@@ -8,11 +8,11 @@ import (
 
 type Client struct {
 	gorm.Model
-	ID              int `gorm:"primary_key"`
-	Name            string
-	LastName        string
-	Email           string
-	IDUserKL        string
+	ID              int    `gorm:"primary_key"`
+	Name            string //given_name
+	LastName        string //family_name
+	Email           string //email
+	IDUserKL        string //sub
 	Tel1            string
 	Tel2            string
 	Observation     string

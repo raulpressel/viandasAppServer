@@ -10,11 +10,11 @@ func GetFoodById(id int) (models.Food, error) {
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close() */
 
-	conn := db.GetDB()
+	db := db.GetDB()
 
 	var foodModel models.Food
 
-	err := conn.First(&foodModel, id).Error
+	err := db.First(&foodModel, id).Error
 
 	return foodModel, err
 

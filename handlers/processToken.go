@@ -76,6 +76,7 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 	for key, val := range *claims {
 		if key == "sub" {
 			fmt.Printf("Key: %v, value: %v\n", key, val)
+			
 		}
 		if key == "realm_access" {
 

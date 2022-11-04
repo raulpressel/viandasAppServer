@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type ClientDir struct {
 	gorm.Model
 	ID          int `gorm:"primary_key"`
 	ClientID    int

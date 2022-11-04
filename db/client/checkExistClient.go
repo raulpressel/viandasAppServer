@@ -7,7 +7,7 @@ import (
 
 /* ChequeoYaExisteUsuario recibe un email de parametro y chequea si ya*/
 
-func CheckExistUser(email string) (models.User, bool, string) {
+func CheckExistClient(id string) (models.Client, bool, string) {
 	//ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	//defer cancel()
 
@@ -17,18 +17,22 @@ func CheckExistUser(email string) (models.User, bool, string) {
 
 	db := db.GetDB()
 
-	user := models.User{}
+	//user := models.User{}
+
+	var client models.Client
+
+	err := db.First(&client, id).Error
 
 	//err := MysqlCN.First(&user, email)
-	err := db.Where("email = ?", email).First(&user)
+	//err := db.Where("email = ?", email).First(&user)
 	//ID := strconv.FormatInt(user.ID, 10)
 
 	var ID string
 
-	if err.Error != nil {
+	if err != nil {
 
-		return user, false, ID
+		return client, false, ID
 
 	}
-	return user, true, ID
+	return client, true, ID
 }
