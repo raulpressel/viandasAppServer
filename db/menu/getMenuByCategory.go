@@ -50,11 +50,11 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 
 			err = db.Table("day_menus").
 				Select("day_menus.date as datefood,  foods.id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
-				Joins("left JOIN food_categories ON food_categories.id = day_menus.food_category_id").
-				Joins("left JOIN foods ON foods.id = food_categories.food_id").
+				Joins("left JOIN categories ON categories.id = day_menus.category_id").
+				Joins("left JOIN foods ON foods.id = day_menus.food_id").
 				Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
 				Joins("left JOIN turn_menus ON turn_menus.id = day_menus.turn_menu_id").
-				Where("food_categories.category_id = ? and turn_menus.turn_id = ? and turn_menus.menu_id = ? ", valor.Category, turn, menu).
+				Where("day_menus.category_id = ? and turn_menus.turn_id = ? and turn_menus.menu_id = ? ", valor.Category, turn, menu).
 				Order("day_menus.date asc").
 				Scan(&foodMenu).Error
 

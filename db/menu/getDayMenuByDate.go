@@ -7,9 +7,6 @@ import (
 )
 
 func GetDayMenuByDate(date time.Time) ([]dtos.DayMenuResponse, error) {
-	/* var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close() */
 
 	db := db.GetDB()
 
@@ -20,13 +17,12 @@ func GetDayMenuByDate(date time.Time) ([]dtos.DayMenuResponse, error) {
 	var categoryMenu dtos.CategoryMenu
 
 	err := db.Table("day_menus").
-		Select("day_menus.id as id, day_menus.date as date, foods.id as foodid, foods.title as foodtitle, foods.description as fooddescription , categories.id as categoryid, categories.description as categorydescription, categories.title as categorytitle , categories.price as categoryprice, location_imgs.location as foodlocation, food_categories.id as foodcategory").
+		Select("day_menus.id as id, day_menus.date as date, foods.id as foodid, foods.title as foodtitle, foods.description as fooddescription , categories.id as categoryid, categories.description as categorydescription, categories.title as categorytitle , categories.price as categoryprice, location_imgs.location as foodlocation").
 		Joins("left JOIN turn_menus on turn_menus.id = day_menus.turn_menu_id").
 		Joins("left JOIN menus on menus.id = turn_menus.menu_id").
-		Joins("left JOIN food_categories on food_categories.id = day_menus.food_category_id").
-		Joins("left JOIN foods on foods.id = food_categories.food_id").
+		Joins("left JOIN categories ON categories.id = day_menus.category_id").
+		Joins("left JOIN foods ON foods.id = day_menus.food_id").
 		Joins("left JOIN location_imgs ON foods.location_id = location_imgs.id").
-		Joins("left JOIN categories on food_categories.category_id = categories.id").
 		Where("day_menus.date = ?", date.Format("2006-01-02")).
 		Scan(&dayMenuDto).Error
 
@@ -35,10 +31,9 @@ func GetDayMenuByDate(date time.Time) ([]dtos.DayMenuResponse, error) {
 		var categoriesFood []dtos.CategoryResponse
 
 		for _, cat := range dayMenuDto {
-			err = db.Table("food_categories").
+			err = db.Table("categories").
 				Select("categories.id as category, categories.description as categorydescription, categories.title as categorytitle, categories.price as categoryprice ").
-				Joins("left JOIN categories on food_categories.category_id = categories.id").
-				Where("food_categories.id = ? ", cat.Foodcategory).
+				Where("categories.id = ? ", cat.Categoryid).
 				Scan(&categoryMenu).Error
 
 			categoryFood := dtos.CategoryResponse{
