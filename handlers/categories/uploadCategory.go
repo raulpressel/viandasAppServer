@@ -12,7 +12,6 @@ import (
 
 	dbcategory "viandasApp/db/categories"
 
-
 	"viandasApp/models"
 )
 
@@ -58,6 +57,7 @@ func UploadCategory(rw http.ResponseWriter, r *http.Request) {
 
 	categoryModel.Title = r.FormValue("title")
 	categoryModel.Description = r.FormValue("description")
+	categoryModel.Color = r.FormValue("color")
 
 	if _Price, err := strconv.ParseFloat(r.FormValue("price"), 32); err != nil {
 		http.Error(rw, "Error al convertir el Precio", http.StatusInternalServerError)
@@ -68,12 +68,8 @@ func UploadCategory(rw http.ResponseWriter, r *http.Request) {
 
 	categoryModel.Active = true
 
-	
 	db.ExistTable(categoryModel)
 	db.ExistTable(locationModel)
-
-
-
 
 	status, err := dbcategory.UploadCategory(categoryModel, locationModel)
 	if err != nil {
@@ -88,7 +84,5 @@ func UploadCategory(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Set("Content-type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
-
-
 
 }

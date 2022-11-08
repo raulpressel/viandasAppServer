@@ -6,10 +6,7 @@ import (
 )
 
 func GetCategoryById(id int) (models.Category, error) {
-	/* 	var db = db.ConnectDB()
-	   	sqlDB, _ := db.DB()
-	   	defer sqlDB.Close()
-	*/
+	
 
 	db := db.GetDB()
 	var categoryModel models.Category

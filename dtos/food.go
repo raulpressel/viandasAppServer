@@ -31,6 +31,11 @@ type CategoryResponse struct {
 	Checked     bool    `json:"checked"`
 }
 
+type ImgFoodByCategoryResponse struct {
+	Title    string `json:"title"`
+	Location string `json:"urlImage"`
+}
+
 /* func (allFood AllFood) ToModelResponse() *AllFoodResponse {
 
 	modelFood := AllFoodResponse{
