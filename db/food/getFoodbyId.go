@@ -6,9 +6,11 @@ import (
 )
 
 func GetFoodById(id int) (models.Food, error) {
-	var db = db.ConnectDB()
+	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	var foodModel models.Food
 

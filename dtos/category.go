@@ -6,6 +6,7 @@ type AllCategoryResponse struct {
 	ID          int     `json:"id"`
 	Description string  `json:"description"`
 	Title       string  `json:"title"`
+	Color       string  `json:"color"`
 	Price       float32 `json:"price"`
 	Location    string  `json:"urlImage"`
 }

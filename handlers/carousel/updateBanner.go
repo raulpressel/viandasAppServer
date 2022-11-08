@@ -79,7 +79,7 @@ func UpdateBanner(rw http.ResponseWriter, r *http.Request) {
 		}
 		file.Close()
 	case http.ErrMissingFile:
-		if locationModel.Location != "" {
+		if locationModel.Location == "" {
 
 			bannerModel.LocationID = nil
 

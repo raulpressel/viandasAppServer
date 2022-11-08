@@ -7,9 +7,11 @@ import (
 
 func UpdateDayMenu(dayMenu models.DayMenu) (bool, error) {
 
-	var db = db.ConnectDB()
+	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	err := db.Save(&dayMenu)
 

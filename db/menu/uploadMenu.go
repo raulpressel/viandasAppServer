@@ -8,9 +8,11 @@ import (
 func UploadMenu(dayModel []models.DayMenu, menuModel models.Menu, turnMenuModel models.TurnMenu) (bool, error) {
 
 	//var dayModel []models.DayMenu
-	var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	/* 	var db = db.ConnectDB()
+	   	sqlDB, _ := db.DB()
+	   	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	tx := db.Begin()
 	defer func() {

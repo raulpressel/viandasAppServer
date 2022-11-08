@@ -7,9 +7,11 @@ import (
 
 func UploadCategory(categoryModel models.Category, locationModel models.LocationImg) (bool, error) {
 
-	var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	/* 	var db = db.ConnectDB()
+	   	sqlDB, _ := db.DB()
+	   	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	tx := db.Begin()
 	defer func() {

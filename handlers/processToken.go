@@ -1,49 +1,106 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"os"
 	"strings"
-
-	db "viandasApp/db/user"
-	"viandasApp/models"
 
 	"github.com/golang-jwt/jwt"
 )
 
-/* Email valor de email usado en todos los EndPoint*/
-var Email string
+type Rol struct {
+	Roles []string
+}
 
-/* IDUsuario es el ID devuelto del modelo, que se usara en todos los EndPoints*/
-//var IDUsuario string
+var secretKey *[]byte
+
+//var Route string
+
+func GetCert(key string) (string, error) {
+
+	keyCert := os.Getenv(key)
+	if keyCert == "" {
+		return keyCert, errors.New("missing key")
+	}
+	return keyCert, nil
+}
+
+func GetSecretKey(route string) (*[]byte, error) {
+	secretK, err := os.ReadFile(route)
+	if err != nil {
+		return &secretK, err
+	}
+	secretKey = &secretK
+	return secretKey, err
+}
+
+func GetSK() *[]byte {
+	return secretKey
+}
 
 /*ProcesoToken proceso token para extraer sus valores*/
-func ProcessToken(tk string) (*models.Claim, bool, error) {
-	miClave := []byte("Master")
-	claims := &models.Claim{}
+func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
-	splitToken := strings.Split(tk, "Bearer")
+	secretk := GetSK()
 
-	if len(splitToken) != 2 {
-		return claims, false, errors.New("formato de token invalido")
+	var admin bool
+
+	claims := &jwt.MapClaims{}
+
+	splitToken := strings.Replace(tk, "Bearer ", "", -1)
+
+	key, er := jwt.ParseRSAPublicKeyFromPEM([]byte(*secretk))
+	if er != nil {
+		return claims, false, er
 	}
-	tk = strings.TrimSpace(splitToken[1])
 
-	
-	tkn, err := jwt.ParseWithClaims(tk, claims, func(token *jwt.Token) (interface{}, error) {
-		return miClave, nil
-	})
-	if err == nil {
-		_, encontrado, _ := db.CheckExistUser(claims.Email)
-		if encontrado {
-			Email = claims.Email
-			//IDUsuario = strconv.FormatInt(claims.ID, 10)
+	token, err := jwt.ParseWithClaims(splitToken, claims, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return claims, encontrado, nil
-	}
-	if !tkn.Valid {
-		return claims, false, errors.New("token invalido")
+		return key, nil
+	})
+
+	if err != nil {
+
+		return claims, admin, err
 	}
 
-	return claims, false, err
+	if !token.Valid {
+		return claims, admin, err
+	}
+
+	for key, val := range *claims {
+		if key == "sub" {
+			fmt.Printf("Key: %v, value: %v\n", key, val)
+			
+		}
+		if key == "realm_access" {
+
+			b, err := json.Marshal(val)
+			if err != nil {
+				return claims, false, err
+			}
+
+			var rol Rol
+
+			if err := json.Unmarshal(b, &rol); err != nil {
+				fmt.Println(err)
+			}
+
+			for _, v := range rol.Roles {
+				if v == "admin" {
+					admin = true
+				}
+			}
+
+		}
+
+	}
+
+	return claims, admin, err
 
 }

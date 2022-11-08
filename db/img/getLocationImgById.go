@@ -6,9 +6,11 @@ import (
 )
 
 func GetLocationImgById(id int) (models.LocationImg, error) {
-	var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	/* 	var db = db.ConnectDB()
+	   	sqlDB, _ := db.DB()
+	   	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	var locationModel models.LocationImg
 

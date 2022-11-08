@@ -79,7 +79,7 @@ func UpdateCategory(rw http.ResponseWriter, r *http.Request) {
 
 		file.Close()
 	case http.ErrMissingFile:
-		if locationModel.Location != "" {
+		if locationModel.Location == "" {
 
 			categoryModel.LocationID = nil
 
@@ -91,6 +91,7 @@ func UpdateCategory(rw http.ResponseWriter, r *http.Request) {
 
 	categoryModel.Title = r.FormValue("title")
 	categoryModel.Description = r.FormValue("description")
+	categoryModel.Color = r.FormValue("color")
 
 	if _Price, err := strconv.ParseFloat(r.FormValue("price"), 32); err != nil {
 		http.Error(rw, "Error al convertir el Precio", http.StatusInternalServerError)

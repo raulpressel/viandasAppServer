@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 	"viandasApp/db"
-	dbFood "viandasApp/db/food"
 	dbMenu "viandasApp/db/menu"
 	"viandasApp/dtos"
 	"viandasApp/models"
@@ -63,7 +62,7 @@ func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, day := range menu.DayMenu {
-			_idFoodCategory, err := dbFood.GetIdFoodCategory(day.Food, day.Category)
+			/* _idFoodCategory, err := dbFood.GetIdFoodCategory(day.Food, day.Category)
 			if _idFoodCategory < 1 {
 				http.Error(rw, "El plato con no existe "+err.Error(), http.StatusBadRequest)
 				return
@@ -72,7 +71,9 @@ func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 				http.Error(rw, "no se ha recuperar el plato de la BD", http.StatusInternalServerError)
 				return
 			}
-			dModel.FoodCategoryID = _idFoodCategory
+			dModel.FoodCategoryID = _idFoodCategory */
+			dModel.CategoryID = day.Category
+			dModel.FoodID = day.Food
 			dModel.Date, _ = time.Parse(time.RFC3339, day.Date)
 			dayModel = append(dayModel, dModel)
 		}

@@ -15,7 +15,7 @@ type DayMenuDateDto struct {
 	Categorydescription string
 	Categorytitle       string
 	Categoryprice       float32
-	Foodcategory        int
+	//Foodcategory        int
 }
 type Menu struct {
 	Menuid          int
@@ -29,6 +29,7 @@ type CategoryMenu struct {
 	Categorydescription string
 	Categorytitle       string
 	Categoryprice       float32
+	Categoryurl         string
 }
 
 type FoodMenu struct {

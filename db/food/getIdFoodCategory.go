@@ -5,9 +5,11 @@ import (
 )
 
 func GetIdFoodCategory(food int, cat int) (int, error) {
-	var db = db.ConnectDB()
+	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
-	defer sqlDB.Close()
+	defer sqlDB.Close() */
+
+	db := db.GetDB()
 
 	var idFoodCategory int
 
