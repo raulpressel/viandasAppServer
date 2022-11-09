@@ -12,6 +12,7 @@ import (
 	categories "viandasApp/handlers/categories"
 	food "viandasApp/handlers/food"
 	menu "viandasApp/handlers/menu"
+	pathology "viandasApp/handlers/pathologies"
 
 	"viandasApp/middlew"
 	"viandasApp/models"
@@ -52,6 +53,11 @@ func Routes(publicDir string) {
 	router.HandleFunc("/category/editCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.UpdateCategory))).Methods("PUT")
 	router.HandleFunc("/category/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.DeleteCategory))).Methods("Delete")
 
+	router.HandleFunc("/pathology/getPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.GetAllPathology))).Methods("GET")
+	/* router.HandleFunc("/pathology/uploadCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.UploadCategory))).Methods("POST")
+	router.HandleFunc("/pathology/editCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.UpdateCategory))).Methods("PUT")
+	router.HandleFunc("/pathology/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.DeleteCategory))).Methods("Delete")*/
+
 	router.HandleFunc("/menu/uploadMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.UploadMenu))).Methods("POST")
 	router.HandleFunc("/menu/validateDateMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.ValidateDateMenu))).Methods("POST")
 	router.HandleFunc("/menu/editMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.UpdateMenu))).Methods("PUT")
@@ -66,6 +72,14 @@ func Routes(publicDir string) {
 	var turnModel models.Turn
 
 	var dayModel models.DayMenu
+
+	var pathologyModel models.Pathology
+
+	if db.ExistTable(pathologyModel) {
+		var patho = []models.Pathology{{ID: 1, Description: "Diabetes"}, {ID: 2, Description: "Hipertension"}}
+		dbc.Create(&patho)
+
+	}
 
 	if db.ExistTable(turnModel) {
 		var turns = []models.Turn{{ID: 1, Description: "Mediodia"}, {ID: 2, Description: "Noche"}}
