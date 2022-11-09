@@ -48,7 +48,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/food/getFoodByCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(food.GetFoodByCategory))).Methods("GET")
 	router.HandleFunc("/food/getImageByCategory", middlew.CheckDB(food.GetImageByCategory)).Methods("GET")
 
-	router.HandleFunc("/category/getCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.GetAllCategories))).Methods("GET")
+	router.HandleFunc("/category/getCategory", middlew.CheckDB(categories.GetAllCategories)).Methods("GET")
 	router.HandleFunc("/category/uploadCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.UploadCategory))).Methods("POST")
 	router.HandleFunc("/category/editCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.UpdateCategory))).Methods("PUT")
 	router.HandleFunc("/category/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.DeleteCategory))).Methods("Delete")
