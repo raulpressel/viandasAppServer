@@ -6,7 +6,7 @@ import (
 	dbpathology "viandasApp/db/pathology"
 )
 
-func DeleteCategory(rw http.ResponseWriter, r *http.Request) {
+func DeletePathology(rw http.ResponseWriter, r *http.Request) {
 
 	ID := r.URL.Query().Get("idPathology")
 

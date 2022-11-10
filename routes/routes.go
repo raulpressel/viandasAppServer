@@ -56,7 +56,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/pathology/getPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.GetAllPathology))).Methods("GET")
 	router.HandleFunc("/pathology/uploadCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UploadPathology))).Methods("POST")
 	router.HandleFunc("/pathology/editCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UpdatePathology))).Methods("PUT")
-	//router.HandleFunc("/pathology/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.DeleteCategory))).Methods("Delete")
+	router.HandleFunc("/pathology/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.DeletePathology))).Methods("Delete")
 
 	router.HandleFunc("/menu/uploadMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.UploadMenu))).Methods("POST")
 	router.HandleFunc("/menu/validateDateMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.ValidateDateMenu))).Methods("POST")
@@ -76,7 +76,7 @@ func Routes(publicDir string) {
 	var pathologyModel models.Pathology
 
 	if db.ExistTable(pathologyModel) {
-		var patho = []models.Pathology{{ID: 1, Description: "Diabetes"}, {ID: 2, Description: "Hipertension"}}
+		var patho = []models.Pathology{{ID: 1, Description: "Diabetes", Active: true}, {ID: 2, Description: "Hipertension", Active: true}}
 		dbc.Create(&patho)
 
 	}

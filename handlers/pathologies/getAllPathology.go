@@ -16,6 +16,7 @@ func GetAllPathology(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "no fue posible recuperar las patologias", http.StatusBadRequest)
 		return
 	}
+
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(rw).Encode(responseModel)

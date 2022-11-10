@@ -25,3 +25,5 @@ func (pathologyRequest Pathology) ToModelPathology() *models.Pathology {
 
 	return &pathologyModel
 }
+
+
