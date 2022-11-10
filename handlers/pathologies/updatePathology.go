@@ -36,6 +36,8 @@ func UpdatePathology(rw http.ResponseWriter, r *http.Request) {
 		pathologyModel.Description = pathologyDto.Pathology.Description
 	}
 
+	pathologyModel.Active = true
+
 	status, err := dbpathology.UpdatePathology(pathologyModel)
 
 	if err != nil {

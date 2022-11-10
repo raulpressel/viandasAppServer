@@ -21,6 +21,8 @@ func UploadPathology(rw http.ResponseWriter, r *http.Request) {
 
 	pathology := pathologyDto.ToModelPathology()
 
+	pathology.Active = true
+
 	status, err := dbpathology.UploadPathology(*pathology)
 	if err != nil {
 		http.Error(rw, "Ocurrio un error al cargar la patologia "+err.Error(), http.StatusInternalServerError)

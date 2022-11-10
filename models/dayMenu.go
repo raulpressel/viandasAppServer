@@ -16,8 +16,6 @@ type DayMenu struct {
 	Food       Food `gorm:"foreignKey:FoodID"`
 	CategoryID int
 	Category   Category `gorm:"foreignKey:CategoryID"`
-	/* FoodCategoryID int
-	FoodCategory   FoodCategory `gorm:"foreignKey:FoodCategoryID"` */
 	TurnMenuID int
 	TurnMenu   TurnMenu `gorm:"foreignKey:TurnMenuID"`
 }
