@@ -54,9 +54,9 @@ func Routes(publicDir string) {
 	router.HandleFunc("/category/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.DeleteCategory))).Methods("Delete")
 
 	router.HandleFunc("/pathology/getPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.GetAllPathology))).Methods("GET")
-	router.HandleFunc("/pathology/uploadCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UploadPathology))).Methods("POST")
-	router.HandleFunc("/pathology/editCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UpdatePathology))).Methods("PUT")
-	router.HandleFunc("/pathology/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.DeletePathology))).Methods("Delete")
+	router.HandleFunc("/pathology/uploadPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UploadPathology))).Methods("POST")
+	router.HandleFunc("/pathology/editPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UpdatePathology))).Methods("PUT")
+	router.HandleFunc("/pathology/deletePathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.DeletePathology))).Methods("Delete")
 
 	router.HandleFunc("/menu/uploadMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.UploadMenu))).Methods("POST")
 	router.HandleFunc("/menu/validateDateMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.ValidateDateMenu))).Methods("POST")
