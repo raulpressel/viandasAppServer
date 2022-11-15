@@ -30,6 +30,7 @@ type CategoryMenu struct {
 	Categorytitle       string
 	Categoryprice       float32
 	Categoryurl         string
+	Categorycolor       string
 }
 
 type FoodMenu struct {

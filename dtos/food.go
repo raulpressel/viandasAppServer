@@ -29,6 +29,7 @@ type CategoryResponse struct {
 	Price       float32 `json:"price"`
 	Location    string  `json:"urlImage"`
 	Checked     bool    `json:"checked"`
+	Color       string  `json:"color"`
 }
 
 type ImgFoodByCategoryResponse struct {
