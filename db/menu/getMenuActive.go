@@ -52,7 +52,7 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 			foodMenu := []dtos.FoodMenu{}
 
 			err = db.Table("day_menus").
-				Select("day_menus.date as datefood,  foods.id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
+				Select("categories.id as category, categories.description as categorydescription, categories.title as categorytitle, categories.price as categoryprice, location_imgs.location as categoryurl, categories.color as categorycolor").
 				Joins("left JOIN categories ON categories.id = day_menus.category_id").
 				Joins("left JOIN foods ON foods.id = day_menus.food_id").
 				Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
@@ -83,6 +83,7 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 					Title:       valor.Categorytitle,
 					Location:    valor.Categoryurl,
 					Price:       valor.Categoryprice,
+					Color:       valor.Categorycolor,
 				}
 
 				CategoryTurn := dtos.CategoryViewer{
