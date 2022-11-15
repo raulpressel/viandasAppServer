@@ -16,8 +16,6 @@ func GetMenuById(idMenu int) (dtos.MenuViewer, error) {
 
 	categoryMenu := []dtos.CategoryMenu{}
 
-	foodMenu := []dtos.FoodMenu{}
-
 	var Turns []dtos.TurnViewer
 
 	var allMenu dtos.MenuViewer
@@ -45,6 +43,8 @@ func GetMenuById(idMenu int) (dtos.MenuViewer, error) {
 
 		for _, valor := range categoryMenu {
 
+			foodMenu := []dtos.FoodMenu{}
+
 			err = db.Table("day_menus").
 				Select("day_menus.date as datefood,  foods.id as foodid, foods.title as foodtitle, foods.description as fooddescription, location_imgs.location as foodurl").
 				Joins("left JOIN categories ON categories.id = day_menus.category_id").
@@ -57,32 +57,35 @@ func GetMenuById(idMenu int) (dtos.MenuViewer, error) {
 
 			var Days []dtos.DayViewer
 
-			for _, valor := range foodMenu {
-				Day := dtos.DayViewer{
-					Date: valor.Datefood,
-					Food: dtos.FoodViewer{
-						ID:          valor.Foodid,
-						Title:       valor.Foodtitle,
-						Description: valor.Fooddescription,
-						UrlImage:    valor.Foodurl,
-					},
+			if len(foodMenu) > 0 {
+
+				for _, valor := range foodMenu {
+					Day := dtos.DayViewer{
+						Date: valor.Datefood,
+						Food: dtos.FoodViewer{
+							ID:          valor.Foodid,
+							Title:       valor.Foodtitle,
+							Description: valor.Fooddescription,
+							UrlImage:    valor.Foodurl,
+						},
+					}
+					Days = append(Days, Day)
 				}
-				Days = append(Days, Day)
-			}
-			Category := dtos.CategoryResponse{
-				ID:          valor.Category,
-				Description: valor.Categorydescription,
-				Title:       valor.Categorytitle,
-				Price:       valor.Categoryprice,
-				Location:    valor.Categoryurl,
-			}
+				Category := dtos.CategoryResponse{
+					ID:          valor.Category,
+					Description: valor.Categorydescription,
+					Title:       valor.Categorytitle,
+					Price:       valor.Categoryprice,
+					Location:    valor.Categoryurl,
+				}
 
-			CategoryTurn := dtos.CategoryViewer{
-				Category: Category,
-				Days:     Days,
-			}
+				CategoryTurn := dtos.CategoryViewer{
+					Category: Category,
+					Days:     Days,
+				}
 
-			CategoryViewer = append(CategoryViewer, CategoryTurn)
+				CategoryViewer = append(CategoryViewer, CategoryTurn)
+			}
 
 		}
 		Turn := dtos.TurnViewer{
