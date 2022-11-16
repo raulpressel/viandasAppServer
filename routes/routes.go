@@ -12,6 +12,7 @@ import (
 	categories "viandasApp/handlers/categories"
 	food "viandasApp/handlers/food"
 	menu "viandasApp/handlers/menu"
+	pathology "viandasApp/handlers/pathologies"
 
 	"viandasApp/middlew"
 	"viandasApp/models"
@@ -47,10 +48,15 @@ func Routes(publicDir string) {
 	router.HandleFunc("/food/getFoodByCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(food.GetFoodByCategory))).Methods("GET")
 	router.HandleFunc("/food/getImageByCategory", middlew.CheckDB(food.GetImageByCategory)).Methods("GET")
 
-	router.HandleFunc("/category/getCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.GetAllCategories))).Methods("GET")
+	router.HandleFunc("/category/getCategory", middlew.CheckDB(categories.GetAllCategories)).Methods("GET")
 	router.HandleFunc("/category/uploadCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.UploadCategory))).Methods("POST")
 	router.HandleFunc("/category/editCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.UpdateCategory))).Methods("PUT")
 	router.HandleFunc("/category/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.DeleteCategory))).Methods("Delete")
+
+	router.HandleFunc("/pathology/getPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.GetAllPathology))).Methods("GET")
+	router.HandleFunc("/pathology/uploadPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UploadPathology))).Methods("POST")
+	router.HandleFunc("/pathology/editPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UpdatePathology))).Methods("PUT")
+	router.HandleFunc("/pathology/deletePathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.DeletePathology))).Methods("Delete")
 
 	router.HandleFunc("/menu/uploadMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.UploadMenu))).Methods("POST")
 	router.HandleFunc("/menu/validateDateMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.ValidateDateMenu))).Methods("POST")
@@ -66,6 +72,14 @@ func Routes(publicDir string) {
 	var turnModel models.Turn
 
 	var dayModel models.DayMenu
+
+	var pathologyModel models.Pathology
+
+	if db.ExistTable(pathologyModel) {
+		var patho = []models.Pathology{{ID: 1, Description: "Diabetes", Active: true}, {ID: 2, Description: "Hipertension", Active: true}}
+		dbc.Create(&patho)
+
+	}
 
 	if db.ExistTable(turnModel) {
 		var turns = []models.Turn{{ID: 1, Description: "Mediodia"}, {ID: 2, Description: "Noche"}}

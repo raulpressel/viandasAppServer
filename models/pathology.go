@@ -10,4 +10,5 @@ type Pathology struct {
 	gorm.Model
 	ID          int `gorm:"primary_key"`
 	Description string
+	Active      bool
 }
