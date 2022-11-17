@@ -7,7 +7,7 @@ import (
 
 /*ValidoJWT permite validar el JWT que nos viene en la peticion*/
 
-func ValidateJWTUser(next http.HandlerFunc) http.HandlerFunc {
+func ValidateJWT(next http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 
 		_, _, err := handlers.ProcessToken(r.Header.Get("Authorization"))

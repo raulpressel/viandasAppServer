@@ -10,6 +10,7 @@ import (
 	"viandasApp/handlers"
 	carousel "viandasApp/handlers/carousel"
 	categories "viandasApp/handlers/categories"
+	city "viandasApp/handlers/cities"
 	food "viandasApp/handlers/food"
 	menu "viandasApp/handlers/menu"
 	pathology "viandasApp/handlers/pathologies"
@@ -53,7 +54,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/category/editCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.UpdateCategory))).Methods("PUT")
 	router.HandleFunc("/category/deleteCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(categories.DeleteCategory))).Methods("Delete")
 
-	router.HandleFunc("/pathology/getPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.GetAllPathology))).Methods("GET")
+	router.HandleFunc("/pathology/getPathology", middlew.CheckDB(middlew.ValidateJWT(pathology.GetAllPathology))).Methods("GET")
 	router.HandleFunc("/pathology/uploadPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UploadPathology))).Methods("POST")
 	router.HandleFunc("/pathology/editPathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.UpdatePathology))).Methods("PUT")
 	router.HandleFunc("/pathology/deletePathology", middlew.CheckDB(middlew.ValidateJWTAdmin(pathology.DeletePathology))).Methods("Delete")
@@ -68,6 +69,8 @@ func Routes(publicDir string) {
 	router.HandleFunc("/menu/getMenuByCategory", middlew.CheckDB(menu.GetMenuByCategory)).Methods("GET")
 	router.HandleFunc("/menu/getDayMenu", middlew.CheckDB(menu.GetDayMenuByDate)).Methods("POST")
 
+	router.HandleFunc("/city/getCity", middlew.CheckDB(middlew.ValidateJWT(city.GetAllCities))).Methods("GET")
+
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
 
@@ -75,9 +78,13 @@ func Routes(publicDir string) {
 
 	var pathologyModel models.Pathology
 
-	if db.ExistTable(pathologyModel) {
-		var patho = []models.Pathology{{ID: 1, Description: "Diabetes", Active: true}, {ID: 2, Description: "Hipertension", Active: true}}
-		dbc.Create(&patho)
+	db.ExistTable(pathologyModel)
+
+	var cityModel models.City
+
+	if db.ExistTable(cityModel) {
+		var city = []models.City{{ID: 1, Description: "Paraná", CP: "3100"}, {ID: 2, Description: "San Benito", CP: "3100"}}
+		dbc.Create(&city)
 
 	}
 
