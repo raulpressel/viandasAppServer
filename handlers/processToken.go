@@ -51,7 +51,7 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	splitToken := strings.Replace(tk, "Bearer ", "", -1)
 
-	key, er := jwt.ParseRSAPublicKeyFromPEM([]byte(*secretk))
+ 	key, er := jwt.ParseRSAPublicKeyFromPEM([]byte(*secretk))
 	if er != nil {
 		return claims, false, er
 	}
