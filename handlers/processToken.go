@@ -16,6 +16,10 @@ type Rol struct {
 
 var secretKey *[]byte
 
+//var claims, _, _ = ProcessToken()
+
+//var claims &jwt.MapClaims{}
+
 //var Route string
 
 func GetCert(key string) (string, error) {
@@ -40,6 +44,19 @@ func GetSK() *[]byte {
 	return secretKey
 }
 
+type client struct {
+	Email    string
+	ID       string
+	Name     string
+	LastName string
+}
+
+func GetClient() client {
+	return cli
+}
+
+var cli client
+
 /*ProcesoToken proceso token para extraer sus valores*/
 func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
@@ -51,7 +68,7 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	splitToken := strings.Replace(tk, "Bearer ", "", -1)
 
- 	key, er := jwt.ParseRSAPublicKeyFromPEM([]byte(*secretk))
+	key, er := jwt.ParseRSAPublicKeyFromPEM([]byte(*secretk))
 	if er != nil {
 		return claims, false, er
 	}
@@ -75,9 +92,22 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	for key, val := range *claims {
 		if key == "sub" {
-			fmt.Printf("Key: %v, value: %v\n", key, val)
-			
+			cli.ID = fmt.Sprintf("%v", val)
+
 		}
+
+		if key == "email" {
+			cli.Email = fmt.Sprintf("%v", val)
+		}
+
+		if key == "given_name" {
+			cli.Name = fmt.Sprintf("%v", val)
+		}
+
+		if key == "family_name" {
+			cli.LastName = fmt.Sprintf("%v", val)
+		}
+
 		if key == "realm_access" {
 
 			b, err := json.Marshal(val)

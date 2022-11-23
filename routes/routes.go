@@ -14,6 +14,7 @@ import (
 	food "viandasApp/handlers/food"
 	menu "viandasApp/handlers/menu"
 	pathology "viandasApp/handlers/pathologies"
+	client "viandasApp/handlers/client"
 
 	"viandasApp/middlew"
 	"viandasApp/models"
@@ -70,6 +71,10 @@ func Routes(publicDir string) {
 	router.HandleFunc("/menu/getDayMenu", middlew.CheckDB(menu.GetDayMenuByDate)).Methods("POST")
 
 	router.HandleFunc("/city/getCity", middlew.CheckDB(middlew.ValidateJWT(city.GetAllCities))).Methods("GET")
+
+	router.HandleFunc("/client/registerClient", middlew.CheckDB(middlew.ValidateJWT(client.RegisterClient))).Methods("POST")
+
+
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
