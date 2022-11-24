@@ -7,7 +7,7 @@ import (
 
 /* ChequeoYaExisteUsuario recibe un email de parametro y chequea si ya*/
 
-func CheckExistClient(id string) (models.Client, error) {
+func CheckExistClient(id string) (models.Client, bool) {
 	//ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	//defer cancel()
 
@@ -15,9 +15,11 @@ func CheckExistClient(id string) (models.Client, error) {
 
 	var client models.Client
 
-	//err := db.First(&client, id).Error
-
 	err := db.First(&client, "id_user_kl = ?", id).Error
 
-	return client, err
+	if err != nil {
+		return client, false
+	}
+
+	return client, true
 }

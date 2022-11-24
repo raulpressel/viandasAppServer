@@ -39,10 +39,10 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 	clientModel.LastName = cli.LastName
 	clientModel.Email = cli.Email
 
-	cm, err := dbClient.CheckExistClient(clientModel.IDUserKL)
+	cm, res := dbClient.CheckExistClient(clientModel.IDUserKL)
 
-	if err != nil {
-		http.Error(rw, "Error al recuperar los datos del cliente "+err.Error(), http.StatusInternalServerError)
+	if !res {
+		http.Error(rw, "Error al recuperar los datos del cliente ", http.StatusInternalServerError)
 		return
 	}
 
@@ -51,7 +51,7 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.NewDecoder(r.Body).Decode(&clientDto)
+	err := json.NewDecoder(r.Body).Decode(&clientDto)
 
 	if err != nil {
 		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
