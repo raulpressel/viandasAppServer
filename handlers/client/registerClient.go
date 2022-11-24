@@ -41,8 +41,8 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 
 	cm, res := dbClient.CheckExistClient(clientModel.IDUserKL)
 
-	if !res {
-		http.Error(rw, "Error al recuperar los datos del cliente ", http.StatusInternalServerError)
+	if res {
+		http.Error(rw, "Ya existe un cliente con los datos solicitados ", http.StatusBadRequest)
 		return
 	}
 
