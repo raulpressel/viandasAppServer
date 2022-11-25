@@ -32,12 +32,12 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 	db.ExistTable(cPModel)
 	db.ExistTable(addcliModel)
 
-	cli := handlers.GetClient()
+	usr := handlers.GetUser()
 
-	clientModel.IDUserKL = cli.ID
-	clientModel.Name = cli.Name
-	clientModel.LastName = cli.LastName
-	clientModel.Email = cli.Email
+	clientModel.IDUserKL = usr.ID
+	clientModel.Name = usr.Name
+	clientModel.LastName = usr.LastName
+	clientModel.Email = usr.Email
 
 	cm, res := dbClient.CheckExistClient(clientModel.IDUserKL)
 

@@ -44,18 +44,18 @@ func GetSK() *[]byte {
 	return secretKey
 }
 
-type client struct {
+type user struct {
 	Email    string
 	ID       string
 	Name     string
 	LastName string
 }
 
-func GetClient() client {
-	return cli
+func GetUser() user {
+	return usr
 }
 
-var cli client
+var usr user
 
 /*ProcesoToken proceso token para extraer sus valores*/
 func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
@@ -92,20 +92,20 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	for key, val := range *claims {
 		if key == "sub" {
-			cli.ID = fmt.Sprintf("%v", val)
+			usr.ID = fmt.Sprintf("%v", val)
 
 		}
 
 		if key == "email" {
-			cli.Email = fmt.Sprintf("%v", val)
+			usr.Email = fmt.Sprintf("%v", val)
 		}
 
 		if key == "given_name" {
-			cli.Name = fmt.Sprintf("%v", val)
+			usr.Name = fmt.Sprintf("%v", val)
 		}
 
 		if key == "family_name" {
-			cli.LastName = fmt.Sprintf("%v", val)
+			usr.LastName = fmt.Sprintf("%v", val)
 		}
 
 		if key == "realm_access" {
