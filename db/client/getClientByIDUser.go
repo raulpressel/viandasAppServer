@@ -20,6 +20,8 @@ func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
 
 	var clientResponse dtos.ClientResponse
 
+	var cityModel models.City
+
 	//err := db.First(&client, "id_user_kl = ?", idkl).Error
 
 	client, res := CheckExistClient(idkl)
@@ -54,7 +56,7 @@ func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
 	}
 
 	err = db.Table("addresses").
-		Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation").
+		Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id").
 		Joins("left JOIN client_addresses ON client_addresses.address_id = addresses.id").
 		Where("client_addresses.client_id = ?", client.ID).
 		Scan(&addressesModel).Error
@@ -67,6 +69,15 @@ func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
 		address.Floor = valor.Floor
 		address.Departament = valor.Departament
 		address.Observation = valor.Observation
+
+		err = db.Table("cities").
+			Select("cities.id, cities.description, cities.cp ").
+			Where("cities.id = ?", valor.CityID).
+			Scan(&cityModel).Error
+
+		address.City.ID = cityModel.ID
+		address.City.Description = cityModel.Description
+		address.City.CP = cityModel.CP
 
 		clientResponse.Client.Address = append(clientResponse.Client.Address, address)
 	}
