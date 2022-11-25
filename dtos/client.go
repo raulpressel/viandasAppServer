@@ -2,11 +2,15 @@ package dtos
 
 import "time"
 
-type Client struct {
-	Client RegisterRequest `json:"client"`
+type RegisterRequest struct {
+	Client Register `json:"client"`
 }
 
-type RegisterRequest struct {
+type ClientResponse struct {
+	Client Client `json:"client"`
+}
+
+type Register struct {
 	ID             int                `json:"id"`
 	PhonePrimary   string             `json:"phonePrimary"`
 	PhoneSecondary string             `json:"phoneSecondary"`
@@ -16,7 +20,7 @@ type RegisterRequest struct {
 	Address        []AddressRequest   `json:"addresses"`
 }
 
-type ClientRespone struct {
+type Client struct {
 	ID             int                 `json:"id"`
 	Name           string              `json:"name"`
 	LastName       string              `json:"lastName"`

@@ -22,7 +22,7 @@ func GetClientByIDUser(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if responseClient.ID == 0 {
+	if responseClient.Client.ID == 0 {
 		http.Error(rw, "No hay clientes en la BD", http.StatusNotFound)
 		return
 	}

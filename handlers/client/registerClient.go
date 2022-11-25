@@ -13,7 +13,7 @@ import (
 
 func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 
-	var clientDto dtos.Client
+	var registerDto dtos.RegisterRequest
 
 	var clientModel models.Client
 
@@ -51,31 +51,31 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&clientDto)
+	err := json.NewDecoder(r.Body).Decode(&registerDto)
 
 	if err != nil {
 		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	clientModel.BornDate, err = time.Parse(time.RFC3339, clientDto.Client.BornDate)
+	clientModel.BornDate, err = time.Parse(time.RFC3339, registerDto.Client.BornDate)
 	if err != nil {
 		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if clientDto.Client.PhonePrimary == "" {
+	if registerDto.Client.PhonePrimary == "" {
 		http.Error(rw, "Debe cargar al menos un número teléfono "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	clientModel.PhonePrimary = clientDto.Client.PhonePrimary
+	clientModel.PhonePrimary = registerDto.Client.PhonePrimary
 
-	clientModel.Observation = clientDto.Client.ObsClient
+	clientModel.Observation = registerDto.Client.ObsClient
 
-	clientModel.PhoneSecondary = clientDto.Client.PhoneSecondary
+	clientModel.PhoneSecondary = registerDto.Client.PhoneSecondary
 
-	if len(clientDto.Client.Pathologies) > 0 {
-		for _, path := range clientDto.Client.Pathologies {
+	if len(registerDto.Client.Pathologies) > 0 {
+		for _, path := range registerDto.Client.Pathologies {
 
 			cPModel.PathologyID = path.ID
 
@@ -85,9 +85,9 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 
 	}
 
-	if len(clientDto.Client.Address) > 0 {
+	if len(registerDto.Client.Address) > 0 {
 
-		for _, addr := range clientDto.Client.Address {
+		for _, addr := range registerDto.Client.Address {
 
 			addModel.Street = addr.Street
 			addModel.Number = addr.Number

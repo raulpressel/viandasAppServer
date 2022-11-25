@@ -6,7 +6,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetClientByIDUser(idkl string) (dtos.ClientRespone, error) {
+func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
 
 	db := db.GetDB()
 
@@ -18,7 +18,7 @@ func GetClientByIDUser(idkl string) (dtos.ClientRespone, error) {
 
 	var address dtos.AddressRespone
 
-	var clientResponse dtos.ClientRespone
+	var clientResponse dtos.ClientResponse
 
 	//err := db.First(&client, "id_user_kl = ?", idkl).Error
 
@@ -29,14 +29,14 @@ func GetClientByIDUser(idkl string) (dtos.ClientRespone, error) {
 		return clientResponse, nil
 	}
 
-	clientResponse.ID = client.ID
-	clientResponse.PhonePrimary = client.PhonePrimary
-	clientResponse.PhoneSecondary = client.PhoneSecondary
-	clientResponse.Name = client.Name
-	clientResponse.LastName = client.LastName
-	clientResponse.ObsClient = client.Observation
-	clientResponse.BornDate = client.BornDate
-	clientResponse.Email = client.Email
+	clientResponse.Client.ID = client.ID
+	clientResponse.Client.PhonePrimary = client.PhonePrimary
+	clientResponse.Client.PhoneSecondary = client.PhoneSecondary
+	clientResponse.Client.Name = client.Name
+	clientResponse.Client.LastName = client.LastName
+	clientResponse.Client.ObsClient = client.Observation
+	clientResponse.Client.BornDate = client.BornDate
+	clientResponse.Client.Email = client.Email
 
 	err := db.Table("pathologies").
 		Select("pathologies.id, pathologies.description").
@@ -49,7 +49,7 @@ func GetClientByIDUser(idkl string) (dtos.ClientRespone, error) {
 		pathology.ID = valor.ID
 		pathology.Description = valor.Description
 		pathology.Checked = true
-		clientResponse.Pathologies = append(clientResponse.Pathologies, pathology)
+		clientResponse.Client.Pathologies = append(clientResponse.Client.Pathologies, pathology)
 
 	}
 
@@ -68,7 +68,7 @@ func GetClientByIDUser(idkl string) (dtos.ClientRespone, error) {
 		address.Departament = valor.Departament
 		address.Observation = valor.Observation
 
-		clientResponse.Address = append(clientResponse.Address, address)
+		clientResponse.Client.Address = append(clientResponse.Client.Address, address)
 	}
 
 	return clientResponse, err
