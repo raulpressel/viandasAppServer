@@ -36,6 +36,7 @@ func GetClientByIDUser(idkl string) (dtos.ClientRespone, error) {
 	clientResponse.LastName = client.LastName
 	clientResponse.ObsClient = client.Observation
 	clientResponse.BornDate = client.BornDate
+	clientResponse.Email = client.Email
 
 	err := db.Table("pathologies").
 		Select("pathologies.id, pathologies.description").
