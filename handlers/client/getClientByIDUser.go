@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	db "viandasApp/db/client"
+	"viandasApp/handlers"
 )
 
 func GetClientByIDUser(rw http.ResponseWriter, r *http.Request) {
@@ -12,6 +13,13 @@ func GetClientByIDUser(rw http.ResponseWriter, r *http.Request) {
 
 	if len(idUserKL) < 1 {
 		http.Error(rw, "debe enviar el parametro id", http.StatusBadRequest)
+		return
+	}
+
+	usr := handlers.GetUser()
+
+	if usr.ID != idUserKL {
+		http.Error(rw, "No tienes los permisos para ver esta información", http.StatusBadRequest)
 		return
 	}
 
