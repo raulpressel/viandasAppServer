@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type Rol struct {
+type rol struct {
 	Roles []string
 }
 
@@ -49,6 +49,7 @@ type user struct {
 	ID       string
 	Name     string
 	LastName string
+	Admin    bool
 }
 
 func GetUser() user {
@@ -62,7 +63,7 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	secretk := GetSK()
 
-	var admin bool
+	usr.Admin = false
 
 	claims := &jwt.MapClaims{}
 
@@ -83,11 +84,11 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	if err != nil {
 
-		return claims, admin, err
+		return claims, usr.Admin, err
 	}
 
 	if !token.Valid {
-		return claims, admin, err
+		return claims, usr.Admin, err
 	}
 
 	for key, val := range *claims {
@@ -115,7 +116,7 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 				return claims, false, err
 			}
 
-			var rol Rol
+			var rol rol
 
 			if err := json.Unmarshal(b, &rol); err != nil {
 				fmt.Println(err)
@@ -123,7 +124,7 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 			for _, v := range rol.Roles {
 				if v == "admin" {
-					admin = true
+					usr.Admin = true
 				}
 			}
 
@@ -131,6 +132,6 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 
 	}
 
-	return claims, admin, err
+	return claims, usr.Admin, err
 
 }

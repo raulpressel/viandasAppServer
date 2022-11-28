@@ -12,6 +12,8 @@ func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
 
 	var pathologiesModel []models.Pathology
 
+	var pathologiesClientModel []models.ClientPathology
+
 	var pathology dtos.PathologyResponse
 
 	var addressesModel []models.Address
@@ -42,15 +44,28 @@ func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
 
 	err := db.Table("pathologies").
 		Select("pathologies.id, pathologies.description").
-		Joins("left JOIN client_pathologies ON client_pathologies.pathology_id = pathologies.id").
-		Where("client_pathologies.client_id = ?", client.ID).
+		//Where("client_pathologies.client_id = ?", client.ID).
+		Where("pathologies.active = 1").
 		Scan(&pathologiesModel).Error
+
+	err = db.Table("client_pathologies").
+		Select("client_pathologies.id, client_pathologies.pathology_id, client_pathologies.client_id").
+		//Where("client_pathologies.client_id = ?", client.ID).
+		Where("client_pathologies.client_id = ?", client.ID).
+		Scan(&pathologiesClientModel).Error
 
 	for _, valor := range pathologiesModel {
 
 		pathology.ID = valor.ID
 		pathology.Description = valor.Description
-		pathology.Checked = true
+		pathology.Checked = false
+
+		for _, v := range pathologiesClientModel {
+			if v.ClientID == client.ID && v.PathologyID == valor.ID {
+				pathology.Checked = true
+			}
+		}
+
 		clientResponse.Client.Pathologies = append(clientResponse.Client.Pathologies, pathology)
 
 	}
