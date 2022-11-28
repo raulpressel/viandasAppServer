@@ -19,8 +19,10 @@ func GetClientByIDUser(rw http.ResponseWriter, r *http.Request) {
 	usr := handlers.GetUser()
 
 	if usr.ID != idUserKL {
-		http.Error(rw, "No tienes los permisos para ver esta información", http.StatusBadRequest)
-		return
+		if !usr.Admin {
+			http.Error(rw, "No tienes los permisos para ver esta información", http.StatusBadRequest)
+			return
+		}
 	}
 
 	responseClient, err := db.GetClientByIDUser(idUserKL)
