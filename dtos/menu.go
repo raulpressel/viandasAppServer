@@ -41,6 +41,21 @@ type FoodMenu struct {
 	Foodurl         string
 }
 
+type FoodMenuCategory struct {
+	ID                  int
+	Datefood            time.Time
+	Foodid              int
+	Foodtitle           string
+	Fooddescription     string
+	Foodurl             string
+	Category            int
+	Categorydescription string
+	Categorytitle       string
+	Categoryprice       float32
+	Categoryurl         string
+	Categorycolor       string
+}
+
 type ValidateDateMenuRequest struct {
 	DateStart string `json:"dateStart"`
 	DateEnd   string `json:"dateEnd"`
@@ -58,6 +73,10 @@ type MenuRequest struct {
 	DateStart string           `json:"dateStart"`
 	DateEnd   string           `json:"dateEnd"`
 	DayMenu   []DayMenuRequest `json:"days"`
+}
+
+type MenuByCategoriesRequest struct {
+	IDCategories []int `json:"idCategory"`
 }
 
 type DayMenuRequest struct {
@@ -165,4 +184,28 @@ func (allMenu AllMenu) ToAllMenuResponse() *AllMenuResponse {
 	}
 
 	return &allMenuResponse
+}
+
+type MenuResponse struct {
+	Menu MenuDetailResponse `json:"menu"`
+}
+
+type MenuDetailResponse struct {
+	ID        int                  `json:"id"`
+	DateStart time.Time            `json:"dateStart"`
+	DateEnd   time.Time            `json:"dateEnd"`
+	Turn      []TurnDetailResponse `json:"turns"`
+}
+
+type TurnDetailResponse struct {
+	ID          int                     `json:"id"`
+	Description string                  `json:"description"`
+	Days        []DayCategoryFoodDetail `json:"days"`
+}
+
+type DayCategoryFoodDetail struct {
+	ID       int              `json:"id"`
+	Date     time.Time        `json:"date"`
+	Category CategoryResponse `json:"category"`
+	Food     AllFoodResponse  `json:"food"`
 }
