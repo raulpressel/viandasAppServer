@@ -41,7 +41,7 @@ func GetMenuByCategories(cat []int) (dtos.MenuResponse, error) {
 			Joins("left JOIN turn_menus ON turn_menus.id = day_menus.turn_menu_id").
 			Where("turn_menus.turn_id = ? and turn_menus.menu_id = ? ", turn, menu).
 			Where("categories.active = 1 and categories.id IN (?)", cat).
-			Order("day_menus.date asc").
+			Order("day_menus.date asc").Order("categories.id asc").
 			Scan(&foodMenuCategory).Error
 
 		if len(foodMenuCategory) > 0 {
