@@ -44,48 +44,59 @@ func GetMenuByCategories(cat []int) (dtos.MenuResponse, error) {
 			Order("day_menus.date asc").
 			Scan(&foodMenuCategory).Error
 
-		var Days []dtos.DayCategoryFoodDetail
+		if len(foodMenuCategory) > 0 {
 
-		for _, valor := range foodMenuCategory {
-			Day := dtos.DayCategoryFoodDetail{
-				ID:   valor.ID,
-				Date: valor.Datefood,
-				Food: dtos.AllFoodResponse{
-					ID:          valor.Foodid,
-					Title:       valor.Foodtitle,
-					Description: valor.Fooddescription,
-					Location:    valor.Foodurl,
-					//Category: ,
-				},
-				Category: dtos.CategoryResponse{
-					ID:          valor.Category,
-					Description: valor.Categorydescription,
-					Title:       valor.Categorytitle,
-					Price:       valor.Categoryprice,
-					Location:    valor.Categoryurl,
-					Color:       valor.Categorycolor,
+			var Days []dtos.DayCategoryFoodDetail
+
+			for _, valor := range foodMenuCategory {
+				Day := dtos.DayCategoryFoodDetail{
+					ID:   valor.ID,
+					Date: valor.Datefood,
+					Food: dtos.AllFoodResponse{
+						ID:          valor.Foodid,
+						Title:       valor.Foodtitle,
+						Description: valor.Fooddescription,
+						Location:    valor.Foodurl,
+						//Category: ,
+					},
+					Category: dtos.CategoryResponse{
+						ID:          valor.Category,
+						Description: valor.Categorydescription,
+						Title:       valor.Categorytitle,
+						Price:       valor.Categoryprice,
+						Location:    valor.Categoryurl,
+						Color:       valor.Categorycolor,
+					},
+				}
+				Days = append(Days, Day)
+			}
+
+			turnDetail := dtos.TurnDetailResponse{
+				ID:          valor.Turnid,
+				Description: valor.Descriptionturn,
+				Days:        Days,
+			}
+
+			turns = append(turns, turnDetail)
+
+			allMenu = dtos.MenuResponse{
+				Menu: dtos.MenuDetailResponse{
+					ID:        valor.Menuid,
+					DateStart: valor.Datestart,
+					DateEnd:   valor.Dateend,
+					Turn:      turns,
 				},
 			}
-			Days = append(Days, Day)
+
+		} else {
+
+			allMenu = dtos.MenuResponse{
+				Menu: dtos.MenuDetailResponse{
+					ID: 0,
+				},
+			}
+
 		}
-
-		turnDetail := dtos.TurnDetailResponse{
-			ID:          valor.Turnid,
-			Description: valor.Descriptionturn,
-			Days:        Days,
-		}
-
-		turns = append(turns, turnDetail)
-
-		allMenu = dtos.MenuResponse{
-			Menu: dtos.MenuDetailResponse{
-				ID:        valor.Menuid,
-				DateStart: valor.Datestart,
-				DateEnd:   valor.Dateend,
-				Turn:      turns,
-			},
-		}
-
 	}
 
 	return allMenu, err

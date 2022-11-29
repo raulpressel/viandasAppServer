@@ -9,20 +9,6 @@ import (
 
 func GetMenuByCategories(rw http.ResponseWriter, r *http.Request) {
 
-	/* ID := r.URL.Query().Get("idCategory")
-
-	if len(ID) < 1 {
-		http.Error(rw, "debe enviar el parametro id", http.StatusBadRequest)
-		return
-	} */
-
-	/* //idCategory, err := strconv.Atoi(ID)
-
-	if err != nil {
-		http.Error(rw, "Error al convertir el ID", http.StatusInternalServerError)
-		return
-	} */
-
 	var cateogories dtos.MenuByCategoriesRequest
 
 	err := json.NewDecoder(r.Body).Decode(&cateogories)
@@ -38,10 +24,10 @@ func GetMenuByCategories(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/* if responseMenuFood.ID == 0 {
+	if responseMenuFood.Menu.ID == 0 {
 		http.Error(rw, "No hay menus en la BD", http.StatusNotFound)
 		return
-	} */
+	}
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
