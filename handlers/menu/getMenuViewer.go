@@ -6,7 +6,7 @@ import (
 	db "viandasApp/db/menu"
 )
 
-func GetMenu(rw http.ResponseWriter, r *http.Request) {
+func GetMenuViewer(rw http.ResponseWriter, r *http.Request) {
 
 	responseMenuFood, err := db.GetMenuActive()
 
