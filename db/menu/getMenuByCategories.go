@@ -88,14 +88,6 @@ func GetMenuByCategories(cat []int) (dtos.MenuResponse, error) {
 				},
 			}
 
-		} else {
-
-			allMenu = dtos.MenuResponse{
-				Menu: dtos.MenuDetailResponse{
-					ID: 0,
-				},
-			}
-
 		}
 	}
 
