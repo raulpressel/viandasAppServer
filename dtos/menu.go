@@ -122,7 +122,7 @@ type FoodViewer struct {
 }
 
 type DayMenuEditRequest struct {
-	IdDayMenu  int `json:"idDay"`
+	IdDayMenu  int `json:"idDayFood"`
 	IdFood     int `json:"idFood"`
 	IdCategory int `json:"idCategory"`
 }
@@ -158,7 +158,7 @@ type AllMenu struct {
 }
 
 type AllMenuResponse struct {
-	ID        int              `json:"menuId"`
+	ID        int              `json:"id"`
 	DateStart time.Time        `json:"dateStart"`
 	DateEnd   time.Time        `json:"dateEnd"`
 	IsCurrent bool             `json:"isCurrent"`
