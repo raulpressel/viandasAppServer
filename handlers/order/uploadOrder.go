@@ -6,6 +6,7 @@ import (
 	"time"
 	"viandasApp/db"
 	dbAddress "viandasApp/db/address"
+	dbClient "viandasApp/db/client"
 	dbMenu "viandasApp/db/menu"
 	dbOrder "viandasApp/db/order"
 	"viandasApp/dtos"
@@ -34,7 +35,19 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	db.ExistTable(dOrderModel)
 
-	orderModel.ClientID = orderDto.IDClient //revisar el idcliente con la funcion que hizo juan
+	clientModel, err := dbClient.GetClientById(orderDto.IDClient)
+
+	if err != nil {
+		http.Error(rw, "Ocurrio un error al obtener el ID del cliente "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if clientModel.ID == 0 {
+		http.Error(rw, "El Cliente enviado no existe ", http.StatusBadRequest)
+		return
+	}
+
+	orderModel.ClientID = orderDto.IDClient
 
 	orderModel.Observation = orderDto.Observation
 
@@ -48,39 +61,43 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	for _, day := range orderDto.DaysOrderRequest {
 
-		dOrderModel.Amount = day.Amount
+		if day.Amount > 0 {
 
-		dayMenuModel, err := dbMenu.GetDayMenuById(day.IDDayFood)
+			dOrderModel.Amount = day.Amount
 
-		if err != nil {
-			http.Error(rw, "Ocurrio un error al obtener el ID del menu "+err.Error(), http.StatusInternalServerError)
-			return
+			dayMenuModel, err := dbMenu.GetDayMenuById(day.IDDayFood)
+
+			if err != nil {
+				http.Error(rw, "Ocurrio un error al obtener el ID del menu "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if dayMenuModel.ID == 0 {
+				http.Error(rw, "El Day Menu enviado no existe ", http.StatusBadRequest)
+				return
+			}
+
+			dOrderModel.DayMenuID = day.IDDayFood
+
+			dOrderModel.Observation = day.Observation
+
+			addressModel, err := dbAddress.GetAddressById(day.IDAddress)
+
+			if err != nil {
+				http.Error(rw, "Ocurrio un error al obtener el ID de la direccion "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if addressModel.ID == 0 {
+				http.Error(rw, "La direccion enviada no existe ", http.StatusBadRequest)
+				return
+			}
+
+			dOrderModel.AddressID = day.IDAddress
+
+			dayOrderModel = append(dayOrderModel, dOrderModel)
+
 		}
-
-		if dayMenuModel.ID == 0 {
-			http.Error(rw, "El Day Menu enviado no existe ", http.StatusBadRequest)
-			return
-		}
-
-		dOrderModel.DayMenuID = day.IDDayFood
-
-		dOrderModel.Observation = day.Observation
-
-		addressModel, err := dbAddress.GetAddressById(day.IDAddress)
-
-		if err != nil {
-			http.Error(rw, "Ocurrio un error al obtener el ID de la direccion "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if addressModel.ID == 0 {
-			http.Error(rw, "La direccion enviada no existe ", http.StatusBadRequest)
-			return
-		}
-
-		dOrderModel.AddressID = day.IDAddress
-
-		dayOrderModel = append(dayOrderModel, dOrderModel)
 	}
 
 	status, err := dbOrder.UploadOrder(orderModel, dayOrderModel)
