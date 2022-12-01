@@ -14,6 +14,7 @@ import (
 	client "viandasApp/handlers/client"
 	food "viandasApp/handlers/food"
 	menu "viandasApp/handlers/menu"
+	order "viandasApp/handlers/order"
 	pathology "viandasApp/handlers/pathologies"
 
 	"viandasApp/middlew"
@@ -76,6 +77,8 @@ func Routes(publicDir string) {
 	router.HandleFunc("/client/registerClient", middlew.CheckDB(middlew.ValidateJWT(client.RegisterClient))).Methods("POST")
 	router.HandleFunc("/client/getClientByIdUser", middlew.CheckDB(middlew.ValidateJWT(client.GetClientByIDUser))).Methods("GET")
 	//client/getClientByIdUser ruta para devolver el cliente
+
+	router.HandleFunc("/order/uploadOrder", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("POST")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
