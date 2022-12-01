@@ -3,14 +3,14 @@ package dtos
 import "time"
 
 type RegisterRequest struct {
-	Client Register `json:"client"`
+	Client ClientRequest `json:"client"`
 }
 
 type ClientResponse struct {
 	Client Client `json:"client"`
 }
 
-type Register struct {
+type ClientRequest struct {
 	ID             int                `json:"id"`
 	PhonePrimary   string             `json:"phonePrimary"`
 	PhoneSecondary string             `json:"phoneSecondary"`

@@ -75,6 +75,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/city/getCity", middlew.CheckDB(middlew.ValidateJWT(city.GetAllCities))).Methods("GET")
 
 	router.HandleFunc("/client/registerClient", middlew.CheckDB(middlew.ValidateJWT(client.RegisterClient))).Methods("POST")
+	router.HandleFunc("/client/updateClient", middlew.CheckDB(middlew.ValidateJWT(client.UpdateClient))).Methods("POST")
 	router.HandleFunc("/client/getClientByIdUser", middlew.CheckDB(middlew.ValidateJWT(client.GetClientByIDUser))).Methods("GET")
 	//client/getClientByIdUser ruta para devolver el cliente
 
