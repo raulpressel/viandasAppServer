@@ -1,5 +1,7 @@
 package dtos
 
+import "time"
+
 type OrderRequest struct {
 	IDClient         int                `json:"idClient"`
 	Observation      string             `json:"observation"`
@@ -13,4 +15,16 @@ type DaysOrderRequest struct {
 	IDDayFood   int    `json:"idDayFood"`
 	IDAddress   int    `json:"idAddress"`
 	Observation string `json:"observation"`
+}
+
+type OrderViewerResponse struct {
+	Order []OrderResponse `json:"orderViewer"`
+}
+
+type OrderResponse struct {
+	ID          int       `json:"id"`
+	OrderDate   time.Time `json:"date"`
+	Observation string    `json:"observation"`
+	Amount      float32   `json:"total"`
+	Status      string    `json:"status"`
 }
