@@ -80,7 +80,7 @@ func Routes(publicDir string) {
 	//client/getClientByIdUser ruta para devolver el cliente
 
 	router.HandleFunc("/order/uploadOrder", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("POST")
-	//router.HandleFunc("/order/getOrderByID", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("GET")
+	router.HandleFunc("/order/getOrderByID", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderById))).Methods("GET")
 	router.HandleFunc("/order/getOrderViewer", middlew.CheckDB(middlew.ValidateJWT(order.GetAllOrder))).Methods("GET")
 
 	var turnMenuModel models.TurnMenu

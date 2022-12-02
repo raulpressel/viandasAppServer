@@ -25,6 +25,26 @@ type OrderResponse struct {
 	ID          int       `json:"id"`
 	OrderDate   time.Time `json:"date"`
 	Observation string    `json:"observation"`
-	Amount      float32   `json:"total"`
+	Total       float32   `json:"total"`
 	Status      string    `json:"status"`
+}
+
+type FullOrderResponse struct {
+	ID          int                `json:"id"`
+	OrderDate   time.Time          `json:"date"`
+	Observation string             `json:"observation"`
+	Total       float32            `json:"total"`
+	Status      string             `json:"status"`
+	DayOrder    []DayOrderResponse `json:"daysOrder"`
+}
+
+type DayOrderResponse struct {
+	ID          int              `json:"id"`
+	Date        time.Time        `json:"date"`
+	Food        FoodResponse     `json:"food"`
+	Category    CategoryResponse `json:"category"`
+	Amount      int              `json:"cant"`
+	Observation string           `json:"observation"`
+	Address     AddressRespone   `json:"address"`
+	Status      string           `json:"status"`
 }

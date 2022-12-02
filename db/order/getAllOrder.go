@@ -28,7 +28,7 @@ func GetAllOrder(id int) (dtos.OrderViewerResponse, error) {
 		orders.OrderDate = ord.OrderDate
 		orders.Observation = ord.Observation
 		orders.Status = ord.Status
-		orders.Amount = ord.Total
+		orders.Total = ord.Total
 
 		dtoOrder.Order = append(dtoOrder.Order, orders)
 	}
