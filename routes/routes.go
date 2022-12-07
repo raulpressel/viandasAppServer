@@ -8,6 +8,7 @@ import (
 	"os"
 	"viandasApp/db"
 	"viandasApp/handlers"
+	address "viandasApp/handlers/address"
 	carousel "viandasApp/handlers/carousel"
 	categories "viandasApp/handlers/categories"
 	city "viandasApp/handlers/cities"
@@ -79,6 +80,10 @@ func Routes(publicDir string) {
 	router.HandleFunc("/client/getClientByIdUser", middlew.CheckDB(middlew.ValidateJWT(client.GetClientByIDUser))).Methods("GET")
 	//client/getClientByIdUser ruta para devolver el cliente
 
+	router.HandleFunc("/address/addAddress", middlew.CheckDB(address.AddAddress)).Methods("POST")
+	//router.HandleFunc("/address/editAddress", middlew.CheckDB(address.UpdateAddress)).Methods("PUT")
+	//router.HandleFunc("/address/deleteAddress", middlew.CheckDB(address.DeleteAddress)).Methods("Delete")
+
 	router.HandleFunc("/order/uploadOrder", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("POST")
 
 	var turnMenuModel models.TurnMenu
@@ -105,6 +110,16 @@ func Routes(publicDir string) {
 	}
 	db.ExistTable(turnMenuModel)
 	db.ExistTable(dayModel)
+
+	var addcliModel models.ClientAddress
+	var clientModel models.Client
+	var addModel models.Address
+	var cPModel models.ClientPathology
+
+	db.ExistTable(clientModel)
+	db.ExistTable(addModel)
+	db.ExistTable(cPModel)
+	db.ExistTable(addcliModel)
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {

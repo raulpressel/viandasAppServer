@@ -6,7 +6,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
+func GetClientByIDUser(idkl string) (*dtos.ClientResponse, error) {
 
 	db := db.GetDB()
 
@@ -30,7 +30,7 @@ func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
 
 	if !res {
 
-		return clientResponse, nil
+		return nil, nil
 	}
 
 	clientResponse.Client.ID = client.ID
@@ -97,5 +97,5 @@ func GetClientByIDUser(idkl string) (dtos.ClientResponse, error) {
 		clientResponse.Client.Address = append(clientResponse.Client.Address, address)
 	}
 
-	return clientResponse, err
+	return &clientResponse, err
 }

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	"viandasApp/db"
 	dbClient "viandasApp/db/client"
 	"viandasApp/dtos"
 	"viandasApp/handlers"
@@ -24,13 +23,6 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 	var clientPathologyModel []models.ClientPathology
 
 	var cPModel models.ClientPathology
-
-	var addcliModel models.ClientAddress
-
-	db.ExistTable(clientModel)
-	db.ExistTable(addModel)
-	db.ExistTable(cPModel)
-	db.ExistTable(addcliModel)
 
 	usr := handlers.GetUser()
 
