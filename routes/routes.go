@@ -81,7 +81,7 @@ func Routes(publicDir string) {
 	//client/getClientByIdUser ruta para devolver el cliente
 
 	router.HandleFunc("/address/addAddress", middlew.CheckDB(address.AddAddress)).Methods("POST")
-	//router.HandleFunc("/address/editAddress", middlew.CheckDB(address.UpdateAddress)).Methods("PUT")
+	router.HandleFunc("/address/editAddress", middlew.CheckDB(address.UpdateAddress)).Methods("PUT")
 	//router.HandleFunc("/address/deleteAddress", middlew.CheckDB(address.DeleteAddress)).Methods("Delete")
 
 	router.HandleFunc("/order/uploadOrder", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("POST")

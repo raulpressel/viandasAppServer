@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"viandasApp/dtos"
 
-	dbaddress "viandasApp/db/address"
+	dbAddress "viandasApp/db/address"
 )
 
 func AddAddress(rw http.ResponseWriter, r *http.Request) {
@@ -24,7 +24,7 @@ func AddAddress(rw http.ResponseWriter, r *http.Request) {
 	address.Active = true
 	address.CityID = 1
 
-	status, err := dbaddress.AddAddress(*address, addressDto.IDClient)
+	status, err := dbAddress.AddAddress(*address, addressDto.IDClient)
 	if err != nil {
 		http.Error(rw, "Ocurrio un error al cargar la dirección "+err.Error(), http.StatusInternalServerError)
 		return
