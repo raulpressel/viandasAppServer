@@ -71,9 +71,11 @@ func GetClientByIDUser(idkl string) (*dtos.ClientResponse, error) {
 	}
 
 	err = db.Table("addresses").
-		Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id").
+		Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id, addresses.favourite").
 		Joins("left JOIN client_addresses ON client_addresses.address_id = addresses.id").
 		Where("client_addresses.client_id = ?", client.ID).
+		Where("addresses.active = 1").
+		Order("addresses.favourite desc").
 		Scan(&addressesModel).Error
 
 	for _, valor := range addressesModel {
@@ -84,6 +86,7 @@ func GetClientByIDUser(idkl string) (*dtos.ClientResponse, error) {
 		address.Floor = valor.Floor
 		address.Departament = valor.Departament
 		address.Observation = valor.Observation
+		address.Favourite = valor.Favourite
 
 		err = db.Table("cities").
 			Select("cities.id, cities.description, cities.cp ").

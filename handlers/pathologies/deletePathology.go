@@ -36,12 +36,12 @@ func DeletePathology(rw http.ResponseWriter, r *http.Request) {
 	status, err := dbpathology.DeletePathology(patholohyModel)
 
 	if err != nil {
-		http.Error(rw, "Ocurrio un error al cargar la patologia "+err.Error(), http.StatusInternalServerError)
+		http.Error(rw, "Ocurrio un error al eliminar la patologia "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if !status {
-		http.Error(rw, "no se ha logrado modificar la patologia en la BD", http.StatusInternalServerError)
+		http.Error(rw, "no se ha logrado eliminar la patologia en la BD", http.StatusInternalServerError)
 		return
 	}
 

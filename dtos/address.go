@@ -3,8 +3,10 @@ package dtos
 import "viandasApp/models"
 
 type Address struct {
-	Address  AddressRequest `json:"address"`
-	IDClient int            `json:"idClient"`
+	Address               AddressRequest `json:"address"`
+	IDClient              int            `json:"idClient"`
+	IDNewFavouriteAddress int            `json:"idNewFavouriteAddress"`
+	IDOldFavouriteAddress int            `json:"idOldFavouriteAddress"`
 }
 
 type AddressRequest struct {
@@ -23,6 +25,7 @@ type AddressRespone struct {
 	Floor       string          `json:"floor"`
 	Departament string          `json:"departament"`
 	Observation string          `json:"observation"`
+	Favourite   bool            `json:"favourite"`
 	City        AllCityResponse `json:"city"`
 }
 
