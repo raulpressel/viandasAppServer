@@ -13,7 +13,6 @@ import (
 	"viandasApp/models"
 )
 
-/*subir el avatar al servidor*/
 func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	var orderDto dtos.OrderRequest

@@ -14,6 +14,13 @@ type FoodCategory struct {
 	Categoryid int
 }
 
+type FoodResponse struct {
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Location    string `json:"urlImage"`
+}
+
 type AllFoodResponse struct {
 	ID          int                `json:"id"`
 	Title       string             `json:"title"`
