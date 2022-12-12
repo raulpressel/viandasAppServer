@@ -32,10 +32,10 @@ func GetClientByIDUser(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if responseClient.Client.ID == 0 {
+	/* if responseClient.Client.ID == 0 {
 		http.Error(rw, "No hay clientes en la BD", http.StatusNotFound)
 		return
-	}
+	} */
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)

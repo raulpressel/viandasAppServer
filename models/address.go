@@ -12,4 +12,6 @@ type Address struct {
 	Observation string
 	CityID      int
 	City        City `gorm:"foreignKey:CityID"`
+	Active      bool
+	Favourite   bool
 }
