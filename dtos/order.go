@@ -27,6 +27,8 @@ type OrderResponse struct {
 	Observation string    `json:"observation"`
 	Total       float32   `json:"total"`
 	Status      string    `json:"status"`
+	DateStart   time.Time `json:"dateStart"`
+	DateEnd     time.Time `json:"dateEnd"`
 }
 
 type FullOrderResponse struct {
