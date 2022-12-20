@@ -2,6 +2,7 @@ package db
 
 import (
 	"viandasApp/db"
+	dbMenu "viandasApp/db/menu"
 	"viandasApp/dtos"
 	"viandasApp/models"
 )
@@ -11,6 +12,8 @@ func GetAllOrder(id int) (dtos.OrderViewerResponse, error) {
 	db := db.GetDB()
 
 	modelOrder := []models.Order{}
+
+	var daysOrderModel models.DayOrder
 
 	var dtoOrder dtos.OrderViewerResponse
 
@@ -24,11 +27,29 @@ func GetAllOrder(id int) (dtos.OrderViewerResponse, error) {
 		Scan(&modelOrder).Error
 
 	for _, ord := range modelOrder {
+
+		err = db.Table("day_orders").
+			Select("day_orders.id, day_orders.observation, day_orders.amount, day_orders.status, day_orders.address_id, day_orders.day_menu_id").
+			Where("day_orders.order_id = ?", ord.ID).
+			Scan(&daysOrderModel).Error
+
+		dayMenuModel, err := dbMenu.GetDayMenuById(daysOrderModel.DayMenuID)
+		if err != nil {
+			return dtoOrder, err
+		}
+
+		menuModel, err := dbMenu.GetMenuByTurnMenuID(dayMenuModel.TurnMenuID)
+		if err != nil {
+			return dtoOrder, err
+		}
+
 		orders.ID = ord.ID
 		orders.OrderDate = ord.OrderDate
 		orders.Observation = ord.Observation
 		orders.Status = ord.Status
 		orders.Total = ord.Total
+		orders.DateStart = menuModel.DateStart
+		orders.DateEnd = menuModel.DateEnd
 
 		dtoOrder.Order = append(dtoOrder.Order, orders)
 	}
