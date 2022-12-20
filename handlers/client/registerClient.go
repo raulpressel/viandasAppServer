@@ -88,6 +88,7 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 			addModel.Observation = addr.Observation
 			addModel.CityID = 1
 			addModel.Favourite = true
+			addModel.Active = true
 
 			addressModel = append(addressModel, addModel)
 
