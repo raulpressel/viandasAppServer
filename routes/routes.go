@@ -13,6 +13,7 @@ import (
 	categories "viandasApp/handlers/categories"
 	city "viandasApp/handlers/cities"
 	client "viandasApp/handlers/client"
+	deliveryDriver "viandasApp/handlers/deliveryDriver"
 	food "viandasApp/handlers/food"
 	menu "viandasApp/handlers/menu"
 	order "viandasApp/handlers/order"
@@ -82,12 +83,17 @@ func Routes(publicDir string) {
 
 	router.HandleFunc("/address/addAddress", middlew.CheckDB(address.AddAddress)).Methods("POST")
 	router.HandleFunc("/address/editAddress", middlew.CheckDB(address.UpdateAddress)).Methods("PUT")
-	router.HandleFunc("/address/deleteAddress", middlew.CheckDB(address.DeleteAddress)).Methods("Delete")
+	router.HandleFunc("/address/deleteAddress", middlew.CheckDB(address.DeleteAddress)).Methods("DELETE")
 	router.HandleFunc("/address/setFavouriteAddress", middlew.CheckDB(address.SetFavouriteAddress)).Methods("POST")
 
 	router.HandleFunc("/order/uploadOrder", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("POST")
 	router.HandleFunc("/order/getOrderByID", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderById))).Methods("GET")
 	router.HandleFunc("/order/getOrderViewer", middlew.CheckDB(middlew.ValidateJWT(order.GetAllOrder))).Methods("GET")
+
+	router.HandleFunc("/delivery/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
+	/* 	router.HandleFunc("/delivery/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderById))).Methods("GET")
+	   	router.HandleFunc("/delivery/editDeliveryDriver", middlew.CheckDB(address.UpdateAddress)).Methods("PUT")
+	   	router.HandleFunc("/delivery/deleteDeliveryDriver", middlew.CheckDB(address.DeleteAddress)).Methods("DELETE") */
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
