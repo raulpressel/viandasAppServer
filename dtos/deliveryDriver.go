@@ -5,7 +5,7 @@ type DeliveryDriverRequest struct {
 }
 
 type DeliveryDriver struct {
-	TurnId   int            `json:"id"`
+	ID       int            `json:"id"`
 	DNI      int            `json:"dni"`
 	Name     string         `json:"name"`
 	LastName string         `json:"lastName"`

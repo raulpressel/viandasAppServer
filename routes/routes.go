@@ -91,9 +91,9 @@ func Routes(publicDir string) {
 	router.HandleFunc("/order/getOrderViewer", middlew.CheckDB(middlew.ValidateJWT(order.GetAllOrder))).Methods("GET")
 
 	router.HandleFunc("/delivery/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
-	/* 	router.HandleFunc("/delivery/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderById))).Methods("GET")
-	   	router.HandleFunc("/delivery/editDeliveryDriver", middlew.CheckDB(address.UpdateAddress)).Methods("PUT")
-	   	router.HandleFunc("/delivery/deleteDeliveryDriver", middlew.CheckDB(address.DeleteAddress)).Methods("DELETE") */
+	//router.HandleFunc("/delivery/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderById))).Methods("GET")
+	router.HandleFunc("/delivery/editDeliveryDriver", middlew.CheckDB(deliveryDriver.UpdateDeliveryDriver)).Methods("PUT")
+	//router.HandleFunc("/delivery/deleteDeliveryDriver", middlew.CheckDB(address.DeleteAddress)).Methods("DELETE")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
