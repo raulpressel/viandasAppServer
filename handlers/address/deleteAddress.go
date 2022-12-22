@@ -31,8 +31,6 @@ func DeleteAddress(rw http.ResponseWriter, r *http.Request) {
 
 	addressModel.Active = false
 
-	rw.Header().Add("content-type", "application/json")
-
 	status, err := dbAddress.DeleteAddress(addressModel)
 
 	if err != nil {
