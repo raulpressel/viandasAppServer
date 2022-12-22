@@ -18,6 +18,7 @@ import (
 	menu "viandasApp/handlers/menu"
 	order "viandasApp/handlers/order"
 	pathology "viandasApp/handlers/pathologies"
+	tanda "viandasApp/handlers/tanda"
 
 	"viandasApp/middlew"
 	"viandasApp/models"
@@ -94,6 +95,9 @@ func Routes(publicDir string) {
 	router.HandleFunc("/deliveryDriver/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWT(deliveryDriver.GetAllDeliveryDriver))).Methods("GET")
 	router.HandleFunc("/deliveryDriver/editDeliveryDriver", middlew.CheckDB(deliveryDriver.UpdateDeliveryDriver)).Methods("PUT")
 	router.HandleFunc("/deliveryDriver/deleteDeliveryDriver", middlew.CheckDB(deliveryDriver.DeleteDeliveryDriver)).Methods("DELETE")
+
+	router.HandleFunc("/tanda/addTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UploadTanda))).Methods("POST")
+	router.HandleFunc("/tanda/getTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.GetAllTanda))).Methods("GET")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
