@@ -39,12 +39,12 @@ func DeleteDeliveryDriver(rw http.ResponseWriter, r *http.Request) {
 	status, err := deliDriver.DeleteDeliveryDriver(deliDriverModel)
 
 	if err != nil {
-		http.Error(rw, "Ocurrio un error al intentar registrar el cadete "+err.Error(), http.StatusInternalServerError)
+		http.Error(rw, "Ocurrio un error al eliminar el cadete "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if !status {
-		http.Error(rw, "no se ha logrado registrar el cadete en la BD", http.StatusInternalServerError)
+		http.Error(rw, "no se ha logrado eliminar el cadete en la BD", http.StatusInternalServerError)
 		return
 	}
 
