@@ -49,7 +49,7 @@ func UpdateDeliveryDriver(rw http.ResponseWriter, r *http.Request) {
 
 	deliDriverModel.Active = true
 
-	vehicleModel, err := vehicleDB.GetVehicleByID(deliDriverDto.DeliveryDriver.ID)
+	vehicleModel, err := vehicleDB.GetVehicleByID(deliDriverModel.VehicleID)
 
 	if err != nil {
 		http.Error(rw, "no fue posible recuperar el vehiculo del cadete en la BD", http.StatusInternalServerError)
@@ -66,7 +66,7 @@ func UpdateDeliveryDriver(rw http.ResponseWriter, r *http.Request) {
 	vehicleModel.Patent = deliDriverDto.DeliveryDriver.Vehicle.Patent
 	vehicleModel.Year = deliDriverDto.DeliveryDriver.Vehicle.Year
 
-	addressModel, err := addrDB.GetAddressById(deliDriverDto.DeliveryDriver.Address.ID)
+	addressModel, err := addrDB.GetAddressById(deliDriverModel.AddressID)
 
 	addressModel.Street = deliDriverDto.DeliveryDriver.Address.Street
 	addressModel.Number = deliDriverDto.DeliveryDriver.Address.Number

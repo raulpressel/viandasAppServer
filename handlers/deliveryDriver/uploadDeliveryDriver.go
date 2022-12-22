@@ -31,6 +31,13 @@ func UploadDeliveryDriver(rw http.ResponseWriter, r *http.Request) {
 
 	db.ExistTable(vehicleModel)
 
+	hasDNI, err := deliDriver.GetDeliveryDriverByDNI(deliDriverDto.DeliveryDriver.DNI)
+
+	if hasDNI {
+		http.Error(rw, "El DNI ya existe ", http.StatusBadRequest)
+		return
+	}
+
 	deliDriverModel.DNI = deliDriverDto.DeliveryDriver.DNI
 
 	deliDriverModel.Name = deliDriverDto.DeliveryDriver.Name
