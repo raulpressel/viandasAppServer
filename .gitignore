@@ -6,3 +6,4 @@ uploads/test.txt
 cert.pem
 .env
 
+__debug_bin.exe
