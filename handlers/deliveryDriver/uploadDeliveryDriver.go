@@ -39,7 +39,13 @@ func UploadDeliveryDriver(rw http.ResponseWriter, r *http.Request) {
 
 	deliDriverModel.Phone = deliDriverDto.DeliveryDriver.Phone
 
-	deliDriverModel.BornDate, err = time.Parse(time.RFC3339, deliDriverDto.DeliveryDriver.BornDate)
+	/* deliDriverModel.BornDate, err = time.Parse(time.RFC3339, deliDriverDto.DeliveryDriver.BornDate)
+	if err != nil {
+		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
+		return
+	} */
+
+	deliDriverModel.BornDate, err = time.Parse(time.RFC3339, "1989-10-12T07:20:50.52Z")
 	if err != nil {
 		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
 		return
@@ -57,6 +63,9 @@ func UploadDeliveryDriver(rw http.ResponseWriter, r *http.Request) {
 	addressModel.Floor = deliDriverDto.DeliveryDriver.Address.Floor
 	addressModel.Departament = deliDriverDto.DeliveryDriver.Address.Departament
 	addressModel.Observation = deliDriverDto.DeliveryDriver.Address.Observation
+	addressModel.CityID = 1
+	addressModel.Favourite = true
+	addressModel.Active = true
 
 	status, err := deliDriver.UploadDeliveryDriver(deliDriverModel, vehicleModel, addressModel)
 

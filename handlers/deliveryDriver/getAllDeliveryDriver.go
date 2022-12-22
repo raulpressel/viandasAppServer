@@ -13,7 +13,7 @@ func GetAllDeliveryDriver(rw http.ResponseWriter, r *http.Request) {
 	responseModelDeliveryDriver, err := db.GetAllDeliveryDriver()
 
 	if err != nil {
-		http.Error(rw, "no fue posible recuperar los platos", http.StatusInternalServerError)
+		http.Error(rw, "no fue posible recuperar los cadetes de la BD", http.StatusInternalServerError)
 		return
 	}
 

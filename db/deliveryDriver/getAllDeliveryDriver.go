@@ -9,7 +9,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetAllDeliveryDriver() (dtos.DeliveryDriverResponse, error) {
+func GetAllDeliveryDriver() (*dtos.DeliveryDriverResponse, error) {
 
 	db := db.GetDB()
 
@@ -18,28 +18,28 @@ func GetAllDeliveryDriver() (dtos.DeliveryDriverResponse, error) {
 	var allDeliveryDriver dtos.DeliveryDriverResponse
 
 	if err := db.Find(&modelDeliveryDriver, "active = 1").Error; err != nil {
-		return allDeliveryDriver, err
+		return nil, err
 	}
 
 	for _, valor := range modelDeliveryDriver {
 
 		addressModel, err := dbAddress.GetAddressById(valor.AddressID)
 		if err != nil {
-			return allDeliveryDriver, err
+			return nil, err
 		}
 
 		vehicleModel, err := dbVehicle.GetVehicleByID(valor.VehicleID)
 		if err != nil {
-			return allDeliveryDriver, err
+			return nil, err
 		}
 
 		cityModel, err := dbCity.GetFoodById(addressModel.CityID)
 		if err != nil {
-			return allDeliveryDriver, err
+			return nil, err
 		}
 
 		deliveryDriver := dtos.DeliveryDriverRes{
-			ID:       valor.DNI,
+			ID:       valor.ID,
 			DNI:      valor.DNI,
 			Name:     valor.Name,
 			LastName: valor.LastName,
@@ -72,6 +72,6 @@ func GetAllDeliveryDriver() (dtos.DeliveryDriverResponse, error) {
 
 	}
 
-	return allDeliveryDriver, nil
+	return &allDeliveryDriver, nil
 
 }
