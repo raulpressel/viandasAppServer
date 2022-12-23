@@ -3,18 +3,14 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"viandasApp/db"
 	deliDriver "viandasApp/db/deliveryDriver"
 	tandaDb "viandasApp/db/tanda"
 	"viandasApp/dtos"
-	"viandasApp/models"
 )
 
-func UploadTanda(rw http.ResponseWriter, r *http.Request) {
+func UpdateTanda(rw http.ResponseWriter, r *http.Request) {
 
 	var tandaDto dtos.TandaRequest
-
-	var tandaModel models.Tanda
 
 	err := json.NewDecoder(r.Body).Decode(&tandaDto)
 
@@ -23,7 +19,17 @@ func UploadTanda(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db.ExistTable(tandaModel)
+	tandaModel, err := tandaDb.GetTandaById(tandaDto.Tanda.ID)
+
+	if err != nil {
+		http.Error(rw, "no fue posible recuperar la tanda de la BD", http.StatusInternalServerError)
+		return
+	}
+
+	if tandaModel.ID == 0 {
+		http.Error(rw, "no fue posible recuperar la tanda de la BD", http.StatusBadRequest)
+		return
+	}
 
 	deliDriverModel, err := deliDriver.GetDeliveryDriverByID(tandaDto.IdDeliveryDriver)
 
@@ -37,9 +43,9 @@ func UploadTanda(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tandaModel.Description = tandaDto.Tanda.Description
-
 	tandaModel.DeliveryDriverID = deliDriverModel.ID
+
+	tandaModel.Description = tandaDto.Tanda.Description
 
 	tandaModel.HourStart = tandaDto.Tanda.HourStart
 	tandaModel.HourEnd = tandaDto.Tanda.HourEnd
@@ -49,12 +55,12 @@ func UploadTanda(rw http.ResponseWriter, r *http.Request) {
 	status, err := tandaDb.UploadTanda(tandaModel)
 
 	if err != nil {
-		http.Error(rw, "Ocurrio un error al intentar registrar la tanda "+err.Error(), http.StatusInternalServerError)
+		http.Error(rw, "Ocurrio un error al intentar actualizar la tanda "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if !status {
-		http.Error(rw, "no se ha logrado registrar la tanda en la BD", http.StatusInternalServerError)
+		http.Error(rw, "no se ha logrado actualizar la tanda en la BD", http.StatusInternalServerError)
 		return
 	}
 

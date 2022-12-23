@@ -11,7 +11,7 @@ func GetAllTanda(rw http.ResponseWriter, r *http.Request) {
 	responseModel, err := db.GetAllTanda()
 
 	if err != nil {
-		http.Error(rw, "no fue posible recuperar las patologias", http.StatusBadRequest)
+		http.Error(rw, "no fue posible recuperar las tandas", http.StatusBadRequest)
 		return
 	}
 

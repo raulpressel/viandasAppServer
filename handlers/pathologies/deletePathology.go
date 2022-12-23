@@ -22,7 +22,7 @@ func DeletePathology(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	patholohyModel, err := dbpathology.GetCategoryById(idPathology)
+	patholohyModel, err := dbpathology.GetPathologyById(idPathology)
 
 	if err != nil {
 		http.Error(rw, "Error al recuperar la patologia de la BD "+err.Error(), http.StatusInternalServerError)
