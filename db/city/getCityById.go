@@ -5,7 +5,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetFoodById(id int) (models.City, error) {
+func GetCityById(id int) (models.City, error) {
 
 	db := db.GetDB()
 

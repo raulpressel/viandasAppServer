@@ -33,7 +33,7 @@ func GetAllDeliveryDriver() (*dtos.DeliveryDriverResponse, error) {
 			return nil, err
 		}
 
-		cityModel, err := dbCity.GetFoodById(addressModel.CityID)
+		cityModel, err := dbCity.GetCityById(addressModel.CityID)
 		if err != nil {
 			return nil, err
 		}

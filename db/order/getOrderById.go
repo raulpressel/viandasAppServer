@@ -69,7 +69,7 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 			return responseOrder, err
 		}
 
-		cityModel, err := dbCity.GetFoodById(addressModel.CityID)
+		cityModel, err := dbCity.GetCityById(addressModel.CityID)
 		if err != nil {
 			return responseOrder, err
 		}

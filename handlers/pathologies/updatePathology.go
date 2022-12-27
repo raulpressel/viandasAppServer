@@ -25,7 +25,7 @@ func UpdatePathology(rw http.ResponseWriter, r *http.Request) {
 
 	var pathologyModel models.Pathology
 
-	pathologyModel, err = dbpathology.GetCategoryById(pathologyDto.Pathology.ID)
+	pathologyModel, err = dbpathology.GetPathologyById(pathologyDto.Pathology.ID)
 
 	if err != nil {
 		http.Error(rw, "Error al recuperar la patologia de la BD "+err.Error(), http.StatusInternalServerError)
