@@ -2,41 +2,18 @@ package db
 
 import (
 	"viandasApp/db"
+	"viandasApp/models"
 )
 
-func UpdateDayOrderAddress(idDayOrder int, idAddress int) (bool, error) {
+func UpdateDayOrderAddress(dayOrderModel models.DayOrder) (bool, error) {
 
 	db := db.GetDB()
 
-	tx := db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
+	err := db.Save(&dayOrderModel)
 
-	if err := tx.Error; err != nil {
-		return false, err
+	if err.Error != nil {
+		return false, err.Error
 	}
-
-	dayOrderModel, err := GetDayOrderById(idDayOrder)
-	if err != nil {
-		tx.Rollback()
-		return false, err
-	}
-
-	if dayOrderModel.ID == 0 {
-		tx.Rollback()
-		return false, err
-	}
-
-	dayOrderModel.AddressID = idAddress
-
-	if err := tx.Save(&dayOrderModel).Error; err != nil {
-		tx.Rollback()
-		return false, err
-	}
-
-	return true, tx.Commit().Error
+	return true, err.Error
 
 }

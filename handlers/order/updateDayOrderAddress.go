@@ -3,7 +3,9 @@ package handlers
 import (
 	"net/http"
 	"strconv"
-	db "viandasApp/db/order"
+	dbClient "viandasApp/db/client"
+	dbOrder "viandasApp/db/order"
+	"viandasApp/handlers"
 )
 
 func UpdateDayOrderAddress(rw http.ResponseWriter, r *http.Request) {
@@ -36,10 +38,51 @@ func UpdateDayOrderAddress(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status, err := db.UpdateDayOrderAddress(idDayOrder, idAddress)
+	usr := handlers.GetUser()
+
+	client, err := dbClient.GetClientByIDUser(usr.ID)
+	if err != nil {
+		http.Error(rw, "Cliente no encontrado", http.StatusBadRequest)
+		return
+	}
+
+	dayOrderModel, err := dbOrder.GetDayOrderById(idDayOrder)
+	if err != nil {
+		http.Error(rw, "no existe la dayorder solicitada", http.StatusBadRequest)
+		return
+	}
+
+	orderModel, err := dbOrder.GetModelOrderById(dayOrderModel.OrderID)
+	if err != nil {
+		http.Error(rw, "la direccion enviada no corresponde al cliente logueado", http.StatusBadRequest)
+		return
+	}
+
+	if orderModel.ClientID != client.Client.ID {
+		http.Error(rw, "la orden no pertenece al cliente logueado", http.StatusBadRequest)
+		return
+	}
+
+	var bandAdd bool
+
+	for _, valor := range client.Client.Address {
+		if valor.ID == idAddress {
+			bandAdd = true
+		}
+
+	}
+
+	if !bandAdd {
+		http.Error(rw, "la direccion enviada no corresponde al cliente logueado", http.StatusBadRequest)
+		return
+	}
+
+	dayOrderModel.AddressID = idAddress
+
+	status, err := dbOrder.UpdateDayOrderAddress(dayOrderModel)
 
 	if err != nil {
-		http.Error(rw, "Orden no encontrada", http.StatusBadRequest)
+		http.Error(rw, "Orden no encontrada", http.StatusInternalServerError)
 		return
 	}
 
