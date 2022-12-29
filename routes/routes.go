@@ -101,6 +101,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/tanda/addTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UploadTanda))).Methods("POST")
 	router.HandleFunc("/tanda/getTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.GetAllTanda))).Methods("GET")
 	router.HandleFunc("/tanda/editTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UpdateTanda))).Methods("PUT")
+	router.HandleFunc("/tanda/assignAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.AssignAddressToTanda))).Methods("POST")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
@@ -108,6 +109,10 @@ func Routes(publicDir string) {
 	var dayModel models.DayMenu
 
 	var pathologyModel models.Pathology
+
+	var tandaAddModel models.TandaAddress
+
+	db.ExistTable(tandaAddModel)
 
 	db.ExistTable(pathologyModel)
 

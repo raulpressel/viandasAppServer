@@ -24,3 +24,8 @@ type TandaRes struct {
 	HourEnd        string            `json:"hourEnd"`
 	DeliveryDriver DeliveryDriverRes `json:"deliveryDriver"`
 }
+
+type TandaAddressRequest struct {
+	IDTanda   int   `json:"idTanda"`
+	IDAddress []int `json:"idAddress"`
+}
