@@ -6,7 +6,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetAllClient() (*[]dtos.ClientResponse, error) {
+func GetAllClient() (*[]dtos.Client, error) {
 
 	db := db.GetDB()
 
@@ -20,9 +20,9 @@ func GetAllClient() (*[]dtos.ClientResponse, error) {
 
 	var address dtos.AddressRespone
 
-	var clientResponse dtos.ClientResponse
+	var clientResponse dtos.Client
 
-	response := []dtos.ClientResponse{}
+	response := []dtos.Client{}
 
 	var cityModel models.City
 
@@ -32,14 +32,14 @@ func GetAllClient() (*[]dtos.ClientResponse, error) {
 
 	for _, client := range modelClient {
 
-		clientResponse.Client.ID = client.ID
-		clientResponse.Client.PhonePrimary = client.PhonePrimary
-		clientResponse.Client.PhoneSecondary = client.PhoneSecondary
-		clientResponse.Client.Name = client.Name
-		clientResponse.Client.LastName = client.LastName
-		clientResponse.Client.ObsClient = client.Observation
-		clientResponse.Client.BornDate = client.BornDate
-		clientResponse.Client.Email = client.Email
+		clientResponse.ID = client.ID
+		clientResponse.PhonePrimary = client.PhonePrimary
+		clientResponse.PhoneSecondary = client.PhoneSecondary
+		clientResponse.Name = client.Name
+		clientResponse.LastName = client.LastName
+		clientResponse.ObsClient = client.Observation
+		clientResponse.BornDate = client.BornDate
+		clientResponse.Email = client.Email
 
 		if err := db.Table("pathologies").
 			Select("pathologies.id, pathologies.description").
@@ -69,7 +69,7 @@ func GetAllClient() (*[]dtos.ClientResponse, error) {
 				}
 			}
 
-			clientResponse.Client.Pathologies = append(clientResponse.Client.Pathologies, pathology)
+			clientResponse.Pathologies = append(clientResponse.Pathologies, pathology)
 
 		}
 
@@ -104,7 +104,7 @@ func GetAllClient() (*[]dtos.ClientResponse, error) {
 			address.City.Description = cityModel.Description
 			address.City.CP = cityModel.CP
 
-			clientResponse.Client.Address = append(clientResponse.Client.Address, address)
+			clientResponse.Address = append(clientResponse.Address, address)
 		}
 
 		response = append(response, clientResponse)
