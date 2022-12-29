@@ -14,13 +14,13 @@ func GetAllClient() (*[]dtos.Client, error) {
 
 	var pathologiesClientModel []models.ClientPathology
 
-	var pathology dtos.PathologyResponse
-
 	var addressesModel []models.Address
+
+	var clientResponse dtos.Client
 
 	var address dtos.AddressRespone
 
-	var clientResponse dtos.Client
+	var pathology dtos.PathologyResponse
 
 	response := []dtos.Client{}
 
@@ -43,7 +43,6 @@ func GetAllClient() (*[]dtos.Client, error) {
 
 		if err := db.Table("pathologies").
 			Select("pathologies.id, pathologies.description").
-			//Where("client_pathologies.client_id = ?", client.ID).
 			Where("pathologies.active = 1").
 			Scan(&pathologiesModel).Error; err != nil {
 			return nil, err
@@ -51,11 +50,12 @@ func GetAllClient() (*[]dtos.Client, error) {
 
 		if err := db.Table("client_pathologies").
 			Select("client_pathologies.id, client_pathologies.pathology_id, client_pathologies.client_id").
-			//Where("client_pathologies.client_id = ?", client.ID).
 			Where("client_pathologies.client_id = ?", client.ID).
 			Scan(&pathologiesClientModel).Error; err != nil {
 			return nil, err
 		}
+
+		var pathologies []dtos.PathologyResponse
 
 		for _, valor := range pathologiesModel {
 
@@ -69,9 +69,11 @@ func GetAllClient() (*[]dtos.Client, error) {
 				}
 			}
 
-			clientResponse.Pathologies = append(clientResponse.Pathologies, pathology)
+			pathologies = append(pathologies, pathology)
 
 		}
+
+		clientResponse.Pathologies = pathologies
 
 		if err := db.Table("addresses").
 			Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id, addresses.favourite").
@@ -82,6 +84,8 @@ func GetAllClient() (*[]dtos.Client, error) {
 			Scan(&addressesModel).Error; err != nil {
 			return nil, err
 		}
+
+		var addresses []dtos.AddressRespone
 
 		for _, valor := range addressesModel {
 
@@ -104,8 +108,10 @@ func GetAllClient() (*[]dtos.Client, error) {
 			address.City.Description = cityModel.Description
 			address.City.CP = cityModel.CP
 
-			clientResponse.Address = append(clientResponse.Address, address)
+			addresses = append(addresses, address)
 		}
+
+		clientResponse.Address = addresses
 
 		response = append(response, clientResponse)
 	}
