@@ -16,8 +16,6 @@ func GetAllClient() (*[]dtos.Client, error) {
 
 	var addressesModel []models.Address
 
-	var clientResponse dtos.Client
-
 	var address dtos.AddressRespone
 
 	var pathology dtos.PathologyResponse
@@ -31,6 +29,8 @@ func GetAllClient() (*[]dtos.Client, error) {
 	err := db.Find(&modelClient).Error
 
 	for _, client := range modelClient {
+
+		var clientResponse dtos.Client
 
 		clientResponse.ID = client.ID
 		clientResponse.PhonePrimary = client.PhonePrimary

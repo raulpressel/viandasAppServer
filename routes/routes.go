@@ -83,19 +83,20 @@ func Routes(publicDir string) {
 	router.HandleFunc("/client/getClient", middlew.CheckDB(middlew.ValidateJWTAdmin(client.GetAllClient))).Methods("GET")
 	//client/getClientByIdUser ruta para devolver el cliente
 
-	router.HandleFunc("/address/addAddress", middlew.CheckDB(address.AddAddress)).Methods("POST")
-	router.HandleFunc("/address/editAddress", middlew.CheckDB(address.UpdateAddress)).Methods("PUT")
-	router.HandleFunc("/address/deleteAddress", middlew.CheckDB(address.DeleteAddress)).Methods("DELETE")
-	router.HandleFunc("/address/setFavouriteAddress", middlew.CheckDB(address.SetFavouriteAddress)).Methods("POST")
+	router.HandleFunc("/address/addAddress", middlew.CheckDB(middlew.ValidateJWT(address.AddAddress))).Methods("POST")
+	router.HandleFunc("/address/editAddress", middlew.CheckDB(middlew.ValidateJWT(address.UpdateAddress))).Methods("PUT")
+	router.HandleFunc("/address/deleteAddress", middlew.CheckDB(middlew.ValidateJWT(address.DeleteAddress))).Methods("DELETE")
+	router.HandleFunc("/address/setFavouriteAddress", middlew.CheckDB(middlew.ValidateJWT(address.SetFavouriteAddress))).Methods("POST")
 
 	router.HandleFunc("/order/uploadOrder", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("POST")
 	router.HandleFunc("/order/getOrderByID", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderById))).Methods("GET")
 	router.HandleFunc("/order/getOrderViewer", middlew.CheckDB(middlew.ValidateJWT(order.GetAllOrder))).Methods("GET")
+	router.HandleFunc("/order/updateDayOrderAddress", middlew.CheckDB(middlew.ValidateJWT(order.UpdateDayOrderAddress))).Methods("GET")
 
 	router.HandleFunc("/deliveryDriver/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
-	router.HandleFunc("/deliveryDriver/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWT(deliveryDriver.GetAllDeliveryDriver))).Methods("GET")
-	router.HandleFunc("/deliveryDriver/editDeliveryDriver", middlew.CheckDB(deliveryDriver.UpdateDeliveryDriver)).Methods("PUT")
-	router.HandleFunc("/deliveryDriver/deleteDeliveryDriver", middlew.CheckDB(deliveryDriver.DeleteDeliveryDriver)).Methods("DELETE")
+	router.HandleFunc("/deliveryDriver/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.GetAllDeliveryDriver))).Methods("GET")
+	router.HandleFunc("/deliveryDriver/editDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UpdateDeliveryDriver))).Methods("PUT")
+	router.HandleFunc("/deliveryDriver/deleteDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.DeleteDeliveryDriver))).Methods("DELETE")
 
 	router.HandleFunc("/tanda/addTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UploadTanda))).Methods("POST")
 	router.HandleFunc("/tanda/getTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.GetAllTanda))).Methods("GET")
