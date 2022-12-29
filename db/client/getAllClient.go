@@ -14,8 +14,6 @@ func GetAllClient() (*[]dtos.Client, error) {
 
 	var pathologiesClientModel []models.ClientPathology
 
-	var addressesModel []models.Address
-
 	var address dtos.AddressRespone
 
 	var pathology dtos.PathologyResponse
@@ -74,6 +72,8 @@ func GetAllClient() (*[]dtos.Client, error) {
 		}
 
 		clientResponse.Pathologies = pathologies
+
+		var addressesModel []models.Address
 
 		if err := db.Table("addresses").
 			Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id, addresses.favourite").
