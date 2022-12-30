@@ -29,3 +29,7 @@ type TandaAddressRequest struct {
 	IDTanda   int   `json:"idTanda"`
 	IDAddress []int `json:"idAddress"`
 }
+
+type TandasRequest struct {
+	IDTanda []int `json:"idTanda"`
+}
