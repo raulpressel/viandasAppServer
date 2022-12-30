@@ -37,7 +37,7 @@ func GetAllClientByTandas(tandas []int) (*[]dtos.Client, error) {
 	var modelClient []models.Client
 
 	err := db.Table("clients").
-		Select("clients.id, clients.name, clients.last_name, clients.email, clients.id_user_kl, clients.phone_primary, clients.phone_secondary, clients.observation, clients.born_date").
+		Select("distinct clients.id, clients.name, clients.last_name, clients.email, clients.id_user_kl, clients.phone_primary, clients.phone_secondary, clients.observation, clients.born_date").
 		Joins("JOIN client_addresses ON client_addresses.client_id = clients.id").
 		Where("client_addresses.address_id IN (select address_id from tanda_addresses where tanda_id IN (?))", tandas).
 		Scan(&modelClient).Error
