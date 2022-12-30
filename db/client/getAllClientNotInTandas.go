@@ -82,6 +82,7 @@ func GetAllClientNotInTandas() (*[]dtos.Client, error) {
 			Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id, addresses.favourite").
 			Joins("left JOIN client_addresses ON client_addresses.address_id = addresses.id").
 			Where("client_addresses.client_id = ?", client.ID).
+			Where("addresses.id NOT IN (select address_id from tanda_addresses)").
 			Where("addresses.active = 1").
 			Order("addresses.favourite desc").
 			Scan(&addressesModel).Error; err != nil {
