@@ -22,19 +22,6 @@ func GetAllClientNotInTandas() (*[]dtos.Client, error) {
 
 	var cityModel models.City
 
-	/* 	var modelTandaAddress []models.TandaAddress
-
-	   	err := db.Find(&modelTandaAddress).Error
-
-	   	var idAddresses []int
-
-	   	for _, val := range modelTandaAddress {
-	   		idAddresses = append(idAddresses, val.AddressID)
-	   	}
-
-
-	   	modelClient, err := GetClientByNotInIdAddress(idAddresses) */
-
 	var modelClient []models.Client
 	err := db.Table("clients").
 		Select("clients.id, clients.name, clients.last_name, clients.email, clients.id_user_kl, clients.phone_primary, clients.phone_secondary, clients.observation, clients.born_date").

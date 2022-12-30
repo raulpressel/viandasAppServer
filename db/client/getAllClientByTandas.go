@@ -22,7 +22,7 @@ func GetAllClientByTandas(tandas []int) (*[]dtos.Client, error) {
 
 	var cityModel models.City
 
-	var modelTandaAddress []models.TandaAddress
+	/* var modelTandaAddress []models.TandaAddress
 
 	err := db.Find(&modelTandaAddress, "tanda_id IN (?)", tandas).Error
 
@@ -32,7 +32,15 @@ func GetAllClientByTandas(tandas []int) (*[]dtos.Client, error) {
 		idAddresses = append(idAddresses, val.AddressID)
 	}
 
-	modelClient, err := GetClientByIdAddress(idAddresses)
+	modelClient, err := GetClientByIdAddress(idAddresses) */
+
+	var modelClient []models.Client
+
+	err := db.Table("clients").
+		Select("clients.id, clients.name, clients.last_name, clients.email, clients.id_user_kl, clients.phone_primary, clients.phone_secondary, clients.observation, clients.born_date").
+		Joins("left JOIN client_addresses ON client_addresses.client_id = clients.id").
+		Where("client_addresses.address_id IN (select address_id from tanda_addresses)").
+		Scan(&modelClient).Error
 
 	for _, client := range modelClient {
 
