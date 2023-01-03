@@ -103,6 +103,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/tanda/getTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.GetAllTanda))).Methods("GET")
 	router.HandleFunc("/tanda/editTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UpdateTanda))).Methods("PUT")
 	router.HandleFunc("/tanda/assignAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.AssignAddressToTanda))).Methods("POST")
+	router.HandleFunc("/tanda/removeAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.RemoveAddressToTanda))).Methods("POST")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn

@@ -26,14 +26,9 @@ func GetClientsByTandas(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		http.Error(rw, "Menu no encontrado", http.StatusBadRequest)
+		http.Error(rw, "Clientes no encontrados", http.StatusInternalServerError)
 		return
 	}
-
-	/* if responseMenuFood == 0 {
-		http.Error(rw, "No hay menus en la BD", http.StatusNotFound)
-		return
-	} */
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
