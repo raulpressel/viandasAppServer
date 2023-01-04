@@ -75,7 +75,7 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 		}
 
 		dayOrder := dtos.DayOrderResponse{
-			ID:          valor.OrderID,
+			ID:          valor.ID,
 			Date:        dayMenuModel.Date,
 			Amount:      valor.Amount,
 			Observation: valor.Observation,
