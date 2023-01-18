@@ -94,6 +94,8 @@ func Routes(publicDir string) {
 	router.HandleFunc("/order/getOrderViewer", middlew.CheckDB(middlew.ValidateJWT(order.GetAllOrder))).Methods("GET")
 	router.HandleFunc("/order/updateDayOrderAddress", middlew.CheckDB(middlew.ValidateJWT(order.UpdateDayOrderAddress))).Methods("GET")
 
+	router.HandleFunc("/order/getOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(order.GetOrders))).Methods("POST")
+
 	router.HandleFunc("/deliveryDriver/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
 	router.HandleFunc("/deliveryDriver/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.GetAllDeliveryDriver))).Methods("GET")
 	router.HandleFunc("/deliveryDriver/editDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UpdateDeliveryDriver))).Methods("PUT")
@@ -104,7 +106,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/tanda/editTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UpdateTanda))).Methods("PUT")
 	router.HandleFunc("/tanda/assignAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.AssignAddressToTanda))).Methods("POST")
 	router.HandleFunc("/tanda/removeAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.RemoveAddressToTanda))).Methods("POST")
-	router.HandleFunc("/tanda/deleteTanda", middlew.CheckDB(middlew.ValidateJWT(tanda.DeleteTanda))).Methods("DELETE")
+	router.HandleFunc("/tanda/deleteTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.DeleteTanda))).Methods("DELETE")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
