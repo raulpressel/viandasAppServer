@@ -23,7 +23,7 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 
 	daysOrderModel := []models.DayOrder{}
 
-	DayOrderResponse := []dtos.DayOrderResponse{}
+	dayOrderResponse := []dtos.DayOrderResponse{}
 
 	var imgCatModel models.LocationImg
 
@@ -109,13 +109,13 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 			},
 		}
 
-		DayOrderResponse = append(DayOrderResponse, dayOrder)
+		dayOrderResponse = append(dayOrderResponse, dayOrder)
 
 	}
 
-	sort.SliceStable(DayOrderResponse, func(i, j int) bool {
+	sort.SliceStable(dayOrderResponse, func(i, j int) bool {
 
-		return DayOrderResponse[i].Date.Before(DayOrderResponse[j].Date)
+		return dayOrderResponse[i].Date.Before(dayOrderResponse[j].Date)
 
 	})
 
@@ -124,7 +124,7 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 	responseOrder.OrderDate = orderModel.OrderDate
 	responseOrder.Status = orderModel.Status
 	responseOrder.Total = orderModel.Total
-	responseOrder.DayOrder = DayOrderResponse
+	responseOrder.DayOrder = dayOrderResponse
 
 	return responseOrder, err
 
