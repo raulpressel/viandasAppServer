@@ -10,6 +10,7 @@ import (
 	dbDeliveryDriver "viandasApp/db/deliveryDriver"
 	dbFood "viandasApp/db/food"
 	dbMenu "viandasApp/db/menu"
+
 	dbVehicle "viandasApp/db/vehicle"
 	"viandasApp/dtos"
 	"viandasApp/models"
@@ -123,9 +124,14 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 			// reemplazar por FIRST o funciones que ya existen
 
-			var modelOrder models.Order
+			/* var modelOrder models.Order
 
 			if err := db.Find(&modelOrder, "id = ?", dayOrder.OrderID).Error; err != nil {
+				return nil, err
+			} */
+
+			modelOrder, err := GetModelOrderById(dayOrder.OrderID)
+			if err != nil {
 				return nil, err
 			}
 
