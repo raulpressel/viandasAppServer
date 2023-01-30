@@ -1,6 +1,17 @@
 package dtos
 
-import "time"
+import (
+	"time"
+)
+
+type ResCantDB struct {
+	ID          int
+	Description string
+	Title       string
+	Color       string
+	Price       float32
+	Cant        int
+}
 
 type OrderRequest struct {
 	IDClient         int                `json:"idClient"`
@@ -49,4 +60,34 @@ type DayOrderResponse struct {
 	Observation string           `json:"observation"`
 	Address     AddressRespone   `json:"address"`
 	Status      string           `json:"status"`
+}
+
+type OrdersResponse struct {
+	TandasTable   TandaTable      `json:"getOrdersResponse"`
+	CategoryTable []CategoryTable `json:"categoryTable"`
+}
+
+type TandaTable struct {
+	TandaTable []Tanda `json:"tandaTable"`
+}
+
+type Tanda struct {
+	Tanda         TandaRes        `json:"tanda"`
+	CategoryTable []CategoryTable `json:"categoryTable"`
+	OrderRes      []OrdersRes     `json:"order"`
+}
+
+type CategoryTable struct {
+	Category CategoryResponse `json:"category"`
+	Cant     int              `json:"cant"`
+}
+
+type OrdersRes struct {
+	ID          int                `json:"id"`
+	OrderDate   time.Time          `json:"date"`
+	Observation string             `json:"observation"`
+	Total       float32            `json:"total"`
+	Status      string             `json:"status"`
+	Client      Client             `json:"client"`
+	DayOrder    []DayOrderResponse `json:"daysOrder"`
 }
