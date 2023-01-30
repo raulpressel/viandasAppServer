@@ -24,7 +24,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 	db := db.GetDB()
 
-	var modelOrder models.Order
+	//var modelOrder models.Order
 
 	//var response dtos.OrdersResponse
 
@@ -122,6 +122,8 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		for _, dayOrder := range modelDayOrder {
 
 			// reemplazar por FIRST o funciones que ya existen
+
+			var modelOrder models.Order
 
 			if err := db.Find(&modelOrder, "id = ?", dayOrder.OrderID).Error; err != nil {
 				return nil, err
