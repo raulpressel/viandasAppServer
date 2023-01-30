@@ -227,13 +227,12 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 		var resCategoryCant []dtos.ResCantDB
 
-		if err := db.Table("tanda_addresses ").
+		if err := db.Table("day_orders").
 			Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
-			Joins("left join day_orders ON tanda_addresses.address_id = day_orders.address_id ").
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 			Joins("left join categories ON categories.id = day_menus.category_id").
 			Where("day_menus.date = ?", date.Format("2006-01-02")).
-			Where("tanda_addresses.tanda_id = ?", tanda.ID).
+			Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID).
 			Where("categories.active = 1").
 			Group("day_menus.category_id").
 			Find(&resCategoryCant).Error; err != nil {
@@ -277,12 +276,12 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 	var resCategoryCant []dtos.ResCantDB
 
-	if err := db.Table("tanda_addresses ").
+	if err := db.Table("day_orders ").
 		Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
-		Joins("left join day_orders ON tanda_addresses.address_id = day_orders.address_id ").
 		Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 		Joins("left join categories ON categories.id = day_menus.category_id").
 		Where("day_menus.date = ?", date.Format("2006-01-02")).
+		Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses)").
 		Where("categories.active = 1").
 		Group("day_menus.category_id").
 		Find(&resCategoryCant).Error; err != nil {
