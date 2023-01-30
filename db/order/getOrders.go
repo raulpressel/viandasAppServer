@@ -111,7 +111,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		if err := db.Table("day_orders").
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id").
 			Joins("left join orders ON orders.id = day_orders.order_id").
-			Where("address_id IN (select tanda_addresses.id from tanda_addresses)").
+			Where("address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID).
 			Where("day_menus.date = ?", date.Format("2006-01-02")).
 			Scan(&modelDayOrder).
 			Error; err != nil {
