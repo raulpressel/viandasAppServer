@@ -63,12 +63,12 @@ type DayOrderResponse struct {
 }
 
 type OrdersResponse struct {
-	TandasTable   TandaTable      `json:"getOrdersResponse"`
-	CategoryTable []CategoryTable `json:"categoryTable"`
+	TandasTable TandaTable `json:"getOrdersResponse"`
 }
 
 type TandaTable struct {
-	TandaTable []Tanda `json:"tandaTable"`
+	TandaTable    []Tanda         `json:"tandaTable"`
+	CategoryTable []CategoryTable `json:"categoryTable"`
 }
 
 type Tanda struct {

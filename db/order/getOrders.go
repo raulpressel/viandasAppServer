@@ -309,9 +309,9 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 	response := dtos.OrdersResponse{
 		TandasTable: dtos.TandaTable{
-			TandaTable: tandasTable,
+			TandaTable:    tandasTable,
+			CategoryTable: cantTotalTable,
 		},
-		CategoryTable: cantTotalTable,
 	}
 
 	/*
