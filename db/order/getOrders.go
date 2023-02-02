@@ -4,12 +4,9 @@ import (
 	"time"
 	"viandasApp/db"
 	dbAddress "viandasApp/db/address"
-	dbCat "viandasApp/db/categories"
 	dbCity "viandasApp/db/city"
 	dbClient "viandasApp/db/client"
 	dbDeliveryDriver "viandasApp/db/deliveryDriver"
-	dbFood "viandasApp/db/food"
-	dbMenu "viandasApp/db/menu"
 
 	dbVehicle "viandasApp/db/vehicle"
 	"viandasApp/dtos"
@@ -108,7 +105,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			return nil, err
 		} */
 
-		if err := db.Table("day_orders").
+		if err := db.Table("day_orders").Distinct().Pluck("day_orders.order_id, day_orders.address_id ", &modelDayOrder).
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id").
 			Joins("left join orders ON orders.id = day_orders.order_id").
 			Where("address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID).
@@ -135,7 +132,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				return nil, err
 			}
 
-			modelDayMenu, err := dbMenu.GetDayMenuById(dayOrder.DayMenuID)
+			/* modelDayMenu, err := dbMenu.GetDayMenuById(dayOrder.DayMenuID)
 			if err != nil {
 				return nil, err
 			}
@@ -148,9 +145,14 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			modelCategory, err := dbCat.GetCategoryById(modelDayMenu.CategoryID)
 			if err != nil {
 				return nil, err
-			}
+			} */
 
 			modelClient, err := dbClient.GetClientById(modelOrder.ClientID)
+			if err != nil {
+				return nil, err
+			}
+
+			pathologies, err := dbClient.GetPathologiesClient(modelClient.ID)
 			if err != nil {
 				return nil, err
 			}
@@ -163,6 +165,41 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			cityOrderModel, err := dbCity.GetCityById(addressOrderModel.CityID)
 			if err != nil {
 				return nil, err
+			}
+
+			var resCategoryCant []dtos.ResCantDB
+
+			if err := db.Table("day_orders").
+				Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
+				Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
+				Joins("left join categories ON categories.id = day_menus.category_id").
+				Joins("left join orders ON orders.id = day_orders.order_id").
+				Where("day_menus.date = ?", date.Format("2006-01-02")).
+				Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID).
+				Where("categories.active = 1").
+				Where("orders.client_id = ?", modelClient.ID).
+				Where("orders.id = ?", modelOrder.ID).
+				Group("day_menus.category_id").
+				Find(&resCategoryCant).Error; err != nil {
+				return nil, err
+			}
+
+			var cantClientTable []dtos.CategoryTable
+
+			for _, res := range resCategoryCant {
+
+				catCliTable := dtos.CategoryTable{
+					Category: dtos.CategoryResponse{
+						ID:          res.ID,
+						Description: res.Description,
+						Title:       res.Title,
+						Price:       res.Price,
+						Color:       res.Color,
+					},
+					Cant: res.Cant,
+				}
+
+				cantClientTable = append(cantClientTable, catCliTable)
 			}
 
 			orderRes := dtos.OrdersRes{
@@ -181,44 +218,24 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 					ObsClient:      modelClient.Observation,
 					BornDate:       modelClient.BornDate,
 					Address:        nil,
-					Pathologies:    nil, //me falta esto//pathology hacer consulta q traiga
+					Pathologies:    pathologies, //me falta esto//pathology hacer consulta q traiga
 				},
-				DayOrder: []dtos.DayOrderResponse{
-					dtos.DayOrderResponse{
-						ID:          dayOrder.ID,
-						Amount:      dayOrder.Amount,
-						Observation: dayOrder.Observation,
-						Status:      dayOrder.Status,
-						Date:        modelDayMenu.Date,
-						Food: dtos.FoodResponse{
-							ID:          modelFood.ID,
-							Title:       modelFood.Title,
-							Description: modelFood.Description,
-						},
-						Category: dtos.CategoryResponse{
-							ID:          modelCategory.ID,
-							Description: modelCategory.Description,
-							Title:       modelCategory.Description,
-							Price:       modelCategory.Price,
-							Color:       modelCategory.Color,
-							//Location:    nil,
-						},
-						Address: dtos.AddressRespone{
-							ID:          addressOrderModel.ID,
-							Street:      addressOrderModel.Street,
-							Number:      addressOrderModel.Number,
-							Floor:       addressOrderModel.Floor,
-							Departament: addressOrderModel.Departament,
-							Observation: addressOrderModel.Observation,
-							Favourite:   addressOrderModel.Favourite,
-							City: dtos.AllCityResponse{
-								ID:          cityOrderModel.ID,
-								Description: cityOrderModel.Description,
-								CP:          cityOrderModel.CP,
-							},
-						},
+				Address: dtos.AddressRespone{
+					ID:          addressOrderModel.ID,
+					Street:      addressOrderModel.Street,
+					Number:      addressOrderModel.Number,
+					Floor:       addressOrderModel.Floor,
+					Departament: addressOrderModel.Departament,
+					Observation: addressOrderModel.Observation,
+					Favourite:   addressOrderModel.Favourite,
+					City: dtos.AllCityResponse{
+						ID:          cityOrderModel.ID,
+						Description: cityOrderModel.Description,
+						CP:          cityOrderModel.CP,
 					},
 				},
+				CategoryTable:         cantClientTable,
+				ObservacionesDayOrder: nil,
 			}
 
 			ordersRes = append(ordersRes, orderRes)
@@ -313,63 +330,6 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			CategoryTable: cantTotalTable,
 		},
 	}
-
-	/*
-
-
-		if err := db.Find(&modelDayMenu, "date = ?", date.Format("2006-01-02")).Error; err != nil {
-			return nil, err
-		}
-
-		for _, dayMenu := range modelDayMenu {
-
-			if err := db.Find(&modelDayOrder, "day_menu_id = ?", dayMenu.ID).Error; err != nil {
-				return nil, err
-			}
-
-			for _, dayOrder := range modelDayOrder {
-				dayOrder.AddressID
-			}
-
-
-		}
-
-			err = db.Table("day_orders").
-				Select("day_orders.id, day_orders.observation, day_orders.amount, day_orders.status, day_orders.address_id, day_orders.day_menu_id").
-				Where("day_orders.order_id = ?", ord.ID).
-				Scan(&daysOrderModel).Error
-
-			dayMenuModel, err := dbMenu.GetDayMenuById(daysOrderModel.DayMenuID)
-			if err != nil {
-				return dtoOrder, err
-			}
-
-			menuModel, err := dbMenu.GetMenuByTurnMenuID(dayMenuModel.TurnMenuID)
-			if err != nil {
-				return dtoOrder, err
-			}
-
-			orders.ID = ord.ID
-			orders.OrderDate = ord.OrderDate
-			orders.Observation = ord.Observation
-			orders.Status = ord.Status
-			orders.Total = ord.Total
-			orders.DateStart = menuModel.DateStart
-			orders.DateEnd = menuModel.DateEnd
-
-			dtoOrder.Order = append(dtoOrder.Order, orders)
-		}
-
-		/* 	for _, valor := range modelAllMenu {
-			id, err := GetIdMenuActive(valor.Menuid)
-			if err != nil {
-				return responseAllMenu, err
-			}
-			if id > 0 {
-				valor.IsCurrent = true
-			}
-			responseAllMenu = append(responseAllMenu, *valor.ToAllMenuResponse())
-		} */
 
 	return &response, db.Error
 

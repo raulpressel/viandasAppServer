@@ -83,11 +83,13 @@ type CategoryTable struct {
 }
 
 type OrdersRes struct {
-	ID          int                `json:"id"`
-	OrderDate   time.Time          `json:"date"`
-	Observation string             `json:"observation"`
-	Total       float32            `json:"total"`
-	Status      string             `json:"status"`
-	Client      Client             `json:"client"`
-	DayOrder    []DayOrderResponse `json:"daysOrder"`
+	ID                    int             `json:"id"`
+	OrderDate             time.Time       `json:"date"`
+	Observation           string          `json:"observation"`
+	Total                 float32         `json:"total"`
+	Status                string          `json:"status"`
+	Client                Client          `json:"client"`
+	CategoryTable         []CategoryTable `json:"categoryTable"`
+	Address               AddressRespone  `json:"address"`
+	ObservacionesDayOrder []string        `json:"observacionesDayOrder"`
 }
