@@ -13,33 +13,20 @@ import (
 	"viandasApp/models"
 )
 
-type Resp struct {
-	Description string
-	Total       int
-}
-
 func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 	db := db.GetDB()
 
-	//var modelOrder models.Order
-
-	//var response dtos.OrdersResponse
-
-	var modelDayOrder []models.DayOrder
+	//var modelDayOrder []models.DayOrder
 
 	modelTanda := []models.Tanda{}
 
-	//modelTandaAddress := []models.TandaAddress{}
-
-	if err := db.Find(&modelTanda, "active = 1").Error; err != nil {
+	if err := db.Find(&modelTanda, "active = 1").
+		Error; err != nil {
 		return nil, err
 	}
 
-	//var tandaTable dtos.Tanda
 	var tandasTable []dtos.Tanda
-
-	//var tandaRes dtos.TandaRes
 
 	for _, tanda := range modelTanda {
 
@@ -99,13 +86,10 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			},
 		}
 
-		//tandasRes = append(tandasRes, tandaRes)
+		var modelDayOrder []models.DayOrder
 
-		/* if err := db.Find(&modelTandaAddress, "tanda_id = ?", tanda.ID).Error; err != nil {
-			return nil, err
-		} */
-
-		if err := db.Table("day_orders").Distinct().Pluck("day_orders.order_id, day_orders.address_id ", &modelDayOrder).
+		if err := db.Table("day_orders").
+			Select("distinct day_orders.order_id, day_orders.address_id ").
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id").
 			Joins("left join orders ON orders.id = day_orders.order_id").
 			Where("address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID).
@@ -119,33 +103,10 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 		for _, dayOrder := range modelDayOrder {
 
-			// reemplazar por FIRST o funciones que ya existen
-
-			/* var modelOrder models.Order
-
-			if err := db.Find(&modelOrder, "id = ?", dayOrder.OrderID).Error; err != nil {
-				return nil, err
-			} */
-
 			modelOrder, err := GetModelOrderById(dayOrder.OrderID)
 			if err != nil {
 				return nil, err
 			}
-
-			/* modelDayMenu, err := dbMenu.GetDayMenuById(dayOrder.DayMenuID)
-			if err != nil {
-				return nil, err
-			}
-
-			modelFood, err := dbFood.GetFoodById(modelDayMenu.FoodID)
-			if err != nil {
-				return nil, err
-			}
-
-			modelCategory, err := dbCat.GetCategoryById(modelDayMenu.CategoryID)
-			if err != nil {
-				return nil, err
-			} */
 
 			modelClient, err := dbClient.GetClientById(modelOrder.ClientID)
 			if err != nil {
@@ -202,6 +163,17 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				cantClientTable = append(cantClientTable, catCliTable)
 			}
 
+			var obsDayOrderClient []string
+
+			if err := db.Table("day_orders").
+				Select("day_orders.observation").
+				Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
+				Where("day_menus.date = ?", date.Format("2006-01-02")).
+				Where("day_orders.order_id = ?", modelOrder.ID).
+				Find(&obsDayOrderClient).Error; err != nil {
+				return nil, err
+			}
+
 			orderRes := dtos.OrdersRes{
 				ID:          modelOrder.ID,
 				OrderDate:   modelOrder.OrderDate,
@@ -218,7 +190,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 					ObsClient:      modelClient.Observation,
 					BornDate:       modelClient.BornDate,
 					Address:        nil,
-					Pathologies:    pathologies, //me falta esto//pathology hacer consulta q traiga
+					Pathologies:    pathologies,
 				},
 				Address: dtos.AddressRespone{
 					ID:          addressOrderModel.ID,
@@ -234,8 +206,8 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 						CP:          cityOrderModel.CP,
 					},
 				},
-				CategoryTable:         cantClientTable,
-				ObservacionesDayOrder: nil,
+				CategoryTable: cantClientTable,
+				Observations:  obsDayOrderClient,
 			}
 
 			ordersRes = append(ordersRes, orderRes)
@@ -282,12 +254,6 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		}
 
 		tandasTable = append(tandasTable, tandaTable)
-
-		//select  category_id, sum(amount)
-		//from tanda_addresses
-		//left join day_orders ON tanda_addresses.address_id = day_orders.address_id
-		//left join day_menus ON day_menus.id = day_orders.day_menu_id
-		//where day_menus.date = "2023-01-25" group by category_id;
 
 	}
 
