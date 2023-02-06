@@ -26,6 +26,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		Where("tandas.active = 1").
 		Where("exists (select tanda_addresses.id from tanda_addresses where tanda_addresses.tanda_id = tandas.id)").
 		Where("exists (select id from day_orders where day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = tandas.id))").
+		Where("exists (select id from day_menus where day_menus.date = ?)", date.Format("2006-01-02")).
 		Scan(&modelTanda).
 		Error; err != nil {
 		return nil, err
