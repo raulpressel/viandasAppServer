@@ -21,7 +21,12 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 	modelTanda := []models.Tanda{}
 
-	if err := db.Find(&modelTanda, "active = 1").
+	if err := db.Table("tandas").
+		Select("tandas.id, tandas.description, tandas.hour_start, tandas.hour_end, tandas.delivery_driver_id").
+		Where("tandas.active = 1").
+		Where("exists (select tanda_addresses.id from tanda_addresses where tanda_addresses.tanda_id = tandas.id)").
+		Where("exists (select id from day_orders where day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = tandas.id))").
+		Scan(&modelTanda).
 		Error; err != nil {
 		return nil, err
 	}
