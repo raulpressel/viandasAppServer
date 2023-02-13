@@ -12,6 +12,7 @@ type PathologyResponse struct {
 	ID          int    `json:"id"`
 	Description string `json:"description"`
 	Checked     bool   `json:"checked"`
+	Color       string `json:"color"`
 }
 
 type Pathology struct {
