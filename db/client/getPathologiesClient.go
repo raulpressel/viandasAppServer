@@ -19,7 +19,7 @@ func GetPathologiesClient(id int) ([]dtos.PathologyResponse, error) {
 	//err := db.Find(&responseModel).Error
 
 	err := db.Table("pathologies").
-		Select("pathologies.id, pathologies.description").
+		Select("pathologies.id, pathologies.description, pathologies.color ").
 		Where("pathologies.active = 1").
 		Where("pathologies.id IN (select pathology_id from client_pathologies where client_id = ?)", id).
 		Scan(&response).Error
