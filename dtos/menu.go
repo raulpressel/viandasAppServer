@@ -81,7 +81,9 @@ type MenuRequest struct {
 }
 
 type MenuByCategoriesRequest struct {
-	IDCategories []int `json:"idCategory"`
+	IDCategories []int  `json:"idCategory"`
+	DateStart    string `json:"dateStart"`
+	DateEnd      string `json:"dateEnd"`
 }
 
 type DayMenuRequest struct {
