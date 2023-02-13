@@ -69,7 +69,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/menu/editMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.UpdateMenu))).Methods("PUT")
 	router.HandleFunc("/menu/deleteMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.DeleteMenu))).Methods("DELETE")
 	router.HandleFunc("/menu/getAllMenu", middlew.CheckDB(middlew.ValidateJWTAdmin(menu.GetAllMenu))).Methods("GET")
-	router.HandleFunc("/menu/getMenuViewer", middlew.CheckDB(menu.GetMenuViewer)).Methods("GET")
+	router.HandleFunc("/menu/getMenuViewer", middlew.CheckDB(menu.GetMenuViewer)).Methods("POST")
 	router.HandleFunc("/menu/getMenuByID", middlew.CheckDB(menu.GetMenuById)).Methods("GET")
 	router.HandleFunc("/menu/getMenuByCategory", middlew.CheckDB(menu.GetMenuByCategory)).Methods("GET")
 	router.HandleFunc("/menu/getMenuByCategories", middlew.CheckDB(middlew.ValidateJWT(menu.GetMenuByCategories))).Methods("POST")
