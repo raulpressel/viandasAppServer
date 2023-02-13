@@ -36,6 +36,10 @@ func UpdatePathology(rw http.ResponseWriter, r *http.Request) {
 		pathologyModel.Description = pathologyDto.Pathology.Description
 	}
 
+	if pathologyDto.Pathology.Color != pathologyModel.Color {
+		pathologyModel.Color = pathologyDto.Pathology.Color
+	}
+
 	pathologyModel.Active = true
 
 	status, err := dbpathology.UpdatePathology(pathologyModel)

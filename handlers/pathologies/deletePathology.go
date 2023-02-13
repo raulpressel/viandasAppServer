@@ -31,8 +31,6 @@ func DeletePathology(rw http.ResponseWriter, r *http.Request) {
 
 	patholohyModel.Active = false
 
-	rw.Header().Add("content-type", "application/json")
-
 	status, err := dbpathology.DeletePathology(patholohyModel)
 
 	if err != nil {

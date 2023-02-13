@@ -4,6 +4,11 @@ import (
 	"time"
 )
 
+type FilterDateMenu struct {
+	DateStart string `json:"dateStart"`
+	DateEnd   string `json:"dateEnd"`
+}
+
 type DayMenuDateDto struct {
 	ID                  int
 	Date                time.Time

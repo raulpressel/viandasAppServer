@@ -11,4 +11,5 @@ type Pathology struct {
 	ID          int `gorm:"primary_key"`
 	Description string
 	Active      bool
+	Color       string
 }
