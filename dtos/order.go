@@ -28,6 +28,10 @@ type DaysOrderRequest struct {
 	Observation string `json:"observation"`
 }
 
+type SaveOrderResponse struct {
+	IDOrder int `json:"idOrder"`
+}
+
 type OrderViewerResponse struct {
 	Order []OrderResponse `json:"orderViewer"`
 }
