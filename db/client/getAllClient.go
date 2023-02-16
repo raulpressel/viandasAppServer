@@ -40,7 +40,7 @@ func GetAllClient() (*[]dtos.Client, error) {
 		clientResponse.Email = client.Email
 
 		if err := db.Table("pathologies").
-			Select("pathologies.id, pathologies.description").
+			Select("pathologies.id, pathologies.description, pathologies.color").
 			Where("pathologies.active = 1").
 			Scan(&pathologiesModel).Error; err != nil {
 			return nil, err
@@ -60,6 +60,7 @@ func GetAllClient() (*[]dtos.Client, error) {
 			pathology.ID = valor.ID
 			pathology.Description = valor.Description
 			pathology.Checked = false
+			pathology.Color = valor.Color
 
 			for _, v := range pathologiesClientModel {
 				if v.ClientID == client.ID && v.PathologyID == valor.ID {
