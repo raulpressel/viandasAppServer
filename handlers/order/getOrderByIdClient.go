@@ -8,7 +8,7 @@ import (
 	dbOrder "viandasApp/db/order"
 )
 
-func getOrderByIdClient(rw http.ResponseWriter, r *http.Request) {
+func GetOrderByIdClient(rw http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("idClient")
 
