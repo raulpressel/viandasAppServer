@@ -6,6 +6,7 @@ import (
 	dbAdd "viandasApp/db/address"
 	dbCat "viandasApp/db/categories"
 	dbCity "viandasApp/db/city"
+	dbClient "viandasApp/db/client"
 	dbFood "viandasApp/db/food"
 	dbImg "viandasApp/db/img"
 	dbMenu "viandasApp/db/menu"
@@ -13,7 +14,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
+func GetOrderById(idOrder int) (*dtos.FullOrderResponse, error) {
 
 	db := db.GetDB()
 
@@ -30,7 +31,7 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 	var imgFoodModel models.LocationImg
 
 	err := db.Table("orders").
-		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status").
+		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status, orders.client_id").
 		Where("orders.id = ?", idOrder).
 		Scan(&orderModel).Error
 
@@ -43,12 +44,12 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 
 		dayMenuModel, err := dbMenu.GetDayMenuById(valor.DayMenuID)
 		if err != nil {
-			return responseOrder, err
+			return nil, err
 		}
 
 		foodModel, err := dbFood.GetFoodById(dayMenuModel.FoodID)
 		if err != nil {
-			return responseOrder, err
+			return nil, err
 		}
 
 		if foodModel.LocationID != nil {
@@ -57,7 +58,7 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 
 		catModel, err := dbCat.GetCategoryById(dayMenuModel.CategoryID)
 		if err != nil {
-			return responseOrder, err
+			return nil, err
 		}
 		if catModel.LocationID != nil {
 			imgCatModel, _ = dbImg.GetLocationImgById(*catModel.LocationID)
@@ -66,12 +67,12 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 		addressModel, err := dbAdd.GetAddressById(valor.AddressID)
 
 		if err != nil {
-			return responseOrder, err
+			return nil, err
 		}
 
 		cityModel, err := dbCity.GetCityById(addressModel.CityID)
 		if err != nil {
-			return responseOrder, err
+			return nil, err
 		}
 
 		dayOrder := dtos.DayOrderResponse{
@@ -119,6 +120,15 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 
 	})
 
+	clientModel, err := dbClient.GetClientById(orderModel.ClientID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	responseOrder.Client.Name = clientModel.Name
+	responseOrder.Client.LastName = clientModel.LastName
+
 	responseOrder.ID = orderModel.ID
 	responseOrder.Observation = orderModel.Observation
 	responseOrder.OrderDate = orderModel.OrderDate
@@ -126,6 +136,6 @@ func GetOrderById(idOrder int) (dtos.FullOrderResponse, error) {
 	responseOrder.Total = orderModel.Total
 	responseOrder.DayOrder = dayOrderResponse
 
-	return responseOrder, err
+	return &responseOrder, err
 
 }

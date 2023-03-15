@@ -22,15 +22,6 @@ func GetOrderById(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Error al convertir el ID", http.StatusInternalServerError)
 		return
 	}
-	/*
-		usr := handlers.GetUser()
-
-		if usr.ID != idUserKL {
-			if !usr.Admin {
-				http.Error(rw, "No tienes los permisos para ver esta información", http.StatusBadRequest)
-				return
-			}
-		} */
 
 	responseOrder, err := db.GetOrderById(idOrder)
 

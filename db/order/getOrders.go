@@ -26,7 +26,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		Where("tandas.active = 1").
 		Where("exists (select tanda_addresses.id from tanda_addresses where tanda_addresses.tanda_id = tandas.id)").
 		Where("exists (select id from day_orders where day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = tandas.id))").
-		Where("exists (select id from day_menus where day_menus.date = ?)", date.Format("2006-01-02")).
+		Where("exists (select id from day_menus where date(day_menus.date) = ?)", date.Format("2006-01-02")).
 		Scan(&modelTanda).
 		Error; err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id").
 			Joins("left join orders ON orders.id = day_orders.order_id").
 			Where("address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID).
-			Where("day_menus.date = ?", date.Format("2006-01-02")).
+			Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
 			Scan(&modelDayOrder).
 			Error; err != nil {
 			return nil, db.Error
@@ -141,7 +141,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 				Joins("left join categories ON categories.id = day_menus.category_id").
 				Joins("left join orders ON orders.id = day_orders.order_id").
-				Where("day_menus.date = ?", date.Format("2006-01-02")).
+				Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
 				Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID).
 				Where("categories.active = 1").
 				Where("orders.client_id = ?", modelClient.ID).
@@ -174,7 +174,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			if err := db.Table("day_orders").
 				Select("day_orders.observation").
 				Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
-				Where("day_menus.date = ?", date.Format("2006-01-02")).
+				Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
 				Where("day_orders.order_id = ?", modelOrder.ID).
 				Find(&obsDayOrderClient).Error; err != nil {
 				return nil, err
@@ -226,7 +226,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 			Joins("left join categories ON categories.id = day_menus.category_id").
-			Where("day_menus.date = ?", date.Format("2006-01-02")).
+			Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
 			Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID).
 			Where("categories.active = 1").
 			Group("day_menus.category_id").
@@ -269,7 +269,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
 		Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 		Joins("left join categories ON categories.id = day_menus.category_id").
-		Where("day_menus.date = ?", date.Format("2006-01-02")).
+		Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
 		Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses)").
 		Where("categories.active = 1").
 		Group("day_menus.category_id").

@@ -2,6 +2,7 @@ package db
 
 import (
 	"viandasApp/db"
+	dbClient "viandasApp/db/client"
 	"viandasApp/dtos"
 	"viandasApp/models"
 )
@@ -24,6 +25,19 @@ func UploadOrder(orderModel models.Order, dayOrderModel []models.DayOrder) (bool
 	}
 
 	if err := tx.Save(&orderModel).Error; err != nil {
+		tx.Rollback()
+		return false, err, nil
+	}
+
+	clientModel, err := dbClient.GetClientById(orderModel.ClientID)
+
+	if err != nil {
+		return false, err, nil
+	}
+
+	clientModel.Observation = orderModel.Observation
+
+	if err := tx.Save(&clientModel).Error; err != nil {
 		tx.Rollback()
 		return false, err, nil
 	}
