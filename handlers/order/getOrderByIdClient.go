@@ -31,10 +31,6 @@ func GetOrderByIdClient(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if responseAllOrdersMenu.Order == nil {
-		http.Error(rw, "No hay ordenes en la BD", http.StatusNotFound)
-	}
-
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(rw).Encode(responseAllOrdersMenu)

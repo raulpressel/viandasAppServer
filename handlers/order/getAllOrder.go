@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	dbClient "viandasApp/db/client"
-	"viandasApp/dtos"
 
 	dbOrder "viandasApp/db/order"
 	"viandasApp/handlers"
@@ -22,17 +21,11 @@ func GetAllOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var responseAllOrdersMenu dtos.OrderViewerResponse
-
 	responseAllOrdersMenu, err := dbOrder.GetAllOrder(client.ID)
 
 	if err != nil {
 		http.Error(rw, "Error a recuperar las ordenes de la BD", http.StatusInternalServerError)
 		return
-	}
-
-	if responseAllOrdersMenu.Order == nil {
-		http.Error(rw, "No hay ordenes en la BD", http.StatusNotFound)
 	}
 
 	rw.Header().Set("Content-Type", "aplication/json")

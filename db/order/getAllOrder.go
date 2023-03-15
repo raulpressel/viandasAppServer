@@ -7,7 +7,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetAllOrder(id int) (dtos.OrderViewerResponse, error) {
+func GetAllOrder(id int) (*dtos.OrderViewerResponse, error) {
 
 	db := db.GetDB()
 
@@ -35,12 +35,12 @@ func GetAllOrder(id int) (dtos.OrderViewerResponse, error) {
 
 		dayMenuModel, err := dbMenu.GetDayMenuById(daysOrderModel.DayMenuID)
 		if err != nil {
-			return dtoOrder, err
+			return nil, err
 		}
 
 		menuModel, err := dbMenu.GetMenuByTurnMenuID(dayMenuModel.TurnMenuID)
 		if err != nil {
-			return dtoOrder, err
+			return nil, err
 		}
 
 		orders.ID = ord.ID
@@ -65,6 +65,6 @@ func GetAllOrder(id int) (dtos.OrderViewerResponse, error) {
 		responseAllMenu = append(responseAllMenu, *valor.ToAllMenuResponse())
 	} */
 
-	return dtoOrder, err
+	return &dtoOrder, err
 
 }
