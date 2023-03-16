@@ -37,6 +37,7 @@ func GetMenuByCategories(cat []int, dateStart time.Time, dateEnd time.Time) (dto
 			Joins("left JOIN foods ON foods.id = day_menus.food_id").
 			Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
 			Joins("left JOIN turn_menus ON turn_menus.id = day_menus.turn_menu_id").
+			Where("foods.title NOT LIKE ?", "%"+"Feriado"+"%").
 			Where("date(day_menus.date) BETWEEN ? and ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")).
 			Where("turn_menus.turn_id = ? and turn_menus.menu_id = ? ", turn, menu).
 			Where("categories.active = 1 and categories.id IN (?)", cat).
