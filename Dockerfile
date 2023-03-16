@@ -3,8 +3,8 @@ FROM golang:alpine
 WORKDIR /app
 COPY . /app
 
-COPY b.jpg /var/www/default/htdocs/public/
-
+COPY .env /app
+COPY cert.pem /app
 
 RUN go build -o main .
 

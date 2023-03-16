@@ -2,10 +2,14 @@ package db
 
 import (
 	"viandasApp/db"
+	dbClient "viandasApp/db/client"
+	"viandasApp/dtos"
 	"viandasApp/models"
 )
 
-func UploadOrder(orderModel models.Order, dayOrderModel []models.DayOrder) (bool, error) {
+func UploadOrder(orderModel models.Order, dayOrderModel []models.DayOrder) (bool, error, *dtos.SaveOrderResponse) {
+
+	var response dtos.SaveOrderResponse
 
 	db := db.GetDB()
 
@@ -17,12 +21,25 @@ func UploadOrder(orderModel models.Order, dayOrderModel []models.DayOrder) (bool
 	}()
 
 	if err := tx.Error; err != nil {
-		return false, err
+		return false, err, nil
 	}
 
 	if err := tx.Save(&orderModel).Error; err != nil {
 		tx.Rollback()
-		return false, err
+		return false, err, nil
+	}
+
+	clientModel, err := dbClient.GetClientById(orderModel.ClientID)
+
+	if err != nil {
+		return false, err, nil
+	}
+
+	clientModel.Observation = orderModel.Observation
+
+	if err := tx.Save(&clientModel).Error; err != nil {
+		tx.Rollback()
+		return false, err, nil
 	}
 
 	for i := range dayOrderModel {
@@ -32,9 +49,11 @@ func UploadOrder(orderModel models.Order, dayOrderModel []models.DayOrder) (bool
 
 	if err := tx.CreateInBatches(&dayOrderModel, len(dayOrderModel)).Error; err != nil {
 		tx.Rollback()
-		return false, err
+		return false, err, nil
 	}
 
-	return true, tx.Commit().Error
+	response.IDOrder = orderModel.ID
+
+	return true, tx.Commit().Error, &response
 
 }

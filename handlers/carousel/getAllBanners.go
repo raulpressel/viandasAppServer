@@ -17,7 +17,7 @@ func GetAllBanners(rw http.ResponseWriter, r *http.Request) {
 	bannerModel, err := db.GetAllBanners()
 
 	if err != nil {
-		http.Error(rw, "no se pudo recuperar los bannaers", http.StatusBadRequest)
+		http.Error(rw, "no se pudo recuperar los banners", http.StatusBadRequest)
 		return
 	}
 

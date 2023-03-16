@@ -6,7 +6,7 @@ import (
 	"viandasApp/dtos"
 )
 
-func GetMenuActive() (dtos.MenuViewer, error) {
+func GetMenuActive(dateStart time.Time, dateEnd time.Time) (dtos.MenuViewer, error) {
 	/* var db = db.ConnectDB()
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close() */
@@ -21,11 +21,11 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 
 	var allMenu dtos.MenuViewer
 
-	var dateTime time.Time = time.Now()
+	//var dateTime time.Time = time.Now()
 
 	err := db.Table("menus").
 		Select("menus.id as menuid, menus.date_start as datestart, menus.date_end as dateend, turns.id as turnid, turns.description as descriptionturn   ").
-		Where("? BETWEEN menus.date_start and menus.date_end", dateTime.Format("2006-01-02")).
+		Where("? BETWEEN date(menus.date_start) and date(menus.date_end) OR ? BETWEEN date(menus.date_start) and date(menus.date_end) OR date(menus.date_start) BETWEEN ? and ? OR date(menus.date_end) BETWEEN ? and ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")).
 		Joins("left JOIN turn_menus on menus.id = turn_menus.menu_id").
 		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
 		Order("turns.id asc").
@@ -57,6 +57,7 @@ func GetMenuActive() (dtos.MenuViewer, error) {
 				Joins("left JOIN foods ON foods.id = day_menus.food_id").
 				Joins("left JOIN location_imgs on foods.location_id = location_imgs.id").
 				Joins("left JOIN turn_menus ON turn_menus.id = day_menus.turn_menu_id").
+				Where("date(day_menus.date) BETWEEN ? and ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")).
 				Where("day_menus.category_id = ? and turn_menus.turn_id = ? and turn_menus.menu_id = ? ", valor.Category, turn, menu).
 				Order("day_menus.date asc").
 				Scan(&foodMenu).Error

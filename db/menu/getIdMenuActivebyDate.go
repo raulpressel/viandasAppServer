@@ -17,7 +17,7 @@ func GetIdMenuActiveByDate(dateStart time.Time, dateEnd time.Time) (int, error) 
 
 	err := db.Table("menus").
 		Select("menus.id as menuid").
-		Where("? BETWEEN menus.date_start and menus.date_end OR ? BETWEEN menus.date_start and menus.date_end OR menus.date_start BETWEEN ? and ? OR menus.date_end BETWEEN ? and ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")).
+		Where("? BETWEEN date(menus.date_start) and date(menus.date_end) OR ? BETWEEN date(menus.date_start) and date(menus.date_end) OR date(menus.date_start) BETWEEN ? and ? OR date(menus.date_end) BETWEEN ? and ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")).
 		Scan(&modelMenu).Error
 
 	return modelMenu.Menuid, err

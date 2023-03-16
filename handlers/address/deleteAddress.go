@@ -25,7 +25,7 @@ func DeleteAddress(rw http.ResponseWriter, r *http.Request) {
 	addressModel, err := dbAddress.GetAddressById(idAddress)
 
 	if err != nil {
-		http.Error(rw, "Error al recuperar la patologia de la BD "+err.Error(), http.StatusInternalServerError)
+		http.Error(rw, "Error al recuperar el modelo de direccion de la BD "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

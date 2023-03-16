@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 	dbClient "viandasApp/db/client"
 	"viandasApp/dtos"
@@ -27,8 +28,8 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 	usr := handlers.GetUser()
 
 	clientModel.IDUserKL = usr.ID
-	clientModel.Name = usr.Name
-	clientModel.LastName = usr.LastName
+	clientModel.Name = strings.Title(usr.Name)
+	clientModel.LastName = strings.Title(usr.LastName)
 	clientModel.Email = usr.Email
 
 	cm, res := dbClient.CheckExistClient(clientModel.IDUserKL)

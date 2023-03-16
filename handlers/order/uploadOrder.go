@@ -80,6 +80,8 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 			dOrderModel.Observation = day.Observation
 
+			dOrderModel.Active = true
+
 			addressModel, err := dbAddress.GetAddressById(day.IDAddress)
 
 			if err != nil {
@@ -99,7 +101,7 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	status, err := dbOrder.UploadOrder(orderModel, dayOrderModel)
+	status, err, orderId := dbOrder.UploadOrder(orderModel, dayOrderModel)
 
 	if err != nil {
 		http.Error(rw, "Ocurrio un error al intentar ingresar el pedido "+err.Error(), http.StatusInternalServerError)
@@ -113,5 +115,6 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Set("Content-type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
+	json.NewEncoder(rw).Encode(orderId)
 
 }

@@ -11,10 +11,8 @@ func GetAllPathology() ([]dtos.PathologyResponse, error) {
 
 	var responseModel []dtos.PathologyResponse
 
-	//err := db.Find(&responseModel).Error
-
 	err := db.Table("pathologies").
-		Select("pathologies.id, pathologies.description").
+		Select("pathologies.id, pathologies.description, pathologies.color").
 		Where("pathologies.active = 1").
 		Scan(&responseModel).Error
 

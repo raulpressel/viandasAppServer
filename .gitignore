@@ -7,3 +7,8 @@ cert.pem
 .env
 
 __debug_bin.exe
+ - copia.env
+Dockerfile
+cert_local.pem
+Dockerfile
+Dockerfile

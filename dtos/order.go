@@ -1,6 +1,17 @@
 package dtos
 
-import "time"
+import (
+	"time"
+)
+
+type ResCantDB struct {
+	ID          int
+	Description string
+	Title       string
+	Color       string
+	Price       float32
+	Cant        int
+}
 
 type OrderRequest struct {
 	IDClient         int                `json:"idClient"`
@@ -15,6 +26,10 @@ type DaysOrderRequest struct {
 	IDDayFood   int    `json:"idDayFood"`
 	IDAddress   int    `json:"idAddress"`
 	Observation string `json:"observation"`
+}
+
+type SaveOrderResponse struct {
+	IDOrder int `json:"idOrder"`
 }
 
 type OrderViewerResponse struct {
@@ -37,6 +52,7 @@ type FullOrderResponse struct {
 	Observation string             `json:"observation"`
 	Total       float32            `json:"total"`
 	Status      string             `json:"status"`
+	Client      Client             `json:"client"`
 	DayOrder    []DayOrderResponse `json:"daysOrder"`
 }
 
@@ -49,4 +65,36 @@ type DayOrderResponse struct {
 	Observation string           `json:"observation"`
 	Address     AddressRespone   `json:"address"`
 	Status      string           `json:"status"`
+}
+
+type OrdersResponse struct {
+	TandasTable TandaTable `json:"getOrdersResponse"`
+}
+
+type TandaTable struct {
+	TandaTable    []Tanda         `json:"tandaTable"`
+	CategoryTable []CategoryTable `json:"categoryTable"`
+}
+
+type Tanda struct {
+	Tanda         TandaRes        `json:"tanda"`
+	CategoryTable []CategoryTable `json:"categoryTable"`
+	OrderRes      []OrdersRes     `json:"order"`
+}
+
+type CategoryTable struct {
+	Category CategoryResponse `json:"category"`
+	Cant     int              `json:"cant"`
+}
+
+type OrdersRes struct {
+	ID            int             `json:"id"`
+	OrderDate     time.Time       `json:"date"`
+	Observation   string          `json:"observation"`
+	Total         float32         `json:"total"`
+	Status        string          `json:"status"`
+	Client        Client          `json:"client"`
+	CategoryTable []CategoryTable `json:"categoryTable"`
+	Address       AddressRespone  `json:"address"`
+	Observations  []string        `json:"observations"`
 }
