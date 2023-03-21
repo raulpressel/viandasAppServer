@@ -26,6 +26,7 @@ func GetAllFood() ([]dtos.AllFoodResponse, error) {
 		Select("foods.id, foods.title, foods.description, location_imgs.location").
 		Joins("left JOIN location_imgs ON foods.location_id = location_imgs.id").
 		Where("foods.active = 1").
+		Order("foods.title asc ").
 		Scan(&modelFood).Error; err != nil {
 		return nil, err
 	}
