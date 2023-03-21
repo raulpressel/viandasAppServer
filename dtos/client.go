@@ -45,4 +45,5 @@ type Client struct {
 	BornDate       time.Time           `json:"bornDate"`
 	Pathologies    []PathologyResponse `json:"pathologies"`
 	Address        []AddressRespone    `json:"addresses"`
+	Note           Note                `json:"note"`
 }

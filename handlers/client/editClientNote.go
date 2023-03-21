@@ -27,7 +27,7 @@ func EditClientNote(rw http.ResponseWriter, r *http.Request) {
 
 	notesClientModel.Note = editNote.Note.Note
 
-	status, err := dbClient.EditClientNote(notesClientModel)
+	status, err := dbClient.EditClientNote(*notesClientModel)
 
 	if err != nil {
 		http.Error(rw, "Ocurrio un error al editar la nota al cliente "+err.Error(), http.StatusInternalServerError)

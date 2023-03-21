@@ -5,13 +5,13 @@ import (
 	"viandasApp/models"
 )
 
-func GetNoteClientById(id int) (*models.ClientNotes, error) {
+func GetNoteByClientId(idClient int) (*models.ClientNotes, error) {
 
 	db := db.GetDB()
 
 	var clientNotesModel models.ClientNotes
 
-	err := db.First(&clientNotesModel, id).Error
+	err := db.First(&clientNotesModel, "client_id = ?", idClient).Error
 
 	return &clientNotesModel, err
 

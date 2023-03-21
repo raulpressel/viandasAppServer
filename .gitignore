@@ -12,3 +12,5 @@ Dockerfile
 cert_local.pem
 Dockerfile
 Dockerfile
+_.env
+cert_prod.pem

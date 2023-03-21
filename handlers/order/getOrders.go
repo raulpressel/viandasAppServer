@@ -17,8 +17,6 @@ func GetOrders(rw http.ResponseWriter, r *http.Request) {
 	var dat daterr
 	err := json.NewDecoder(r.Body).Decode(&dat)
 
-	println(dat.Date)
-
 	date, err := time.Parse(time.RFC3339, dat.Date)
 	if err != nil {
 		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
