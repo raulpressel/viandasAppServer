@@ -110,10 +110,10 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/tanda/removeAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.RemoveAddressToTanda))).Methods("POST")
 	router.HandleFunc("/app/tanda/deleteTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.DeleteTanda))).Methods("DELETE")
 
-	router.HandleFunc("/app/setting/addDisCount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadDiscount))).Methods("POST")
-	router.HandleFunc("/app/setting/getDisCount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.GetAllDiscount))).Methods("GET")
-	router.HandleFunc("/app/setting/editDisCount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateDiscount))).Methods("PUT")
-	router.HandleFunc("/app/setting/deleteDisCount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteDiscount))).Methods("DELETE")
+	router.HandleFunc("/app/setting/addDiscount", middlew.CheckDB((setting.UploadDiscount))).Methods("POST")
+	router.HandleFunc("/app/setting/getDiscount", middlew.CheckDB((setting.GetAllDiscount))).Methods("GET")
+	router.HandleFunc("/app/setting/editDiscount", middlew.CheckDB((setting.UpdateDiscount))).Methods("PUT")
+	router.HandleFunc("/app/setting/deleteDiscount", middlew.CheckDB((setting.DeleteDiscount))).Methods("DELETE")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
