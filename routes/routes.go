@@ -18,6 +18,7 @@ import (
 	menu "viandasApp/handlers/menu"
 	order "viandasApp/handlers/order"
 	pathology "viandasApp/handlers/pathologies"
+	setting "viandasApp/handlers/setting"
 	tanda "viandasApp/handlers/tanda"
 
 	"viandasApp/middlew"
@@ -84,7 +85,6 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/client/getClientByTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(client.GetClientsByTandas))).Methods("POST")
 	router.HandleFunc("/app/client/addNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.AddClientNote))).Methods("POST")
 	router.HandleFunc("/app/client/editNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.EditClientNote))).Methods("POST")
-	//"/tanda/removeAddressToTanda"
 
 	router.HandleFunc("/app/address/addAddress", middlew.CheckDB(middlew.ValidateJWT(address.AddAddress))).Methods("POST")
 	router.HandleFunc("/app/address/editAddress", middlew.CheckDB(middlew.ValidateJWT(address.UpdateAddress))).Methods("PUT")
@@ -96,7 +96,6 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/order/getOrderViewer", middlew.CheckDB(middlew.ValidateJWT(order.GetAllOrder))).Methods("GET")
 	router.HandleFunc("/app/order/getOrderByIdClient", middlew.CheckDB(middlew.ValidateJWTAdmin(order.GetOrderByIdClient))).Methods("GET")
 	router.HandleFunc("/app/order/updateDayOrderAddress", middlew.CheckDB(middlew.ValidateJWT(order.UpdateDayOrderAddress))).Methods("GET")
-
 	router.HandleFunc("/app/order/getOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(order.GetOrders))).Methods("POST")
 
 	router.HandleFunc("/app/deliveryDriver/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
@@ -110,6 +109,11 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/tanda/assignAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.AssignAddressToTanda))).Methods("POST")
 	router.HandleFunc("/app/tanda/removeAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.RemoveAddressToTanda))).Methods("POST")
 	router.HandleFunc("/app/tanda/deleteTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.DeleteTanda))).Methods("DELETE")
+
+	router.HandleFunc("/app/setting/addDisCount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadDiscount))).Methods("POST")
+	router.HandleFunc("/app/setting/getDisCount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.GetAllDiscount))).Methods("GET")
+	router.HandleFunc("/app/setting/editDisCount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateDiscount))).Methods("PUT")
+	router.HandleFunc("/app/setting/deleteDisCount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteDiscount))).Methods("DELETE")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
