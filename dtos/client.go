@@ -20,6 +20,20 @@ type ClientRequest struct {
 	Address        []AddressRequest   `json:"addresses"`
 }
 
+type AddNoteRequest struct {
+	IDClient int  `json:"idClient"`
+	Note     Note `json:"note"`
+}
+
+type EditNoteRequest struct {
+	Note Note `json:"note"`
+}
+
+type Note struct {
+	ID   int    `json:"id"`
+	Note string `json:"note"`
+}
+
 type Client struct {
 	ID             int                 `json:"id"`
 	Name           string              `json:"name"`
@@ -31,4 +45,5 @@ type Client struct {
 	BornDate       time.Time           `json:"bornDate"`
 	Pathologies    []PathologyResponse `json:"pathologies"`
 	Address        []AddressRespone    `json:"addresses"`
+	Note           Note                `json:"note"`
 }

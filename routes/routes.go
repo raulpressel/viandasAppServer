@@ -82,6 +82,8 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/client/getClientByIdUser", middlew.CheckDB(middlew.ValidateJWT(client.GetClientByIDUser))).Methods("GET")
 	router.HandleFunc("/app/client/getClient", middlew.CheckDB(middlew.ValidateJWTAdmin(client.GetAllClient))).Methods("GET")
 	router.HandleFunc("/app/client/getClientByTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(client.GetClientsByTandas))).Methods("POST")
+	router.HandleFunc("/app/client/addNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.AddClientNote))).Methods("POST")
+	router.HandleFunc("/app/client/editNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.EditClientNote))).Methods("POST")
 	//"/tanda/removeAddressToTanda"
 
 	router.HandleFunc("/app/address/addAddress", middlew.CheckDB(middlew.ValidateJWT(address.AddAddress))).Methods("POST")

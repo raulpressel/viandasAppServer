@@ -119,6 +119,8 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				return nil, err
 			}
 
+			notesClientModel, _ := dbClient.GetNoteByClientId(modelClient.ID)
+
 			pathologies, err := dbClient.GetPathologiesClient(modelClient.ID)
 			if err != nil {
 				return nil, err
@@ -196,7 +198,11 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 					ObsClient:      modelClient.Observation,
 					BornDate:       modelClient.BornDate,
 					Address:        nil,
-					Pathologies:    pathologies,
+					Note: dtos.Note{
+						ID:   notesClientModel.ID,
+						Note: notesClientModel.Note,
+					},
+					Pathologies: pathologies,
 				},
 				Address: dtos.AddressRespone{
 					ID:          addressOrderModel.ID,

@@ -39,6 +39,11 @@ func GetAllClient() (*[]dtos.Client, error) {
 		clientResponse.BornDate = client.BornDate
 		clientResponse.Email = client.Email
 
+		notesClientModel, _ := GetNoteByClientId(client.ID)
+
+		clientResponse.Note.ID = notesClientModel.ID
+		clientResponse.Note.Note = notesClientModel.Note
+
 		if err := db.Table("pathologies").
 			Select("pathologies.id, pathologies.description, pathologies.color").
 			Where("pathologies.active = 1").
