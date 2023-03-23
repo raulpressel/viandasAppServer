@@ -21,12 +21,12 @@ func UpdateDiscount(rw http.ResponseWriter, r *http.Request) {
 	discountModel, err := settingDB.GetDiscountById(discountDto.Discount.ID)
 
 	if err != nil {
-		http.Error(rw, "no fue posible recuperar la tanda de la BD", http.StatusInternalServerError)
+		http.Error(rw, "no fue posible recuperar el descuento de la BD", http.StatusInternalServerError)
 		return
 	}
 
 	if discountModel.ID == 0 {
-		http.Error(rw, "no fue posible recuperar la tanda de la BD", http.StatusBadRequest)
+		http.Error(rw, "no fue posible recuperar el descuento de la BD", http.StatusBadRequest)
 		return
 	}
 
@@ -53,12 +53,12 @@ func UpdateDiscount(rw http.ResponseWriter, r *http.Request) {
 	status, err := settingDB.UploadDiscount(discountModel)
 
 	if err != nil {
-		http.Error(rw, "Ocurrio un error al intentar registrar el descuento "+err.Error(), http.StatusInternalServerError)
+		http.Error(rw, "Ocurrio un error al intentar actualizar el descuento "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if !status {
-		http.Error(rw, "no se ha logrado registrar el descuento en la BD", http.StatusInternalServerError)
+		http.Error(rw, "no se ha logrado actualizar el descuento en la BD", http.StatusInternalServerError)
 		return
 	}
 

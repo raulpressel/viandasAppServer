@@ -14,3 +14,17 @@ type Discount struct {
 type DiscountResponse struct {
 	Discount []Discount `json:"discount"`
 }
+
+type ZoneRequest struct {
+	Zone Zone `json:"zone"`
+}
+
+type Zone struct {
+	ID          int     `json:"id"`
+	Description string  `json:"description"`
+	Price       float32 `json:"price"`
+}
+
+type ZoneResponse struct {
+	Zone []Zone `json:"zone"`
+}

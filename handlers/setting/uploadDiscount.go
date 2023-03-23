@@ -27,14 +27,14 @@ func UploadDiscount(rw http.ResponseWriter, r *http.Request) {
 	discountModel.Description = discountDto.Discount.Description
 
 	if discountDto.Discount.Cant < 1 {
-		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
+		http.Error(rw, "Error en los datos recibidos, no puede ser menor a 1 "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	discountModel.Cant = discountDto.Discount.Cant
 
 	if discountDto.Discount.Percentage < 1 {
-		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
+		http.Error(rw, "Error en los datos recibidos, no puede ser menor a 1 "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	if discountDto.Discount.Percentage > 100 {

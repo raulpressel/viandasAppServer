@@ -115,6 +115,11 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/setting/editDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateDiscount))).Methods("PUT")
 	router.HandleFunc("/app/setting/deleteDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteDiscount))).Methods("DELETE")
 
+	router.HandleFunc("/app/setting/addZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadZone))).Methods("POST")
+	router.HandleFunc("/app/setting/getZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.GetAllZone))).Methods("GET")
+	router.HandleFunc("/app/setting/editZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateZone))).Methods("PUT")
+	router.HandleFunc("/app/setting/deleteZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteZone))).Methods("DELETE")
+
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
 
