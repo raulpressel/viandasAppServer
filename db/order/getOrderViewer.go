@@ -7,7 +7,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetAllOrder(id int) (*dtos.OrderViewerResponse, error) {
+func GetOrderViewer(id int) (*dtos.OrderViewerResponse, error) {
 
 	db := db.GetDB()
 

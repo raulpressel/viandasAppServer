@@ -24,7 +24,7 @@ func GetOrderByIdClient(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseAllOrdersMenu, err := dbOrder.GetAllOrder(idClient)
+	responseAllOrdersMenu, err := dbOrder.GetOrderViewer(idClient)
 
 	if err != nil {
 		http.Error(rw, "Error a recuperar las ordenes de la BD", http.StatusInternalServerError)

@@ -10,7 +10,7 @@ import (
 	"viandasApp/handlers"
 )
 
-func GetAllOrder(rw http.ResponseWriter, r *http.Request) {
+func GetOrderViewer(rw http.ResponseWriter, r *http.Request) {
 
 	usr := handlers.GetUser()
 
@@ -21,7 +21,7 @@ func GetAllOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseAllOrdersMenu, err := dbOrder.GetAllOrder(client.ID)
+	responseAllOrdersMenu, err := dbOrder.GetOrderViewer(client.ID)
 
 	if err != nil {
 		http.Error(rw, "Error a recuperar las ordenes de la BD", http.StatusInternalServerError)

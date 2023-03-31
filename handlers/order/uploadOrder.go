@@ -52,6 +52,10 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	orderModel.Total = orderDto.Total
 
+	orderModel.Status = true
+
+	orderModel.Paid = false
+
 	orderModel.OrderDate, err = time.Parse(time.RFC3339, orderDto.Date)
 	if err != nil {
 		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
@@ -81,6 +85,8 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 			dOrderModel.Observation = day.Observation
 
 			dOrderModel.Active = true
+
+			dOrderModel.Status = true
 
 			addressModel, err := dbAddress.GetAddressById(day.IDAddress)
 

@@ -12,7 +12,8 @@ type Order struct {
 	Observation string
 	OrderDate   time.Time
 	Total       float32
-	Status      string
+	Status      bool
+	Paid        bool
 	ClientID    int
 	Client      Client `gorm:"foreignKey:ClientID"`
 }

@@ -13,6 +13,15 @@ type ResCantDB struct {
 	Cant        int
 }
 
+type AllOrderRequest struct {
+	DateStart *string `json:"dateStart"`
+	DateEnd   *string `json:"dateEnd"`
+	Paid      bool    `json:"paid"`
+	NotPaid   bool    `json:"notPaid"`
+	Active    bool    `json:"active"`
+	Inactive  bool    `json:"inactive"`
+}
+
 type OrderRequest struct {
 	IDClient         int                `json:"idClient"`
 	Observation      string             `json:"observation"`
@@ -41,7 +50,7 @@ type OrderResponse struct {
 	OrderDate   time.Time `json:"date"`
 	Observation string    `json:"observation"`
 	Total       float32   `json:"total"`
-	Status      string    `json:"status"`
+	Status      bool      `json:"status"`
 	DateStart   time.Time `json:"dateStart"`
 	DateEnd     time.Time `json:"dateEnd"`
 }
@@ -51,7 +60,7 @@ type FullOrderResponse struct {
 	OrderDate   time.Time          `json:"date"`
 	Observation string             `json:"observation"`
 	Total       float32            `json:"total"`
-	Status      string             `json:"status"`
+	Status      bool               `json:"status"`
 	Client      Client             `json:"client"`
 	DayOrder    []DayOrderResponse `json:"daysOrder"`
 }
@@ -64,13 +73,13 @@ type DayOrderResponse struct {
 	Amount      int              `json:"cant"`
 	Observation string           `json:"observation"`
 	Address     AddressRespone   `json:"address"`
-	Status      string           `json:"status"`
+	Status      bool             `json:"status"`
 }
 
 type OrdersResponse struct {
 	TandasTable TandaTable `json:"getOrdersResponse"`
 }
-
+	
 type TandaTable struct {
 	TandaTable    []Tanda         `json:"tandaTable"`
 	CategoryTable []CategoryTable `json:"categoryTable"`
@@ -92,7 +101,8 @@ type OrdersRes struct {
 	OrderDate     time.Time       `json:"date"`
 	Observation   string          `json:"observation"`
 	Total         float32         `json:"total"`
-	Status        string          `json:"status"`
+	Status        bool            `json:"status"`
+	Paid          bool            `json:"paid"`
 	Client        Client          `json:"client"`
 	CategoryTable []CategoryTable `json:"categoryTable"`
 	Address       AddressRespone  `json:"address"`
