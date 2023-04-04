@@ -84,7 +84,7 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 			dOrderModel.Observation = day.Observation
 
-			dOrderModel.Active = true
+			//dOrderModel.Active = true
 
 			dOrderModel.Status = true
 

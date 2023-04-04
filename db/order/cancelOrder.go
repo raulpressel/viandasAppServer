@@ -25,30 +25,22 @@ func CancelOrder(modelOrder models.Order) (bool, error) {
 		return false, err
 	}
 
-	/* clientModel, err := dbClient.GetClientById(orderModel.ClientID)
+	modelDayOrder, err := GetDayOrdersByOrderIdandDate(modelOrder.ID)
 
 	if err != nil {
-		return false, err, nil
+		return false, err
 	}
 
-	clientModel.Observation = orderModel.Observation
+	for i := range modelDayOrder {
 
-	if err := tx.Save(&clientModel).Error; err != nil {
+		modelDayOrder[i].Status = false
+
+	}
+
+	if err := tx.Save(&modelDayOrder).Error; err != nil {
 		tx.Rollback()
-		return false, err, nil
+		return false, err
 	}
-
-	for i := range dayOrderModel {
-
-		dayOrderModel[i].OrderID = orderModel.ID
-	}
-
-	if err := tx.CreateInBatches(&dayOrderModel, len(dayOrderModel)).Error; err != nil {
-		tx.Rollback()
-		return false, err, nil
-	}
-
-	response.IDOrder = orderModel.ID */
 
 	return true, tx.Commit().Error
 

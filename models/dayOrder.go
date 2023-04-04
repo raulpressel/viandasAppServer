@@ -10,7 +10,7 @@ type DayOrder struct {
 	Observation string
 	Amount      int
 	Status      bool
-	Active      bool
+	//Active      bool
 	AddressID   int
 	Address     Address `gorm:"foreignKey:AddressID"`
 	DayMenuID   int

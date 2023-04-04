@@ -16,9 +16,8 @@ func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool
 
 	query := db.Model(&modelOrder)
 
-	if active == inactive {
-		//query = query.Where("orders.status = 1").Or("orders.status = 0")
-	} else {
+	if active != inactive {
+
 		if active {
 			query = query.Where("orders.status = 1")
 		}
@@ -27,9 +26,8 @@ func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool
 		}
 	}
 
-	if paid == notPaid {
+	if paid != notPaid {
 
-	} else {
 		if paid {
 			query = query.Where("orders.paid = 1")
 		}
