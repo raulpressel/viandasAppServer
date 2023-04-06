@@ -19,7 +19,8 @@ type AllOrderRequest struct {
 	Paid      bool    `json:"paid"`
 	NotPaid   bool    `json:"notPaid"`
 	Active    bool    `json:"active"`
-	Inactive  bool    `json:"inactive"`
+	Finished  bool    `json:"finished"`
+	Cancel    bool    `json:"cancel"`
 }
 
 type OrderRequest struct {
@@ -46,13 +47,13 @@ type OrderViewerResponse struct {
 }
 
 type OrderResponse struct {
-	ID          int       `json:"id"`
-	OrderDate   time.Time `json:"date"`
-	Observation string    `json:"observation"`
-	Total       float32   `json:"total"`
-	Status      bool      `json:"status"`
-	DateStart   time.Time `json:"dateStart"`
-	DateEnd     time.Time `json:"dateEnd"`
+	ID          int         `json:"id"`
+	OrderDate   time.Time   `json:"date"`
+	Observation string      `json:"observation"`
+	Total       float32     `json:"total"`
+	Status      StatusOrder `json:"status"`
+	DateStart   time.Time   `json:"dateStart"`
+	DateEnd     time.Time   `json:"dateEnd"`
 }
 
 type FullOrderResponse struct {
@@ -60,7 +61,7 @@ type FullOrderResponse struct {
 	OrderDate   time.Time          `json:"date"`
 	Observation string             `json:"observation"`
 	Total       float32            `json:"total"`
-	Status      bool               `json:"status"`
+	Status      StatusOrder        `json:"status"`
 	Client      Client             `json:"client"`
 	DayOrder    []DayOrderResponse `json:"daysOrder"`
 }
@@ -79,7 +80,7 @@ type DayOrderResponse struct {
 type OrdersResponse struct {
 	TandasTable TandaTable `json:"getOrdersResponse"`
 }
-	
+
 type TandaTable struct {
 	TandaTable    []Tanda         `json:"tandaTable"`
 	CategoryTable []CategoryTable `json:"categoryTable"`
@@ -101,10 +102,15 @@ type OrdersRes struct {
 	OrderDate     time.Time       `json:"date"`
 	Observation   string          `json:"observation"`
 	Total         float32         `json:"total"`
-	Status        bool            `json:"status"`
+	Status        StatusOrder     `json:"status"`
 	Paid          bool            `json:"paid"`
 	Client        Client          `json:"client"`
 	CategoryTable []CategoryTable `json:"categoryTable"`
 	Address       AddressRespone  `json:"address"`
 	Observations  []string        `json:"observations"`
+}
+
+type StatusOrder struct {
+	ID          int    `json:"id"`
+	Description string `json:"description"`
 }

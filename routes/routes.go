@@ -99,7 +99,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/order/getOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(order.GetOrders))).Methods("POST")
 	router.HandleFunc("/app/order/getAllOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(order.GetAllOrders))).Methods("POST")
 	router.HandleFunc("/app/order/paid", middlew.CheckDB(middlew.ValidateJWTAdmin(order.PaidOrder))).Methods("GET")
-	router.HandleFunc("/app/order/cancel", middlew.CheckDB((order.CancelOrder))).Methods("GET")
+	router.HandleFunc("/app/order/cancel", middlew.CheckDB(middlew.ValidateJWTAdmin(order.CancelOrder))).Methods("GET")
 
 	router.HandleFunc("/app/deliveryDriver/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
 	router.HandleFunc("/app/deliveryDriver/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.GetAllDeliveryDriver))).Methods("GET")
@@ -139,6 +139,15 @@ func Routes(publicDir string) {
 		dbc.Create(&turns)
 
 	}
+
+	var modelStatusOrder models.StatusOrder
+
+	if db.ExistTable(modelStatusOrder) {
+		var status = []models.StatusOrder{{ID: 1, Description: "Activa"}, {ID: 2, Description: "Finalizada"}, {ID: 3, Description: "Cancelada"}}
+		dbc.Create(&status)
+
+	}
+
 	db.ExistTable(turnMenuModel)
 	db.ExistTable(dayModel)
 

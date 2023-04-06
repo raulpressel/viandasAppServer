@@ -49,7 +49,7 @@ func GetAllOrders(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseAllOrdersMenu, err := dbOrder.GetAllOrders(date, dateStart, dateEnd, allOrderDto.Active, allOrderDto.Inactive, allOrderDto.Paid, allOrderDto.NotPaid)
+	responseAllOrdersMenu, err := dbOrder.GetAllOrders(date, dateStart, dateEnd, allOrderDto.Active, allOrderDto.Cancel, allOrderDto.Finished, allOrderDto.Paid, allOrderDto.NotPaid)
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)

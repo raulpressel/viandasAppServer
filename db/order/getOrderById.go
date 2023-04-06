@@ -31,7 +31,7 @@ func GetOrderById(idOrder int) (*dtos.FullOrderResponse, error) {
 	var imgFoodModel models.LocationImg
 
 	err := db.Table("orders").
-		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status, orders.client_id").
+		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status_order_id, orders.client_id").
 		Where("orders.id = ?", idOrder).
 		Scan(&orderModel).Error
 
@@ -126,13 +126,19 @@ func GetOrderById(idOrder int) (*dtos.FullOrderResponse, error) {
 		return nil, err
 	}
 
+	modelStatusOrder, err := GetStatusOrder(orderModel.StatusOrderID)
+	if err != nil {
+		return nil, err
+	}
+
 	responseOrder.Client.Name = clientModel.Name
 	responseOrder.Client.LastName = clientModel.LastName
 
 	responseOrder.ID = orderModel.ID
 	responseOrder.Observation = orderModel.Observation
 	responseOrder.OrderDate = orderModel.OrderDate
-	responseOrder.Status = orderModel.Status
+	responseOrder.Status.ID = modelStatusOrder.ID
+	responseOrder.Status.Description = modelStatusOrder.Description
 	responseOrder.Total = orderModel.Total
 	responseOrder.DayOrder = dayOrderResponse
 

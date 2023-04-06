@@ -52,7 +52,7 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	orderModel.Total = orderDto.Total
 
-	orderModel.Status = true
+	orderModel.StatusOrderID = 1 //se da de alta orden y queda con estado 1 - Activa
 
 	orderModel.Paid = false
 

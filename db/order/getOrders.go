@@ -182,13 +182,21 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				return nil, err
 			}
 
+			modelStatusOrder, err := GetStatusOrder(modelOrder.StatusOrderID)
+			if err != nil {
+				return nil, err
+			}
+
 			orderRes := dtos.OrdersRes{
 				ID:          modelOrder.ID,
 				OrderDate:   modelOrder.OrderDate,
 				Observation: modelOrder.Observation,
 				Total:       modelOrder.Total,
-				Status:      modelOrder.Status,
-				Paid:        modelOrder.Paid,
+				Status: dtos.StatusOrder{
+					ID:          modelStatusOrder.ID,
+					Description: modelStatusOrder.Description,
+				},
+				Paid: modelOrder.Paid,
 				Client: dtos.Client{
 					ID:             modelClient.ID,
 					Name:           modelClient.Name,

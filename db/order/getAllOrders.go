@@ -8,7 +8,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool, inactive bool, paid bool, notPaid bool) (*[]dtos.OrdersRes, error) {
+func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool, cancel bool, finished bool, paid bool, notPaid bool) (*[]dtos.OrdersRes, error) {
 
 	db := db.GetDB()
 
@@ -16,13 +16,16 @@ func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool
 
 	query := db.Model(&modelOrder)
 
-	if active != inactive {
+	if active != finished && finished != cancel && active != cancel {
 
 		if active {
-			query = query.Where("orders.status = 1")
+			query = query.Where("orders.status_order_id = 1")
 		}
-		if inactive {
-			query = query.Where("orders.status = 0")
+		if finished {
+			query = query.Where("orders.status_order_id = 2")
+		}
+		if cancel {
+			query = query.Where("orders.status_order_id = 3")
 		}
 	}
 
@@ -53,13 +56,21 @@ func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool
 			return nil, err
 		}
 
+		modelStatusOrder, err := GetStatusOrder(valor.StatusOrderID)
+		if err != nil {
+			return nil, err
+		}
+
 		orderRes := dtos.OrdersRes{
 			ID:          valor.ID,
 			OrderDate:   valor.OrderDate,
 			Observation: valor.Observation,
 			Total:       valor.Total,
-			Status:      valor.Status,
-			Paid:        valor.Paid,
+			Status: dtos.StatusOrder{
+				ID:          modelStatusOrder.ID,
+				Description: modelStatusOrder.Description,
+			},
+			Paid: valor.Paid,
 			Client: dtos.Client{
 				ID:             modelClient.ID,
 				Name:           modelClient.Name,

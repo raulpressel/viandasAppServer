@@ -34,7 +34,7 @@ func CancelOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	modelOrder.Status = false
+	modelOrder.StatusOrderID = 3 //se cancela orden y queda con estado 3 - Cancelada
 
 	status, err := db.CancelOrder(modelOrder)
 

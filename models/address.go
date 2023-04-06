@@ -10,6 +10,9 @@ type Address struct {
 	Departament string
 	Floor       string
 	Observation string
+	IDZone      int
+	Lat         string
+	Lng         string
 	CityID      int
 	City        City `gorm:"foreignKey:CityID"`
 	Active      bool
