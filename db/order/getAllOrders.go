@@ -16,17 +16,14 @@ func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool
 
 	query := db.Model(&modelOrder)
 
-	if active != finished && finished != cancel && active != cancel {
-
-		if active {
-			query = query.Where("orders.status_order_id = 1")
-		}
-		if finished {
-			query = query.Where("orders.status_order_id = 2")
-		}
-		if cancel {
-			query = query.Where("orders.status_order_id = 3")
-		}
+	if active {
+		query = query.Where("orders.status_order_id = 1")
+	}
+	if finished {
+		query = query.Where("orders.status_order_id = 2")
+	}
+	if cancel {
+		query = query.Where("orders.status_order_id = 3")
 	}
 
 	if paid != notPaid {
