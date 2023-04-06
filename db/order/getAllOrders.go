@@ -16,14 +16,20 @@ func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool
 
 	query := db.Model(&modelOrder)
 
+	var parametro []int
+
 	if active {
-		query = query.Where("orders.status_order_id = 1")
+		parametro = append(parametro, 1)
 	}
 	if finished {
-		query = query.Where("orders.status_order_id = 2")
+		parametro = append(parametro, 2)
 	}
 	if cancel {
-		query = query.Where("orders.status_order_id = 3")
+		parametro = append(parametro, 3)
+	}
+
+	if len(parametro) > 0 {
+		query = query.Where("orders.status_order_id IN ?", parametro)
 	}
 
 	if paid != notPaid {
