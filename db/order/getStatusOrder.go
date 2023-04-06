@@ -10,7 +10,8 @@ func GetStatusOrder(id int) (models.StatusOrder, error) {
 
 	var modelStatusOrder models.StatusOrder
 
-	err := db.First(&modelStatusOrder, id).Error
+	err := db.First(&modelStatusOrder, id).
+		Where("id <> 0").Error
 
 	return modelStatusOrder, err
 
