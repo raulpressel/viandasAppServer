@@ -11,9 +11,25 @@ import (
 
 func GetAllOrders(rw http.ResponseWriter, r *http.Request) {
 
+	status, err := dbOrder.FinishedOrder()
+
+	if err != nil {
+		http.Error(rw, "No fue posible actualizar el estado de las ordenes", http.StatusInternalServerError)
+		return
+	}
+
+	if !status {
+		http.Error(rw, "No fue posible actualizar el estado de las ordenes", http.StatusInternalServerError)
+		return
+	}
+
 	var allOrderDto dtos.AllOrderRequest
 
-	err := json.NewDecoder(r.Body).Decode(&allOrderDto)
+	err = json.NewDecoder(r.Body).Decode(&allOrderDto)
+	if err != nil {
+		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	var dateStart time.Time
 
