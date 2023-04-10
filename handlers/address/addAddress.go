@@ -21,6 +21,7 @@ func AddAddress(rw http.ResponseWriter, r *http.Request) {
 
 	address := addressDto.ToModelAddress()
 
+	
 	address.Active = true
 	address.CityID = 1
 

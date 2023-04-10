@@ -87,6 +87,9 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 			addModel.Floor = addr.Floor
 			addModel.Departament = addr.Departament
 			addModel.Observation = addr.Observation
+			addModel.IDZone = addr.IDZone
+			addModel.Lat = addr.Lat
+			addModel.Lng = addr.Lng
 			addModel.CityID = 1
 			addModel.Favourite = true
 			addModel.Active = true

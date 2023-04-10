@@ -105,6 +105,9 @@ func GetAllClientNotInTandas() (*[]dtos.Client, error) {
 			address.Departament = valor.Departament
 			address.Observation = valor.Observation
 			address.Favourite = valor.Favourite
+			address.IDZone = valor.IDZone
+			address.Lat = valor.Lat
+			address.Lng = valor.Lng
 
 			if err := db.Table("cities").
 				Select("cities.id, cities.description, cities.cp ").

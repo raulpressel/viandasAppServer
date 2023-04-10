@@ -14,6 +14,9 @@ type AddressRequest struct {
 	Street      string `json:"street"`
 	Number      string `json:"number"`
 	Floor       string `json:"floor"`
+	IDZone      int    `json:"idZone"`
+	Lat         string `json:"lat"`
+	Lng         string `json:"lng"`
 	Departament string `json:"departament"`
 	Observation string `json:"observation"`
 }
@@ -24,6 +27,9 @@ type AddressRespone struct {
 	Number      string          `json:"number"`
 	Floor       string          `json:"floor"`
 	Departament string          `json:"departament"`
+	IDZone      int             `json:"idZone"`
+	Lat         string          `json:"lat"`
+	Lng         string          `json:"lng"`
 	Observation string          `json:"observation"`
 	Favourite   bool            `json:"favourite"`
 	City        AllCityResponse `json:"city"`
@@ -38,6 +44,9 @@ func (addressRequest Address) ToModelAddress() *models.Address {
 		Number:      addressRequest.Address.Number,
 		Departament: addressRequest.Address.Departament,
 		Observation: addressRequest.Address.Observation,
+		IDZone:      addressRequest.Address.IDZone,
+		Lat:         addressRequest.Address.Lat,
+		Lng:         addressRequest.Address.Lng,
 	}
 
 	return &addressModel
