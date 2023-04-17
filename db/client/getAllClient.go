@@ -82,7 +82,7 @@ func GetAllClient() (*[]dtos.Client, error) {
 		var addressesModel []models.Address
 
 		if err := db.Table("addresses").
-			Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id, addresses.favourite").
+			Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id, addresses.favourite, addresses.id_zone, addresses.lat, addresses.lng").
 			Joins("left JOIN client_addresses ON client_addresses.address_id = addresses.id").
 			Where("client_addresses.client_id = ?", client.ID).
 			Where("addresses.active = 1").
