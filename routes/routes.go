@@ -18,6 +18,7 @@ import (
 	menu "viandasApp/handlers/menu"
 	order "viandasApp/handlers/order"
 	pathology "viandasApp/handlers/pathologies"
+	setting "viandasApp/handlers/setting"
 	tanda "viandasApp/handlers/tanda"
 
 	"viandasApp/middlew"
@@ -84,7 +85,6 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/client/getClientByTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(client.GetClientsByTandas))).Methods("POST")
 	router.HandleFunc("/app/client/addNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.AddClientNote))).Methods("POST")
 	router.HandleFunc("/app/client/editNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.EditClientNote))).Methods("POST")
-	//"/tanda/removeAddressToTanda"
 
 	router.HandleFunc("/app/address/addAddress", middlew.CheckDB(middlew.ValidateJWT(address.AddAddress))).Methods("POST")
 	router.HandleFunc("/app/address/editAddress", middlew.CheckDB(middlew.ValidateJWT(address.UpdateAddress))).Methods("PUT")
@@ -112,6 +112,16 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/tanda/assignAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.AssignAddressToTanda))).Methods("POST")
 	router.HandleFunc("/app/tanda/removeAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.RemoveAddressToTanda))).Methods("POST")
 	router.HandleFunc("/app/tanda/deleteTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.DeleteTanda))).Methods("DELETE")
+
+	router.HandleFunc("/app/setting/addDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadDiscount))).Methods("POST")
+	router.HandleFunc("/app/setting/getDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.GetAllDiscount))).Methods("GET")
+	router.HandleFunc("/app/setting/editDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateDiscount))).Methods("PUT")
+	router.HandleFunc("/app/setting/deleteDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteDiscount))).Methods("DELETE")
+
+	router.HandleFunc("/app/setting/addZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadZone))).Methods("POST")
+	router.HandleFunc("/app/setting/getZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.GetAllZone))).Methods("GET")
+	router.HandleFunc("/app/setting/editZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateZone))).Methods("PUT")
+	router.HandleFunc("/app/setting/deleteZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteZone))).Methods("DELETE")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
