@@ -5,13 +5,13 @@ import (
 	"viandasApp/models"
 )
 
-func GetDiscountById(id int) (models.Discount, error) {
+func GetDiscounts() ([]models.Discount, error) {
 
 	db := db.GetDB()
 
-	var discountModel models.Discount
+	var discountModel []models.Discount
 
-	err := db.First(&discountModel, id).Error
+	err := db.Find(&discountModel, "active = 1").Error
 
 	return discountModel, err
 
