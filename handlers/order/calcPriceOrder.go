@@ -89,7 +89,7 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 		if day.Amount > 0 {
 
-			//dOrderModel.Amount = day.Amount
+			dOrderModel.Amount = day.Amount
 
 			amount = amount + dOrderModel.Amount
 

@@ -43,7 +43,7 @@ func GetOrderViewer(id int) (*dtos.OrderViewerResponse, error) {
 			return nil, err
 		}
 
-		modelStatusOrder, err := GetStatusOrder(ord.ID)
+		modelStatusOrder, err := GetStatusOrder(ord.StatusOrderID)
 		if err != nil {
 			return nil, err
 		}
