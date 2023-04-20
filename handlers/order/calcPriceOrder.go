@@ -83,8 +83,6 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 	var price float32 = 0.0
 
-	//var priceDelivery float32 = 0.0
-
 	for _, day := range orderDto.DaysOrderRequest {
 
 		if day.Amount > 0 {
