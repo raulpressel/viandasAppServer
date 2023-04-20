@@ -167,7 +167,7 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 	response.Total = (response.SubTotal - response.Discount) + response.Delivery
 
 	rw.Header().Set("Content-type", "application/json")
-	rw.WriteHeader(http.StatusCreated)
+	rw.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(rw).Encode(response)
 
 }
