@@ -170,6 +170,6 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Set("Content-type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
-	json.NewEncoder(rw).Encode(response.Total)
+	json.NewEncoder(rw).Encode(response)
 
 }
