@@ -173,9 +173,13 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 			if allEqual(weeks) {
 				filterDates = append(filterDates, dates...)
 			} else if allEqual(weeks[:3]) {
-				filterDates = append(filterDates, dates[:3]...)
+				if len(weeks[:3]) > 2 {
+					filterDates = append(filterDates, dates[:3]...)
+				}
 			} else if allEqual(weeks[1:]) {
-				filterDates = append(filterDates, dates[1:]...)
+				if len(weeks[:1]) > 2 {
+					filterDates = append(filterDates, dates[1:]...)
+				}
 			}
 		}
 
