@@ -44,6 +44,8 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 	var response responseTotal
 
+	var dates []time.Time
+
 	err := json.NewDecoder(r.Body).Decode(&orderDto)
 
 	if err != nil {
@@ -103,6 +105,8 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			dates = append(dates, dayMenuModel.Date)
+
 			cat, _ := dbCategory.GetCategoryById(dayMenuModel.CategoryID)
 
 			price = price + cat.Price
@@ -142,6 +146,7 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 			response.Delivery = response.Delivery + zoneModel.Price
 
 		}
+
 	}
 
 	discounts, _ := dbSetting.GetDiscounts()
@@ -153,6 +158,56 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 	response.SubTotal = price
 
 	response.Discount = 0.0
+
+	var filterDates []time.Time
+
+	if amount >= 3 && amount < 5 {
+
+		years := make([]int, amount)
+		weeks := make([]int, amount)
+
+		for i, date := range dates {
+			years[i], weeks[i] = date.ISOWeek()
+		}
+		if allEqual(years) {
+			if allEqual(weeks) {
+				filterDates = append(filterDates, dates...)
+			} else if allEqual(weeks[:3]) {
+				filterDates = append(filterDates, dates[:3]...)
+			} else if allEqual(weeks[1:]) {
+				filterDates = append(filterDates, dates[1:]...)
+			}
+		}
+
+		workdays := worksDays(filterDates[0].ISOWeek())
+
+		var diff []string
+
+		for _, a := range workdays {
+			found := false
+			for _, b := range filterDates {
+				if a.Format("2006-01-02") == b.Format("2006-01-02") {
+					found = true
+					break
+				}
+			}
+			if !found {
+				diff = append(diff, a.Format("2006-01-02"))
+			}
+
+		}
+
+		if len(diff) > 0 {
+
+			check, _ := dbMenu.CheckFeriado(diff)
+
+			if check {
+				amount = amount + len(diff)
+			}
+
+		}
+
+	}
 
 	for i := range discounts {
 		if amount >= discounts[i].Cant {
@@ -169,5 +224,37 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-type", "application/json")
 	rw.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(rw).Encode(response)
+
+}
+
+func allEqual(arr []int) bool {
+	for i := 1; i < len(arr); i++ {
+		if arr[i] != arr[0] {
+			return false
+		}
+	}
+	return true
+}
+
+func isWeekday(t time.Time) bool {
+	return t.Weekday() >= time.Monday && t.Weekday() <= time.Friday
+}
+
+func worksDays(year, week int) []time.Time {
+
+	t := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
+
+	daysToAdd := time.Duration((week-1)*7-int(t.Weekday())) * 24 * time.Hour
+
+	firstDay := t.Add(daysToAdd)
+
+	weekdays := make([]time.Time, 0)
+	for i := 0; i < 7; i++ {
+		if isWeekday(firstDay) {
+			weekdays = append(weekdays, firstDay)
+		}
+		firstDay = firstDay.AddDate(0, 0, 1)
+	}
+	return weekdays
 
 }
