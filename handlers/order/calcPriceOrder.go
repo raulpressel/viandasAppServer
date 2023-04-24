@@ -179,32 +179,35 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		workdays := worksDays(filterDates[0].ISOWeek())
+		if len(filterDates) > 0 {
 
-		var diff []string
+			workdays := worksDays(filterDates[0].ISOWeek())
 
-		for _, a := range workdays {
-			found := false
-			for _, b := range filterDates {
-				if a.Format("2006-01-02") == b.Format("2006-01-02") {
-					found = true
-					break
+			var diff []string
+
+			for _, a := range workdays {
+				found := false
+				for _, b := range filterDates {
+					if a.Format("2006-01-02") == b.Format("2006-01-02") {
+						found = true
+						break
+					}
 				}
-			}
-			if !found {
-				diff = append(diff, a.Format("2006-01-02"))
-			}
+				if !found {
+					diff = append(diff, a.Format("2006-01-02"))
+				}
 
-		}
-
-		if len(diff) > 0 {
-
-			check, _ := dbMenu.CheckFeriado(diff)
-
-			if check {
-				amount = amount + len(diff)
 			}
 
+			if len(diff) > 0 {
+
+				check, _ := dbMenu.CheckFeriado(diff)
+
+				if check {
+					amount = amount + len(diff)
+				}
+
+			}
 		}
 
 	}
