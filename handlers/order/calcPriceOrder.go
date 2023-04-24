@@ -161,7 +161,7 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 	var filterDates []time.Time
 
-	if amount >= 3 && amount < 5 {
+	if len(dates) >= 3 && len(dates) < 5 {
 
 		years := make([]int, amount)
 		weeks := make([]int, amount)
