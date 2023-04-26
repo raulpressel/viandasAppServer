@@ -11,21 +11,11 @@ import (
 
 func GetAllOrders(rw http.ResponseWriter, r *http.Request) {
 
-	status, err := dbOrder.FinishedOrder()
-
-	if err != nil {
-		http.Error(rw, "No fue posible actualizar el estado de las ordenes", http.StatusInternalServerError)
-		return
-	}
-
-	if !status {
-		http.Error(rw, "No fue posible actualizar el estado de las ordenes", http.StatusInternalServerError)
-		return
-	}
+	dbOrder.FinishedOrder()
 
 	var allOrderDto dtos.AllOrderRequest
 
-	err = json.NewDecoder(r.Body).Decode(&allOrderDto)
+	err := json.NewDecoder(r.Body).Decode(&allOrderDto)
 	if err != nil {
 		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
@@ -55,17 +45,12 @@ func GetAllOrders(rw http.ResponseWriter, r *http.Request) {
 
 	}
 
-	if err != nil {
-		http.Error(rw, "Error a recuperar las ordenes de la BD", http.StatusInternalServerError)
-		return
-	}
-
-	if err != nil {
-		http.Error(rw, "Error a recuperar las ordenes de la BD", http.StatusInternalServerError)
-		return
-	}
-
 	responseAllOrdersMenu, err := dbOrder.GetAllOrders(date, dateStart, dateEnd, allOrderDto.Active, allOrderDto.Cancel, allOrderDto.Finished, allOrderDto.Paid, allOrderDto.NotPaid)
+
+	if err != nil {
+		http.Error(rw, "Error a recuperar las ordenes de la BD", http.StatusInternalServerError)
+		return
+	}
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)

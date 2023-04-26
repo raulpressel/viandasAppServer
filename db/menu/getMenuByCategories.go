@@ -6,7 +6,7 @@ import (
 	"viandasApp/dtos"
 )
 
-func GetMenuByCategories(cat []int, dateStart time.Time, dateEnd time.Time) (dtos.MenuResponse, error) {
+func GetMenuByCategories(cat []int, dateStart time.Time, dateEnd time.Time) (*dtos.MenuResponse, error) {
 
 	db := db.GetDB()
 
@@ -25,6 +25,10 @@ func GetMenuByCategories(cat []int, dateStart time.Time, dateEnd time.Time) (dto
 		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
 		Order("turns.id asc").
 		Scan(&modelMenu).Error
+
+	if len(modelMenu) < 1 {
+		return nil, nil
+	}
 
 	for _, valor := range modelMenu {
 
@@ -91,6 +95,6 @@ func GetMenuByCategories(cat []int, dateStart time.Time, dateEnd time.Time) (dto
 		}
 	}
 
-	return allMenu, err
+	return &allMenu, err
 
 }

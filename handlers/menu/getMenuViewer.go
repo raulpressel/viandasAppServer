@@ -34,12 +34,7 @@ func GetMenuViewer(rw http.ResponseWriter, r *http.Request) {
 	responseMenuFood, err := db.GetMenuActive(dateStart, dateEnd)
 
 	if err != nil {
-		http.Error(rw, "Menu no encontrado", http.StatusBadRequest)
-		return
-	}
-
-	if responseMenuFood.ID == 0 {
-		http.Error(rw, "No hay menus en la BD", http.StatusNotFound)
+		http.Error(rw, "Error al recuperar el Menu del servidor", http.StatusInternalServerError)
 		return
 	}
 

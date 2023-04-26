@@ -6,10 +6,7 @@ import (
 	"viandasApp/dtos"
 )
 
-func GetMenuActive(dateStart time.Time, dateEnd time.Time) (dtos.MenuViewer, error) {
-	/* var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close() */
+func GetMenuActive(dateStart time.Time, dateEnd time.Time) (*dtos.MenuViewer, error) {
 
 	db := db.GetDB()
 
@@ -21,8 +18,6 @@ func GetMenuActive(dateStart time.Time, dateEnd time.Time) (dtos.MenuViewer, err
 
 	var allMenu dtos.MenuViewer
 
-	//var dateTime time.Time = time.Now()
-
 	err := db.Table("menus").
 		Select("menus.id as menuid, menus.date_start as datestart, menus.date_end as dateend, turns.id as turnid, turns.description as descriptionturn   ").
 		Where("? BETWEEN date(menus.date_start) and date(menus.date_end) OR ? BETWEEN date(menus.date_start) and date(menus.date_end) OR date(menus.date_start) BETWEEN ? and ? OR date(menus.date_end) BETWEEN ? and ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")).
@@ -31,8 +26,9 @@ func GetMenuActive(dateStart time.Time, dateEnd time.Time) (dtos.MenuViewer, err
 		Order("turns.id asc").
 		Scan(&modelMenu).Error
 
-	/* 	subQuery1 := db.Model(&models.Menu{}).Where("? BETWEEN menus.date_start and menus.date_end", dateTime.Format("2006-01-02"))
-	   	fmt.Println(subQuery1) */
+	if len(modelMenu) < 1 {
+		return nil, nil
+	}
 
 	for _, valor := range modelMenu {
 
@@ -113,6 +109,6 @@ func GetMenuActive(dateStart time.Time, dateEnd time.Time) (dtos.MenuViewer, err
 
 	}
 
-	return allMenu, err
+	return &allMenu, err
 
 }
