@@ -17,7 +17,7 @@ func GetOrderViewer(rw http.ResponseWriter, r *http.Request) {
 	client, valid := dbClient.CheckExistClient(usr.ID)
 
 	if !valid {
-		http.Error(rw, "Error al recuperar el ID del cliente ", http.StatusInternalServerError)
+		//http.Error(rw, "Error al recuperar el ID del cliente ", http.StatusInternalServerError)
 		return
 	}
 
