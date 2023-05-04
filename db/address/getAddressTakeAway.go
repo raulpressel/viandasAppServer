@@ -13,7 +13,7 @@ func GetAddressTakeAway() (*dtos.AddressRespone, error) {
 
 	var addressModel models.Address
 
-	err := db.First(&addressModel, 1).Error
+	err := db.First(&addressModel, 100).Error
 
 	cityModel, err := dbCity.GetCityById(addressModel.CityID)
 	if err != nil {

@@ -20,8 +20,6 @@ func AddressTakeAway(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	addressModel.ID = addressDto.ID
-
 	if addressDto.ID > 0 {
 		addressModel, err = dbAddress.GetAddressById(addressDto.ID)
 		if err != nil {
@@ -29,7 +27,7 @@ func AddressTakeAway(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
+	addressModel.ID = 100
 	addressModel.Street = addressDto.Street
 	addressModel.Floor = addressDto.Floor
 	addressModel.Number = addressDto.Number
