@@ -18,7 +18,7 @@ func UpdateAddress(rw http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&addressDto)
 
 	if err != nil {
-		http.Error(rw, "Error en los datos recibidos "+err.Error(), 400)
+		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
 	}
 

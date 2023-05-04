@@ -105,12 +105,6 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			return nil, db.Error
 		}
 
-		if len(modelDayOrder) < 1 {
-
-			return nil, err
-
-		}
-
 		var ordersRes []dtos.OrdersRes
 
 		for _, dayOrder := range modelDayOrder {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	"viandasApp/db"
 	dbAddress "viandasApp/db/address"
 	dbClient "viandasApp/db/client"
 	dbMenu "viandasApp/db/menu"
@@ -29,10 +28,6 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	db.ExistTable(orderModel)
-
-	db.ExistTable(dOrderModel)
 
 	clientModel, err := dbClient.GetClientById(orderDto.IDClient)
 

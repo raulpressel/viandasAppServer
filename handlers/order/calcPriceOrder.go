@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 	"sort"
 	"time"
@@ -109,7 +110,7 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 			cat, _ := dbCategory.GetCategoryById(dayMenuModel.CategoryID)
 
-			price = price + cat.Price
+			price = price + (cat.Price * float32(dOrderModel.Amount))
 
 			dOrderModel.DayMenuID = day.IDDayFood
 
@@ -225,6 +226,10 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+
+	redon := math.RoundToEven(float64(response.Discount))
+
+	response.Discount = float32(redon)
 
 	response.Total = (response.SubTotal - response.Discount) + response.Delivery
 

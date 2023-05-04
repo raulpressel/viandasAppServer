@@ -123,6 +123,8 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/setting/getZone", middlew.CheckDB((setting.GetAllZone))).Methods("GET")
 	router.HandleFunc("/app/setting/editZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateZone))).Methods("PUT")
 	router.HandleFunc("/app/setting/deleteZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteZone))).Methods("DELETE")
+	router.HandleFunc("/app/setting/getAddressTakeAway", middlew.CheckDB((setting.GetAddressTakeAway))).Methods("GET")
+	router.HandleFunc("/app/setting/editAddressTakeAway", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.AddressTakeAway))).Methods("POST")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
@@ -133,9 +135,29 @@ func Routes(publicDir string) {
 
 	var tandaAddModel models.TandaAddress
 
+	var orderModel models.Order
+
+	var dOrderModel models.DayOrder
+
+	db.ExistTable(orderModel)
+
+	db.ExistTable(dOrderModel)
+
 	db.ExistTable(tandaAddModel)
 
 	db.ExistTable(pathologyModel)
+
+	var discountModel models.Discount
+
+	db.ExistTable(discountModel)
+
+	var zoneModel models.Zone
+
+	db.ExistTable(zoneModel)
+
+	var notesClientModel models.ClientNotes
+
+	db.ExistTable(notesClientModel)
 
 	var cityModel models.City
 
