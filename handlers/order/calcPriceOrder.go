@@ -26,6 +26,26 @@ var priceTable = []struct {
 	{5, 6, 2.0},
 	{7, 8, 2.5},
 	{9, 10, 3.0},
+	{11, 12, 3.5},
+	{13, 14, 4.0},
+	{15, 16, 4.5},
+	{17, 18, 5.0},
+	{19, 20, 5.5},
+	{21, 22, 6.0},
+	{23, 24, 6.5},
+	{25, 26, 7.0},
+	{27, 28, 7.5},
+	{29, 30, 8.0},
+	{31, 32, 8.5},
+	{33, 34, 9.0},
+	{35, 36, 9.5},
+	{37, 38, 10.0},
+	{39, 40, 10.5},
+	{41, 42, 11.0},
+	{43, 44, 11.5},
+	{45, 46, 12.0},
+	{47, 48, 12.5},
+	{49, 50, 13.0},
 }
 
 type responseTotal struct {
@@ -120,31 +140,35 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 			dOrderModel.Status = true
 
-			addressModel, err := dbAddress.GetAddressById(day.IDAddress)
+			if day.IDAddress == 100 {
 
-			if err != nil {
-				http.Error(rw, "Ocurrio un error al obtener el ID de la direccion "+err.Error(), http.StatusInternalServerError)
-				return
-			}
+				addressModel, err := dbAddress.GetAddressById(day.IDAddress)
 
-			if addressModel.ID == 0 {
-				http.Error(rw, "La direccion enviada no existe ", http.StatusBadRequest)
-				return
-			}
-
-			zoneModel, _ := dbSetting.GetZoneById(addressModel.IDZone)
-
-			var priceFactor float32 = 1.0
-			for _, entry := range priceTable {
-				if day.Amount >= entry.MinAmount && day.Amount <= entry.MaxAmount {
-					priceFactor = entry.PriceFactor
-					break
+				if err != nil {
+					http.Error(rw, "Ocurrio un error al obtener el ID de la direccion "+err.Error(), http.StatusInternalServerError)
+					return
 				}
+
+				if addressModel.ID == 0 {
+					http.Error(rw, "La direccion enviada no existe ", http.StatusBadRequest)
+					return
+				}
+
+				zoneModel, _ := dbSetting.GetZoneById(addressModel.IDZone)
+
+				var priceFactor float32 = 1.0
+				for _, entry := range priceTable {
+					if day.Amount >= entry.MinAmount && day.Amount <= entry.MaxAmount {
+						priceFactor = entry.PriceFactor
+						break
+					}
+				}
+
+				zoneModel.Price *= priceFactor
+
+				response.Delivery = response.Delivery + zoneModel.Price
+
 			}
-
-			zoneModel.Price *= priceFactor
-
-			response.Delivery = response.Delivery + zoneModel.Price
 
 		}
 
