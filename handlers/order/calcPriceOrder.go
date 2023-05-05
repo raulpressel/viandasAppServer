@@ -140,7 +140,7 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 			dOrderModel.Status = true
 
-			if day.IDAddress == 100 {
+			if day.IDAddress != 100 {
 
 				addressModel, err := dbAddress.GetAddressById(day.IDAddress)
 
