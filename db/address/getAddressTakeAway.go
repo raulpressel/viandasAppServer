@@ -13,7 +13,9 @@ func GetAddressTakeAway() (*dtos.AddressRespone, error) {
 
 	var addressModel models.Address
 
-	err := db.First(&addressModel, 100).Error
+	if err := db.First(&addressModel, 100).Error; err != nil {
+		return nil, err
+	}
 
 	cityModel, err := dbCity.GetCityById(addressModel.CityID)
 	if err != nil {
@@ -37,6 +39,6 @@ func GetAddressTakeAway() (*dtos.AddressRespone, error) {
 		},
 	}
 
-	return &response, err
+	return &response, nil
 
 }
