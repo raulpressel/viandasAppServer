@@ -3,12 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	db "viandasApp/db/setting"
+	db "viandasApp/db/address"
 )
 
 func GetAddressTakeAway(rw http.ResponseWriter, r *http.Request) {
 
-	responseModel, err := db.GetAllZone()
+	responseModel, err := db.GetAddressTakeAway()
 
 	if err != nil {
 		http.Error(rw, "no fue posible recuperar la dirección de take away", http.StatusBadRequest)
