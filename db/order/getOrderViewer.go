@@ -24,6 +24,7 @@ func GetOrderViewer(id int) (*dtos.OrderViewerResponse, error) {
 	err := db.Table("orders").
 		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status_order_id").
 		Where("orders.client_id = ?", id).
+		Order("orders.order_date desc").
 		Scan(&modelOrder).Error
 
 	for _, ord := range modelOrder {
