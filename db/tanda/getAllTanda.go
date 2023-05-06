@@ -18,30 +18,38 @@ func GetAllTanda() (*dtos.TandaResponse, error) {
 
 	var allTanda dtos.TandaResponse
 
-	if err := db.Find(&modelTanda, "active = 1").Error; err != nil {
+	if err := db.Find(&modelTanda, "active = 1 AND  id <> 100").Error; err != nil {
 		return nil, err
 	}
 
 	for _, valor := range modelTanda {
 
-		deliveryDriverModel, err := dbDeliveryDriver.GetDeliveryDriverByID(valor.DeliveryDriverID)
-		if err != nil {
-			return nil, err
-		}
+		var deliveryDriverModel models.DeliveryDriver
+		var vehicleModel models.Vehicle
+		var cityModel models.City
+		var addressModel models.Address
 
-		addressModel, err := dbAddress.GetAddressById(deliveryDriverModel.AddressID)
-		if err != nil {
-			return nil, err
-		}
+		if valor.DeliveryDriverID > 0 {
 
-		vehicleModel, err := dbVehicle.GetVehicleByID(deliveryDriverModel.VehicleID)
-		if err != nil {
-			return nil, err
-		}
+			deliveryDriverModel, err := dbDeliveryDriver.GetDeliveryDriverByID(valor.DeliveryDriverID)
+			if err != nil {
+				return nil, err
+			}
 
-		cityModel, err := dbCity.GetCityById(addressModel.CityID)
-		if err != nil {
-			return nil, err
+			addressModel, err := dbAddress.GetAddressById(deliveryDriverModel.AddressID)
+			if err != nil {
+				return nil, err
+			}
+
+			vehicleModel, err = dbVehicle.GetVehicleByID(deliveryDriverModel.VehicleID)
+			if err != nil {
+				return nil, err
+			}
+
+			cityModel, err = dbCity.GetCityById(addressModel.CityID)
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		tanda := dtos.TandaRes{

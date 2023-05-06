@@ -24,8 +24,8 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 	if err := db.Table("tandas").
 		Select("tandas.id, tandas.description, tandas.hour_start, tandas.hour_end, tandas.delivery_driver_id").
 		Where("tandas.active = 1").
-		Where("exists (select tanda_addresses.id from tanda_addresses where tanda_addresses.tanda_id = tandas.id)").
-		Where("exists (select id from day_orders where day_orders.status = 1 and day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = tandas.id))").
+		//Where("exists (select tanda_addresses.id from tanda_addresses where tanda_addresses.tanda_id = tandas.id)").
+		Where("exists (select id from day_orders where day_orders.status = 1 and (day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = tandas.id) OR day_orders.address_id = 100))").
 		Where("exists (select id from day_menus where date(day_menus.date) = ?)", date.Format("2006-01-02")).
 		Scan(&modelTanda).
 		Error; err != nil {
@@ -36,27 +36,36 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 	for _, tanda := range modelTanda {
 
-		deliveryDriverModel, err := dbDeliveryDriver.GetDeliveryDriverByID(tanda.DeliveryDriverID)
-		if err != nil {
-			return nil, err
+		var deliveryDriverModel models.DeliveryDriver
+		var vehicleModel models.Vehicle
+		var cityModel models.City
+		var addressModel models.Address
+		var tandaRes dtos.TandaRes
+
+		if tanda.ID != 100 {
+
+			deliveryDriverModel, err := dbDeliveryDriver.GetDeliveryDriverByID(tanda.DeliveryDriverID)
+			if err != nil {
+				return nil, err
+			}
+
+			addressModel, err = dbAddress.GetAddressById(deliveryDriverModel.AddressID)
+			if err != nil {
+				return nil, err
+			}
+
+			vehicleModel, err = dbVehicle.GetVehicleByID(deliveryDriverModel.VehicleID)
+			if err != nil {
+				return nil, err
+			}
+
+			cityModel, err = dbCity.GetCityById(addressModel.CityID)
+			if err != nil {
+				return nil, err
+			}
 		}
 
-		addressModel, err := dbAddress.GetAddressById(deliveryDriverModel.AddressID)
-		if err != nil {
-			return nil, err
-		}
-
-		vehicleModel, err := dbVehicle.GetVehicleByID(deliveryDriverModel.VehicleID)
-		if err != nil {
-			return nil, err
-		}
-
-		cityModel, err := dbCity.GetCityById(addressModel.CityID)
-		if err != nil {
-			return nil, err
-		}
-
-		tandaRes := dtos.TandaRes{
+		tandaRes = dtos.TandaRes{
 			ID:          tanda.ID,
 			Description: tanda.Description,
 			HourStart:   tanda.HourStart,
@@ -92,7 +101,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			},
 		}
 
-		var modelDayOrder []models.DayOrder
+		/* var modelDayOrder []models.DayOrder
 
 		if err := db.Table("day_orders").
 			Select("distinct day_orders.order_id, day_orders.address_id ").
@@ -102,6 +111,24 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
 			Scan(&modelDayOrder).
 			Error; err != nil {
+			return nil, db.Error
+		} */
+
+		modelDayOrder := []models.DayOrder{}
+
+		query := db.Model(&modelDayOrder).
+			Select("distinct day_orders.order_id, day_orders.address_id ").
+			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id").
+			Joins("left join orders ON orders.id = day_orders.order_id").
+			Where("date(day_menus.date) = ?", date.Format("2006-01-02"))
+
+		if tanda.ID != 100 {
+			query = query.Where("address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID)
+		} else {
+			query = query.Where("address_id = 100")
+		}
+
+		if err := query.Find(&modelDayOrder).Error; err != nil {
 			return nil, db.Error
 		}
 
@@ -138,7 +165,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 			var resCategoryCant []dtos.ResCantDB
 
-			if err := db.Table("day_orders").
+			/* if err := db.Table("day_orders").
 				Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
 				Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 				Joins("left join categories ON categories.id = day_menus.category_id").
@@ -151,6 +178,28 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				Group("day_menus.category_id").
 				Find(&resCategoryCant).Error; err != nil {
 				return nil, err
+			} */
+
+			query := db.Table("day_orders").
+				Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
+				Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
+				Joins("left join categories ON categories.id = day_menus.category_id").
+				Joins("left join orders ON orders.id = day_orders.order_id").
+				Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
+				Where("categories.active = 1").
+				Where("orders.client_id = ?", modelClient.ID).
+				Where("orders.id = ?", modelOrder.ID)
+
+			if tanda.ID != 100 {
+				query = query.Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID)
+			} else {
+				query = query.Where("day_orders.address_id = 100")
+			}
+
+			query = query.Group("day_menus.category_id")
+
+			if err := query.Find(&resCategoryCant).Error; err != nil {
+				return nil, db.Error
 			}
 
 			var cantClientTable []dtos.CategoryTable
@@ -237,7 +286,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 
 		var resCategoryCant []dtos.ResCantDB
 
-		if err := db.Table("day_orders").
+		/* if err := db.Table("day_orders").
 			Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 			Joins("left join categories ON categories.id = day_menus.category_id").
@@ -247,6 +296,25 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			Group("day_menus.category_id").
 			Find(&resCategoryCant).Error; err != nil {
 			return nil, err
+		} */
+
+		query2 := db.Model(&modelDayOrder).
+			Select("categories.id, categories.description, categories.title, categories.color, categories.price, sum(day_orders.amount) as cant").
+			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
+			Joins("left join categories ON categories.id = day_menus.category_id").
+			Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
+			Where("categories.active = 1")
+
+		if tanda.ID != 100 {
+			query2 = query2.Where("address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID)
+		} else {
+			query2 = query2.Where("address_id = 100")
+		}
+
+		query2 = query2.Group("day_menus.category_id")
+
+		if err := query2.Find(&resCategoryCant).Error; err != nil {
+			return nil, db.Error
 		}
 
 		var catArrTable []dtos.CategoryTable
@@ -285,7 +353,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 		Joins("left join categories ON categories.id = day_menus.category_id").
 		Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
-		Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses)").
+		Where("(day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses) OR day_orders.address_id = 100)").
 		Where("categories.active = 1").
 		Group("day_menus.category_id").
 		Find(&resCategoryCant).Error; err != nil {
