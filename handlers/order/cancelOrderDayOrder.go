@@ -6,9 +6,9 @@ import (
 	db "viandasApp/db/order"
 )
 
-func CancelOrder(rw http.ResponseWriter, r *http.Request) {
+func CancelOrderDayOrder(rw http.ResponseWriter, r *http.Request) {
 
-	ID := r.URL.Query().Get("idOrder")
+	ID := r.URL.Query().Get("idDayOrder")
 
 	if len(ID) < 1 {
 		http.Error(rw, "debe enviar el parametro id", http.StatusBadRequest)
@@ -22,24 +22,19 @@ func CancelOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	modelOrder, err := db.GetModelOrderById(idOrder)
+	modelDayOrder, err := db.GetDayOrderById(idOrder)
 
 	if err != nil {
-		http.Error(rw, "error al actualizar el estado del DayOrder", http.StatusBadRequest)
+		http.Error(rw, "Day Orden no encontrado con el ID solicitado", http.StatusBadRequest)
 		return
 	}
 
-	if modelOrder.ID == 0 {
-		http.Error(rw, "No hay orden en la BD", http.StatusNotFound)
-		return
-	}
+	modelDayOrder.Status = false
 
-	modelOrder.StatusOrderID = 3 //se cancela orden y queda con estado 3 - Cancelada
-
-	status, err := db.CancelOrder(modelOrder)
+	status, err := db.CancelDayOrder(modelDayOrder)
 
 	if err != nil {
-		http.Error(rw, "Orden no encontrada", http.StatusInternalServerError)
+		http.Error(rw, "error al actualizar el estado del DayOrder", http.StatusInternalServerError)
 		return
 	}
 
