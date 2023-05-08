@@ -101,7 +101,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/order/getAllOrders", middlew.CheckDB((order.GetAllOrders))).Methods("POST")
 	router.HandleFunc("/app/order/paid", middlew.CheckDB(middlew.ValidateJWTAdmin(order.PaidOrder))).Methods("GET")
 	router.HandleFunc("/app/order/cancel", middlew.CheckDB(middlew.ValidateJWTAdmin(order.CancelOrder))).Methods("GET")
-	router.HandleFunc("/app/order/cancelDayOrder", middlew.CheckDB(middlew.ValidateJWTAdmin(order.CancelOrder))).Methods("GET")
+	router.HandleFunc("/app/order/cancelDayOrder", middlew.CheckDB(middlew.ValidateJWTAdmin(order.CancelOrderDayOrder))).Methods("GET")
 
 	router.HandleFunc("/app/deliveryDriver/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
 	router.HandleFunc("/app/deliveryDriver/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.GetAllDeliveryDriver))).Methods("GET")

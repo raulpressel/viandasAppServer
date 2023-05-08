@@ -12,7 +12,11 @@ func FinishedOrder() (bool, error) {
 
 	var modelOrders []models.Order
 
+	//var modelDayMenu models.DayMenu
+
 	date := time.Now()
+
+	date = date.AddDate(0, 0, 2)
 
 	tx := db.Begin()
 	defer func() {
@@ -25,10 +29,7 @@ func FinishedOrder() (bool, error) {
 		return false, err
 	}
 
-	if err := tx.Distinct("orders.id").
-		Joins("join day_orders on day_orders.order_id = orders.id").
-		Joins("left join day_menus on day_menus.id = day_orders.day_menu_id").
-		Where("date(day_menus.date) < ?", date.Format("2006-01-02")).
+	if err := tx.Table("orders").
 		Where("orders.status_order_id = 1").
 		Find(&modelOrders).Error; err != nil {
 		tx.Rollback()
@@ -39,19 +40,38 @@ func FinishedOrder() (bool, error) {
 
 		for i := range modelOrders {
 
-			modelOrder, err := GetModelOrderById(modelOrders[i].ID)
-			if err != nil {
+			var dateC time.Time
+
+			if err := tx.Table("day_menus").Select("MAX(day_menus.date)").
+				Joins("left join day_orders on day_menus.id = day_orders.day_menu_id").
+				Where("day_orders.order_id = ?", modelOrders[i].ID).
+				Find(&dateC).Error; err != nil {
+				tx.Rollback()
 				return false, err
 			}
-			modelOrder.StatusOrderID = 2
 
-			modelOrders[i] = modelOrder
+			if date.After(dateC) {
+				if err := tx.Model(&modelOrders[i]).Update("status_order_id", 2).Error; err != nil {
+					return false, err
+				}
 
-		}
+				/*
 
-		if err := tx.Save(&modelOrders).Error; err != nil {
-			tx.Rollback()
-			return false, err
+					modelOrder, err := GetModelOrderById(modelOrders[i].ID)
+					if err != nil {
+						return false, err
+					} */
+				/* modelOrders.StatusOrderID = 2
+
+				modelOrders[i] = modelOrder */
+
+			}
+
+			/* if err := tx.Save(&modelOrders).Error; err != nil {
+				tx.Rollback()
+				return false, err
+			} */
+
 		}
 	}
 
