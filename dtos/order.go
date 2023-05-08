@@ -51,6 +51,7 @@ type OrderResponse struct {
 	OrderDate   time.Time   `json:"date"`
 	Observation string      `json:"observation"`
 	Total       float32     `json:"total"`
+	Paid        bool        `json:"paid"`
 	Status      StatusOrder `json:"status"`
 	DateStart   time.Time   `json:"dateStart"`
 	DateEnd     time.Time   `json:"dateEnd"`

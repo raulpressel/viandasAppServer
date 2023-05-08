@@ -22,7 +22,7 @@ func GetOrderViewer(id int) (*dtos.OrderViewerResponse, error) {
 	//responseAllMenu := []dtos.AllMenuResponse{}
 
 	err := db.Table("orders").
-		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status_order_id").
+		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status_order_id, orders.paid").
 		Where("orders.client_id = ?", id).
 		Order("orders.order_date desc").
 		Scan(&modelOrder).Error
@@ -54,6 +54,7 @@ func GetOrderViewer(id int) (*dtos.OrderViewerResponse, error) {
 		orders.Observation = ord.Observation
 		orders.Status.ID = modelStatusOrder.ID
 		orders.Status.Description = modelStatusOrder.Description
+		orders.Paid = ord.Paid
 		orders.Total = ord.Total
 		orders.DateStart = menuModel.DateStart
 		orders.DateEnd = menuModel.DateEnd
