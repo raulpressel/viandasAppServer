@@ -15,7 +15,7 @@ type daterr struct {
 
 func GetOrders(rw http.ResponseWriter, r *http.Request) {
 
-	dbOrder.FinishedOrder()
+	//dbOrder.FinishedOrder()
 
 	var dat daterr
 
