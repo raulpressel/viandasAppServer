@@ -5,12 +5,24 @@ import (
 	"net/http"
 	"time"
 	dbAddress "viandasApp/db/address"
+	dbCategories "viandasApp/db/categories"
 	dbClient "viandasApp/db/client"
 	dbMenu "viandasApp/db/menu"
 	dbOrder "viandasApp/db/order"
 	"viandasApp/dtos"
 	"viandasApp/models"
 )
+
+type response struct {
+	OrderId      int                  `json:"idOrder"`
+	Total        float32              `json:"total"`
+	CantDelivery int                  `json:"cantDelivery"`
+	Categories   []dtos.CategoryTable `json:"categories"`
+}
+type categoriesCant struct {
+	Cant        int    `json:"cant"`
+	Description string `json:"description"`
+}
 
 func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
@@ -114,8 +126,68 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	categoriesCant, cantDelivery := calcAmounts(dayOrderModel)
+
+	res := response{
+		OrderId:      orderId.IDOrder,
+		Total:        orderModel.Total,
+		CantDelivery: cantDelivery,
+		Categories:   *categoriesCant,
+	}
+
 	rw.Header().Set("Content-type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
-	json.NewEncoder(rw).Encode(orderId)
+	json.NewEncoder(rw).Encode(res)
 
+}
+
+func calcAmounts(dayOrderModel []models.DayOrder) (*[]dtos.CategoryTable, int) {
+
+	var arr []int
+	var cantEnvios int
+
+	var categories []dtos.CategoryTable
+
+	for _, day := range dayOrderModel {
+		if day.AddressID != 100 {
+			cantEnvios++
+		}
+
+		dayMenu, err := dbMenu.GetDayMenuById(day.DayMenuID)
+
+		if err != nil {
+			return nil, cantEnvios
+		}
+
+		arr = append(arr, dayMenu.CategoryID)
+
+	}
+
+	counts := countOccurrences(arr)
+
+	for num, count := range counts {
+		categoryModel, err := dbCategories.GetCategoryById(num)
+		if err != nil {
+			return nil, cantEnvios
+		}
+		category := dtos.CategoryTable{
+			Cant: count,
+			Category: dtos.CategoryResponse{
+				ID:    categoryModel.ID,
+				Title: categoryModel.Title,
+			},
+		}
+		categories = append(categories, category)
+	}
+
+	return &categories, cantEnvios
+
+}
+
+func countOccurrences(arr []int) map[int]int {
+	counts := make(map[int]int)
+	for _, num := range arr {
+		counts[num]++
+	}
+	return counts
 }
