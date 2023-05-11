@@ -58,6 +58,21 @@ func FinishedOrder() (bool, error) {
 					return false, err
 				}
 
+				modelDay, err := GetDayOrdersByOrderId(modelOrder.ID)
+
+				if err != nil {
+					return false, err
+				}
+
+				for i := range modelDay {
+					modelDay[i].Status = false
+				}
+
+				if err := tx.Save(&modelDay).Error; err != nil {
+					tx.Rollback()
+					return false, err
+				}
+
 			}
 
 		}

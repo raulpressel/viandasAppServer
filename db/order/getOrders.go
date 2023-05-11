@@ -120,7 +120,8 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			Select("distinct day_orders.order_id, day_orders.address_id ").
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id").
 			Joins("left join orders ON orders.id = day_orders.order_id").
-			Where("date(day_menus.date) = ?", date.Format("2006-01-02"))
+			Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
+			Where("day_orders.status = 1")
 
 		if tanda.ID != 100 {
 			query = query.Where("address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID)
@@ -186,9 +187,12 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				Joins("left join categories ON categories.id = day_menus.category_id").
 				Joins("left join orders ON orders.id = day_orders.order_id").
 				Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
+				Where("day_orders.status = 1").
 				Where("categories.active = 1").
 				Where("orders.client_id = ?", modelClient.ID).
-				Where("orders.id = ?", modelOrder.ID)
+				Where("orders.id = ?", // The above code is not a valid code in Go language. It seems to be a
+				// heading or a title for a section related to a model named "Order".
+				modelOrder.ID)
 
 			if tanda.ID != 100 {
 				query = query.Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID)
@@ -225,6 +229,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			if err := db.Table("day_orders").
 				Select("day_orders.observation").
 				Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
+				Where("day_orders.status = 1").
 				Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
 				Where("day_orders.order_id = ?", modelOrder.ID).
 				Find(&obsDayOrderClient).Error; err != nil {
@@ -303,6 +308,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 			Joins("left join day_menus ON day_menus.id = day_orders.day_menu_id ").
 			Joins("left join categories ON categories.id = day_menus.category_id").
 			Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
+			Where("day_orders.status = 1").
 			Where("categories.active = 1")
 
 		if tanda.ID != 100 {
@@ -354,6 +360,7 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		Joins("left join categories ON categories.id = day_menus.category_id").
 		Where("date(day_menus.date) = ?", date.Format("2006-01-02")).
 		Where("(day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses) OR day_orders.address_id = 100)").
+		Where("day_orders.status = 1").
 		Where("categories.active = 1").
 		Group("day_menus.category_id").
 		Find(&resCategoryCant).Error; err != nil {

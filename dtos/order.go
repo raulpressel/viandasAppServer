@@ -63,6 +63,7 @@ type FullOrderResponse struct {
 	Observation string             `json:"observation"`
 	Total       float32            `json:"total"`
 	Status      StatusOrder        `json:"status"`
+	Paid        bool               `json:"paid"`
 	Client      Client             `json:"client"`
 	DayOrder    []DayOrderResponse `json:"daysOrder"`
 }
