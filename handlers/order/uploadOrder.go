@@ -159,7 +159,12 @@ func calcAmounts(dayOrderModel []models.DayOrder) (*[]dtos.CategoryTable, int) {
 			return nil, cantEnvios
 		}
 
-		arr = append(arr, dayMenu.CategoryID)
+		if day.Amount > 1 {
+			array := multiplyElement(dayMenu.CategoryID, day.Amount)
+			arr = append(arr, array...)
+		} else {
+			arr = append(arr, dayMenu.CategoryID)
+		}
 
 	}
 
@@ -190,4 +195,12 @@ func countOccurrences(arr []int) map[int]int {
 		counts[num]++
 	}
 	return counts
+}
+
+func multiplyElement(element, multiplier int) []int {
+	arr := make([]int, multiplier)
+	for i := range arr {
+		arr[i] = element
+	}
+	return arr
 }
