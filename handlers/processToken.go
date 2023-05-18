@@ -50,6 +50,7 @@ type user struct {
 	Name     string
 	LastName string
 	Admin    bool
+	Token    string
 }
 
 func GetUser() user {
@@ -81,6 +82,8 @@ func ProcessToken(tk string) (*jwt.MapClaims, bool, error) {
 		}
 		return key, nil
 	})
+
+	usr.Token = splitToken
 
 	if err != nil {
 

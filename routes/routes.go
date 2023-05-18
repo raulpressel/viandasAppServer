@@ -85,6 +85,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/client/getClientByTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(client.GetClientsByTandas))).Methods("POST")
 	router.HandleFunc("/app/client/addNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.AddClientNote))).Methods("POST")
 	router.HandleFunc("/app/client/editNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.EditClientNote))).Methods("POST")
+	router.HandleFunc("/app/client/deleteClient", middlew.CheckDB(middlew.ValidateJWTAdmin(client.DeleteClient))).Methods("DELETE")
 
 	router.HandleFunc("/app/address/addAddress", middlew.CheckDB(middlew.ValidateJWT(address.AddAddress))).Methods("POST")
 	router.HandleFunc("/app/address/editAddress", middlew.CheckDB(middlew.ValidateJWT(address.UpdateAddress))).Methods("PUT")
@@ -102,6 +103,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/order/paid", middlew.CheckDB(middlew.ValidateJWTAdmin(order.PaidOrder))).Methods("GET")
 	router.HandleFunc("/app/order/cancel", middlew.CheckDB(middlew.ValidateJWTAdmin(order.CancelOrder))).Methods("GET")
 	router.HandleFunc("/app/order/cancelDayOrder", middlew.CheckDB(middlew.ValidateJWTAdmin(order.CancelOrderDayOrder))).Methods("GET")
+	router.HandleFunc("/app/order/finishedOrders", middlew.CheckDB(order.FinishedOrders)).Methods("GET")
 
 	router.HandleFunc("/app/deliveryDriver/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
 	router.HandleFunc("/app/deliveryDriver/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.GetAllDeliveryDriver))).Methods("GET")

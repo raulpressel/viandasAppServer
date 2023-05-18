@@ -14,6 +14,8 @@ func FinishedOrder() (bool, error) {
 
 	date := time.Now()
 
+	date = date.AddDate(0, 0, 1)
+
 	tx := db.Begin()
 	defer func() {
 		if r := recover(); r != nil {

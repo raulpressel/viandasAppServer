@@ -11,8 +11,6 @@ import (
 
 func GetAllOrders(rw http.ResponseWriter, r *http.Request) {
 
-	dbOrder.FinishedOrder()
-
 	var allOrderDto dtos.AllOrderRequest
 
 	err := json.NewDecoder(r.Body).Decode(&allOrderDto)
