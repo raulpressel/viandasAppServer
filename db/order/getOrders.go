@@ -142,7 +142,9 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				return nil, err
 			}
 
-			modelClient, err := dbClient.GetClientById(modelOrder.ClientID)
+			var modelClient models.Client
+
+			err = db.First(&modelClient, modelOrder.ClientID).Error
 			if err != nil {
 				return nil, err
 			}
@@ -191,8 +193,8 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 				Where("categories.active = 1").
 				Where("orders.client_id = ?", modelClient.ID).
 				Where("orders.id = ?", // The above code is not a valid code in Go language. It seems to be a
-				// heading or a title for a section related to a model named "Order".
-				modelOrder.ID)
+					// heading or a title for a section related to a model named "Order".
+					modelOrder.ID)
 
 			if tanda.ID != 100 {
 				query = query.Where("day_orders.address_id IN (select tanda_addresses.address_id from tanda_addresses where tanda_addresses.tanda_id = ?)", tanda.ID)

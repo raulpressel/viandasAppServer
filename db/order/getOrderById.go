@@ -6,7 +6,6 @@ import (
 	dbAdd "viandasApp/db/address"
 	dbCat "viandasApp/db/categories"
 	dbCity "viandasApp/db/city"
-	dbClient "viandasApp/db/client"
 	dbFood "viandasApp/db/food"
 	dbImg "viandasApp/db/img"
 	dbMenu "viandasApp/db/menu"
@@ -120,8 +119,9 @@ func GetOrderById(idOrder int) (*dtos.FullOrderResponse, error) {
 
 	})
 
-	clientModel, err := dbClient.GetClientById(orderModel.ClientID)
+	var modelClient models.Client
 
+	err = db.First(&modelClient, orderModel.ClientID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -131,8 +131,8 @@ func GetOrderById(idOrder int) (*dtos.FullOrderResponse, error) {
 		return nil, err
 	}
 
-	responseOrder.Client.Name = clientModel.Name
-	responseOrder.Client.LastName = clientModel.LastName
+	responseOrder.Client.Name = modelClient.Name
+	responseOrder.Client.LastName = modelClient.LastName
 
 	responseOrder.ID = orderModel.ID
 	responseOrder.Observation = orderModel.Observation
