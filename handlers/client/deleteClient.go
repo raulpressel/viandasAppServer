@@ -56,14 +56,14 @@ func GetPathKC(key, pass, usr, client_id, grant_type string) (*KC, error) {
 
 func DeleteClient(rw http.ResponseWriter, r *http.Request) {
 
-	idUser := r.URL.Query().Get("idUser")
+	idClient := r.URL.Query().Get("idClient")
 
-	if len(idUser) < 1 {
+	if len(idClient) < 1 {
 		http.Error(rw, "debe enviar el parametro id", http.StatusBadRequest)
 		return
 	}
 
-	idUsr, err := strconv.Atoi(idUser)
+	idUsr, err := strconv.Atoi(idClient)
 
 	if err != nil {
 		http.Error(rw, "Error al convertir el ID", http.StatusInternalServerError)
