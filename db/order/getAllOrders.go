@@ -3,7 +3,6 @@ package db
 import (
 	"time"
 	"viandasApp/db"
-	dbClient "viandasApp/db/client"
 	"viandasApp/dtos"
 	"viandasApp/models"
 )
@@ -54,7 +53,9 @@ func GetAllOrders(date bool, dateStart time.Time, dateEnd time.Time, active bool
 
 	for _, valor := range modelOrder {
 
-		modelClient, err := dbClient.GetClientById(valor.ClientID)
+		var modelClient models.Client
+
+		err := db.First(&modelClient, valor.ClientID).Error
 		if err != nil {
 			return nil, err
 		}
