@@ -31,6 +31,7 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 	clientModel.Name = strings.Title(usr.Name)
 	clientModel.LastName = strings.Title(usr.LastName)
 	clientModel.Email = usr.Email
+	clientModel.Active = true
 
 	cm, res := dbClient.CheckExistClient(clientModel.IDUserKL)
 

@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	db "viandasApp/db/client"
 	"viandasApp/handlers"
@@ -55,10 +56,17 @@ func GetPathKC(key, pass, usr, client_id, grant_type string) (*KC, error) {
 
 func DeleteClient(rw http.ResponseWriter, r *http.Request) {
 
-	idUserKL := r.URL.Query().Get("idUser")
+	idUser := r.URL.Query().Get("idUser")
 
-	if len(idUserKL) < 1 {
+	if len(idUser) < 1 {
 		http.Error(rw, "debe enviar el parametro id", http.StatusBadRequest)
+		return
+	}
+
+	idUsr, err := strconv.Atoi(idUser)
+
+	if err != nil {
+		http.Error(rw, "Error al convertir el ID", http.StatusInternalServerError)
 		return
 	}
 
@@ -69,16 +77,16 @@ func DeleteClient(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, valid := db.CheckExistClient(idUserKL)
+	clientModel, err := db.GetClientById(idUsr)
 
-	if !valid {
-		http.Error(rw, "No existe un cliente con los datos solicitados ", http.StatusBadRequest)
+	if err != nil {
+		http.Error(rw, "no fue posible recuperar el cliente en la BD", http.StatusInternalServerError)
 		return
 	}
 
-	client.Active = false
+	clientModel.Active = false
 
-	status, err := db.DeleteClient(client)
+	status, err := db.DeleteClient(clientModel)
 
 	if err != nil {
 		http.Error(rw, "Ocurrio un error al eliminar el cliente "+err.Error(), http.StatusInternalServerError)
@@ -90,31 +98,35 @@ func DeleteClient(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kc, err := GetPathKC("KC", "PASSKC", "USERKC", "CLIENT_ID", "GRANT_TYPE")
+	if clientModel.IDUserKL != "" {
 
-	if err != nil {
-		log.Fatal("Key incorrecta PATH")
-		return
+		kc, err := GetPathKC("KC", "PASSKC", "USERKC", "CLIENT_ID", "GRANT_TYPE")
+
+		if err != nil {
+			log.Fatal("Key incorrecta PATH")
+			return
+		}
+
+		token := getTokenAdminKC(*kc)
+
+		if token == nil {
+			http.Error(rw, "No tienes los permisos para ver esta información", http.StatusBadRequest)
+		}
+
+		req, err := http.NewRequest("DELETE", kc.Path+"auth/admin/realms/viandas/users/"+clientModel.IDUserKL, nil)
+		if err != nil {
+			// handle err
+		}
+		req.Header.Set("Authorization", "Bearer "+token.AccessToken)
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			// handle err
+		}
+
+		defer resp.Body.Close()
+
 	}
-
-	token := getTokenAdminKC(*kc)
-
-	if token == nil {
-		http.Error(rw, "No tienes los permisos para ver esta información", http.StatusBadRequest)
-	}
-
-	req, err := http.NewRequest("DELETE", kc.Path+"auth/admin/realms/viandas/users/"+idUserKL, nil)
-	if err != nil {
-		// handle err
-	}
-	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		// handle err
-	}
-
-	defer resp.Body.Close()
 
 	rw.Header().Set("Content-Type", "aplication/json")
 	rw.WriteHeader(http.StatusAccepted)

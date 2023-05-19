@@ -24,7 +24,7 @@ func GetAllClient() (*[]dtos.Client, error) {
 
 	modelClient := []models.Client{}
 
-	err := db.Find(&modelClient).Error
+	err := db.Find(&modelClient, "active = 1").Error
 
 	for _, client := range modelClient {
 
