@@ -208,6 +208,8 @@ func Routes(publicDir string) {
 
 	log.Fatal(http.ListenAndServe(":"+PORT, handler))
 
+	//log.Fatal(http.ListenAndServeTLS(":"+PORT, "C:/Users/Raul/github.com/raulpressel/viandasAppServer/certi.pem", "C:/Users/Raul/github.com/raulpressel/viandasAppServer/privkey.pem", handler))
+
 }
 
 func GetPublicDir(key string) (string, error) {

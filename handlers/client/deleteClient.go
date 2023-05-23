@@ -129,7 +129,7 @@ func DeleteClient(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	rw.Header().Set("Content-Type", "aplication/json")
-	rw.WriteHeader(http.StatusAccepted)
+	rw.WriteHeader(http.StatusCreated)
 
 }
 
