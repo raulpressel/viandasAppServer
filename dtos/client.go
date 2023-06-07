@@ -49,5 +49,5 @@ type Client struct {
 	Pathologies    []PathologyResponse `json:"pathologies"`
 	Address        []AddressRespone    `json:"addresses"`
 	Note           Note                `json:"note"`
-	IDUserKL       string              `json:"IdUserKL"`
+	IDUserKL       string              `json:"idUserKL"`
 }
