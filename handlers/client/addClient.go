@@ -33,6 +33,7 @@ func AddClient(rw http.ResponseWriter, r *http.Request) {
 	clientModel.Name = registerDto.Client.Name
 	clientModel.LastName = registerDto.Client.LastName
 	clientModel.Email = registerDto.Client.Email //ver si validar que sea mail
+	clientModel.Active = true
 
 	cli, err := dbClient.GetClientByEmail(clientModel.Email)
 	if err != nil {
