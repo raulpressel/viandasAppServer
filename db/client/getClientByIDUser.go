@@ -41,6 +41,7 @@ func GetClientByIDUser(idkl string) (*dtos.ClientResponse, error) {
 	clientResponse.Client.ObsClient = client.Observation
 	clientResponse.Client.BornDate = client.BornDate
 	clientResponse.Client.Email = client.Email
+	clientResponse.Client.IDUserKL = client.IDUserKL
 
 	err := db.Table("pathologies").
 		Select("pathologies.id, pathologies.description").

@@ -38,6 +38,7 @@ func GetAllClient() (*[]dtos.Client, error) {
 		clientResponse.ObsClient = client.Observation
 		clientResponse.BornDate = client.BornDate
 		clientResponse.Email = client.Email
+		clientResponse.IDUserKL = client.IDUserKL
 
 		notesClientModel, _ := GetNoteByClientId(client.ID)
 
