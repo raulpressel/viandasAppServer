@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"regexp"
 	"time"
 	dbClient "viandasApp/db/client"
 	"viandasApp/dtos"
@@ -33,7 +34,11 @@ func AddClient(rw http.ResponseWriter, r *http.Request) {
 	clientModel.Name = registerDto.Client.Name
 	clientModel.LastName = registerDto.Client.LastName
 	clientModel.Email = registerDto.Client.Email //ver si validar que sea mail
-	clientModel.Active = true
+
+	valid := isValidEmail(clientModel.Email)
+	if !valid {
+		http.Error(rw, "El email ingresado no es válido ", http.StatusBadRequest)
+	}
 
 	cli, err := dbClient.GetClientByEmail(clientModel.Email)
 	if err != nil {
@@ -43,6 +48,8 @@ func AddClient(rw http.ResponseWriter, r *http.Request) {
 	if cli.ID > 0 {
 		http.Error(rw, "El email ingresado ya se encuentra asociado a un cliente ", http.StatusBadRequest)
 	}
+
+	clientModel.Active = true
 
 	clientModel.BornDate, err = time.Parse(time.RFC3339, registerDto.Client.BornDate)
 	if err != nil {
@@ -109,4 +116,14 @@ func AddClient(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
 
+}
+
+func isValidEmail(email string) bool {
+	// Expresión regular para verificar el formato del correo electrónico
+	regex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	match, err := regexp.MatchString(regex, email)
+	if err != nil {
+		return false
+	}
+	return match
 }
