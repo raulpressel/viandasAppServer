@@ -38,7 +38,6 @@ func UpdateClient(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	clientModel.BornDate, err = time.Parse(time.RFC3339, clientDto.Client.BornDate)
 	if err != nil {
 		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)

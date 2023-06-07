@@ -7,7 +7,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetAllOrder(id int) (*dtos.OrderViewerResponse, error) {
+func GetOrderViewer(id int) (*dtos.OrderViewerResponse, error) {
 
 	db := db.GetDB()
 
@@ -22,8 +22,9 @@ func GetAllOrder(id int) (*dtos.OrderViewerResponse, error) {
 	//responseAllMenu := []dtos.AllMenuResponse{}
 
 	err := db.Table("orders").
-		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status").
+		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status_order_id, orders.paid").
 		Where("orders.client_id = ?", id).
+		Order("orders.order_date desc").
 		Scan(&modelOrder).Error
 
 	for _, ord := range modelOrder {
@@ -43,10 +44,17 @@ func GetAllOrder(id int) (*dtos.OrderViewerResponse, error) {
 			return nil, err
 		}
 
+		modelStatusOrder, err := GetStatusOrder(ord.StatusOrderID)
+		if err != nil {
+			return nil, err
+		}
+
 		orders.ID = ord.ID
 		orders.OrderDate = ord.OrderDate
 		orders.Observation = ord.Observation
-		orders.Status = ord.Status
+		orders.Status.ID = modelStatusOrder.ID
+		orders.Status.Description = modelStatusOrder.Description
+		orders.Paid = ord.Paid
 		orders.Total = ord.Total
 		orders.DateStart = menuModel.DateStart
 		orders.DateEnd = menuModel.DateEnd

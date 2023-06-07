@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	dbOrder "viandasApp/db/order"
@@ -14,8 +15,15 @@ type daterr struct {
 
 func GetOrders(rw http.ResponseWriter, r *http.Request) {
 
+	//dbOrder.FinishedOrder()
+
 	var dat daterr
+
 	err := json.NewDecoder(r.Body).Decode(&dat)
+	if err != nil {
+		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	date, err := time.Parse(time.RFC3339, dat.Date)
 	if err != nil {
@@ -25,7 +33,7 @@ func GetOrders(rw http.ResponseWriter, r *http.Request) {
 
 	responseAllOrdersMenu, err := dbOrder.GetOrders(date)
 
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "Error 1146:") {
 		http.Error(rw, "Error a recuperar las ordenes de la BD", http.StatusInternalServerError)
 		return
 	}

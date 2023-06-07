@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"viandasApp/db"
 	dbClient "viandasApp/db/client"
 	"viandasApp/dtos"
 	"viandasApp/models"
@@ -21,8 +20,6 @@ func AddClientNote(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	db.ExistTable(notesClientModel)
 
 	notesClientModel.ClientID = addNote.IDClient
 

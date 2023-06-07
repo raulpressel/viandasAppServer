@@ -13,6 +13,16 @@ type ResCantDB struct {
 	Cant        int
 }
 
+type AllOrderRequest struct {
+	DateStart *string `json:"dateStart"`
+	DateEnd   *string `json:"dateEnd"`
+	Paid      bool    `json:"paid"`
+	NotPaid   bool    `json:"notPaid"`
+	Active    bool    `json:"active"`
+	Finished  bool    `json:"finished"`
+	Cancel    bool    `json:"cancel"`
+}
+
 type OrderRequest struct {
 	IDClient         int                `json:"idClient"`
 	Observation      string             `json:"observation"`
@@ -37,13 +47,14 @@ type OrderViewerResponse struct {
 }
 
 type OrderResponse struct {
-	ID          int       `json:"id"`
-	OrderDate   time.Time `json:"date"`
-	Observation string    `json:"observation"`
-	Total       float32   `json:"total"`
-	Status      string    `json:"status"`
-	DateStart   time.Time `json:"dateStart"`
-	DateEnd     time.Time `json:"dateEnd"`
+	ID          int         `json:"id"`
+	OrderDate   time.Time   `json:"date"`
+	Observation string      `json:"observation"`
+	Total       float32     `json:"total"`
+	Paid        bool        `json:"paid"`
+	Status      StatusOrder `json:"status"`
+	DateStart   time.Time   `json:"dateStart"`
+	DateEnd     time.Time   `json:"dateEnd"`
 }
 
 type FullOrderResponse struct {
@@ -51,7 +62,8 @@ type FullOrderResponse struct {
 	OrderDate   time.Time          `json:"date"`
 	Observation string             `json:"observation"`
 	Total       float32            `json:"total"`
-	Status      string             `json:"status"`
+	Status      StatusOrder        `json:"status"`
+	Paid        bool               `json:"paid"`
 	Client      Client             `json:"client"`
 	DayOrder    []DayOrderResponse `json:"daysOrder"`
 }
@@ -64,7 +76,7 @@ type DayOrderResponse struct {
 	Amount      int              `json:"cant"`
 	Observation string           `json:"observation"`
 	Address     AddressRespone   `json:"address"`
-	Status      string           `json:"status"`
+	Status      bool             `json:"status"`
 }
 
 type OrdersResponse struct {
@@ -92,9 +104,15 @@ type OrdersRes struct {
 	OrderDate     time.Time       `json:"date"`
 	Observation   string          `json:"observation"`
 	Total         float32         `json:"total"`
-	Status        string          `json:"status"`
+	Status        StatusOrder     `json:"status"`
+	Paid          bool            `json:"paid"`
 	Client        Client          `json:"client"`
 	CategoryTable []CategoryTable `json:"categoryTable"`
 	Address       AddressRespone  `json:"address"`
 	Observations  []string        `json:"observations"`
+}
+
+type StatusOrder struct {
+	ID          int    `json:"id"`
+	Description string `json:"description"`
 }

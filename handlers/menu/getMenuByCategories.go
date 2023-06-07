@@ -33,12 +33,7 @@ func GetMenuByCategories(rw http.ResponseWriter, r *http.Request) {
 	responseMenuFood, err := db.GetMenuByCategories(requestCateogoriesDateFilter.IDCategories, dateStart, dateEnd)
 
 	if err != nil {
-		http.Error(rw, "Menu no encontrado", http.StatusBadRequest)
-		return
-	}
-
-	if responseMenuFood.Menu.ID == 0 {
-		http.Error(rw, "No hay menus en la BD", http.StatusNotFound)
+		http.Error(rw, "Error al recuperar el Menu del servidor", http.StatusInternalServerError)
 		return
 	}
 

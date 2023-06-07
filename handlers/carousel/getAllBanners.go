@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	db "viandasApp/db/carousel"
 	"viandasApp/dtos"
@@ -16,7 +17,7 @@ func GetAllBanners(rw http.ResponseWriter, r *http.Request) {
 
 	bannerModel, err := db.GetAllBanners()
 
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "Error 1146:") {
 		http.Error(rw, "no se pudo recuperar los banners", http.StatusBadRequest)
 		return
 	}

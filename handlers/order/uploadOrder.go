@@ -4,14 +4,25 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	"viandasApp/db"
 	dbAddress "viandasApp/db/address"
+	dbCategories "viandasApp/db/categories"
 	dbClient "viandasApp/db/client"
 	dbMenu "viandasApp/db/menu"
 	dbOrder "viandasApp/db/order"
 	"viandasApp/dtos"
 	"viandasApp/models"
 )
+
+type response struct {
+	OrderId      int                  `json:"idOrder"`
+	Total        float32              `json:"total"`
+	CantDelivery int                  `json:"cantDelivery"`
+	Categories   []dtos.CategoryTable `json:"categories"`
+}
+type categoriesCant struct {
+	Cant        int    `json:"cant"`
+	Description string `json:"description"`
+}
 
 func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
@@ -30,10 +41,6 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db.ExistTable(orderModel)
-
-	db.ExistTable(dOrderModel)
-
 	clientModel, err := dbClient.GetClientById(orderDto.IDClient)
 
 	if err != nil {
@@ -51,6 +58,10 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 	orderModel.Observation = orderDto.Observation
 
 	orderModel.Total = orderDto.Total
+
+	orderModel.StatusOrderID = 1 //se da de alta orden y queda con estado 1 - Activa
+
+	orderModel.Paid = false
 
 	orderModel.OrderDate, err = time.Parse(time.RFC3339, orderDto.Date)
 	if err != nil {
@@ -80,7 +91,9 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 			dOrderModel.Observation = day.Observation
 
-			dOrderModel.Active = true
+			//dOrderModel.Active = true
+
+			dOrderModel.Status = true
 
 			addressModel, err := dbAddress.GetAddressById(day.IDAddress)
 
@@ -113,8 +126,81 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	categoriesCant, cantDelivery := calcAmounts(dayOrderModel)
+
+	res := response{
+		OrderId:      orderId.IDOrder,
+		Total:        orderModel.Total,
+		CantDelivery: cantDelivery,
+		Categories:   *categoriesCant,
+	}
+
 	rw.Header().Set("Content-type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
-	json.NewEncoder(rw).Encode(orderId)
+	json.NewEncoder(rw).Encode(res)
 
+}
+
+func calcAmounts(dayOrderModel []models.DayOrder) (*[]dtos.CategoryTable, int) {
+
+	var arr []int
+	var cantEnvios int
+
+	var categories []dtos.CategoryTable
+
+	for _, day := range dayOrderModel {
+		if day.AddressID != 100 {
+			cantEnvios++
+		}
+
+		dayMenu, err := dbMenu.GetDayMenuById(day.DayMenuID)
+
+		if err != nil {
+			return nil, cantEnvios
+		}
+
+		if day.Amount > 1 {
+			array := multiplyElement(dayMenu.CategoryID, day.Amount)
+			arr = append(arr, array...)
+		} else {
+			arr = append(arr, dayMenu.CategoryID)
+		}
+
+	}
+
+	counts := countOccurrences(arr)
+
+	for num, count := range counts {
+		categoryModel, err := dbCategories.GetCategoryById(num)
+		if err != nil {
+			return nil, cantEnvios
+		}
+		category := dtos.CategoryTable{
+			Cant: count,
+			Category: dtos.CategoryResponse{
+				ID:    categoryModel.ID,
+				Title: categoryModel.Title,
+			},
+		}
+		categories = append(categories, category)
+	}
+
+	return &categories, cantEnvios
+
+}
+
+func countOccurrences(arr []int) map[int]int {
+	counts := make(map[int]int)
+	for _, num := range arr {
+		counts[num]++
+	}
+	return counts
+}
+
+func multiplyElement(element, multiplier int) []int {
+	arr := make([]int, multiplier)
+	for i := range arr {
+		arr[i] = element
+	}
+	return arr
 }

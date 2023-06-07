@@ -27,6 +27,7 @@ func GetAllClientNotInTandas() (*[]dtos.Client, error) {
 		Select("distinct clients.id, clients.name, clients.last_name, clients.email, clients.id_user_kl, clients.phone_primary, clients.phone_secondary, clients.observation, clients.born_date").
 		Joins("JOIN client_addresses ON client_addresses.client_id = clients.id").
 		Where("client_addresses.address_id NOT IN (select address_id from tanda_addresses)").
+		Where("clients.active = 1").
 		Scan(&modelClient).Error
 
 	for _, client := range modelClient {
@@ -84,7 +85,7 @@ func GetAllClientNotInTandas() (*[]dtos.Client, error) {
 		var addressesModel []models.Address
 
 		if err := db.Table("addresses").
-			Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id, addresses.favourite").
+			Select("addresses.id, addresses.street, addresses.number, addresses.floor, addresses.departament, addresses.observation, addresses.city_id, addresses.favourite, addresses.id_zone, addresses.lat, addresses.lng").
 			Joins("left JOIN client_addresses ON client_addresses.address_id = addresses.id").
 			Where("client_addresses.client_id = ?", client.ID).
 			Where("addresses.id NOT IN (select address_id from tanda_addresses)").
@@ -105,6 +106,9 @@ func GetAllClientNotInTandas() (*[]dtos.Client, error) {
 			address.Departament = valor.Departament
 			address.Observation = valor.Observation
 			address.Favourite = valor.Favourite
+			address.IDZone = valor.IDZone
+			address.Lat = valor.Lat
+			address.Lng = valor.Lng
 
 			if err := db.Table("cities").
 				Select("cities.id, cities.description, cities.cp ").

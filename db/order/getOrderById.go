@@ -6,7 +6,6 @@ import (
 	dbAdd "viandasApp/db/address"
 	dbCat "viandasApp/db/categories"
 	dbCity "viandasApp/db/city"
-	dbClient "viandasApp/db/client"
 	dbFood "viandasApp/db/food"
 	dbImg "viandasApp/db/img"
 	dbMenu "viandasApp/db/menu"
@@ -31,7 +30,7 @@ func GetOrderById(idOrder int) (*dtos.FullOrderResponse, error) {
 	var imgFoodModel models.LocationImg
 
 	err := db.Table("orders").
-		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status, orders.client_id").
+		Select("orders.id, orders.order_date, orders.observation, orders.total, orders.status_order_id, orders.client_id, orders.paid").
 		Where("orders.id = ?", idOrder).
 		Scan(&orderModel).Error
 
@@ -120,19 +119,27 @@ func GetOrderById(idOrder int) (*dtos.FullOrderResponse, error) {
 
 	})
 
-	clientModel, err := dbClient.GetClientById(orderModel.ClientID)
+	var modelClient models.Client
 
+	err = db.First(&modelClient, orderModel.ClientID).Error
 	if err != nil {
 		return nil, err
 	}
 
-	responseOrder.Client.Name = clientModel.Name
-	responseOrder.Client.LastName = clientModel.LastName
+	modelStatusOrder, err := GetStatusOrder(orderModel.StatusOrderID)
+	if err != nil {
+		return nil, err
+	}
+
+	responseOrder.Client.Name = modelClient.Name
+	responseOrder.Client.LastName = modelClient.LastName
 
 	responseOrder.ID = orderModel.ID
 	responseOrder.Observation = orderModel.Observation
 	responseOrder.OrderDate = orderModel.OrderDate
-	responseOrder.Status = orderModel.Status
+	responseOrder.Status.ID = modelStatusOrder.ID
+	responseOrder.Status.Description = modelStatusOrder.Description
+	responseOrder.Paid = orderModel.Paid
 	responseOrder.Total = orderModel.Total
 	responseOrder.DayOrder = dayOrderResponse
 

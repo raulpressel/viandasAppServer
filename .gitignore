@@ -14,3 +14,7 @@ Dockerfile
 Dockerfile
 _.env
 cert_prod.pem
+local.env
+privkey.pem
+.gitignore
+certi.pem

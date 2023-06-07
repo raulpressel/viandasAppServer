@@ -6,10 +6,7 @@ import (
 	"viandasApp/dtos"
 )
 
-func GetBanners() ([]dtos.BannersResponse, error) {
-	/* var db = db.ConnectDB()
-	sqlDB, _ := db.DB()
-	defer sqlDB.Close() */
+func GetBanners() (*[]dtos.BannersResponse, error) {
 
 	db := db.GetDB()
 
@@ -23,6 +20,6 @@ func GetBanners() ([]dtos.BannersResponse, error) {
 		Where("banners.active = 1 and ? BETWEEN banners.date_start AND banners.date_end", dateTime).
 		Scan(&responseModel).Error
 
-	return responseModel, err
+	return &responseModel, err
 
 }

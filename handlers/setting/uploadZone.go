@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"viandasApp/db"
 	settingDB "viandasApp/db/setting"
 	"viandasApp/dtos"
 	"viandasApp/models"
@@ -21,8 +20,6 @@ func UploadZone(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	db.ExistTable(zoneModel)
 
 	zoneModel.Description = zoneDto.Zone.Description
 

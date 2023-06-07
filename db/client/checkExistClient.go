@@ -15,7 +15,7 @@ func CheckExistClient(id string) (models.Client, bool) {
 
 	var client models.Client
 
-	err := db.First(&client, "id_user_kl = ?", id).Error
+	err := db.First(&client, "active = 1 and id_user_kl = ?", id).Error
 
 	if err != nil {
 		return client, false

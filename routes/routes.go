@@ -85,6 +85,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/client/getClientByTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(client.GetClientsByTandas))).Methods("POST")
 	router.HandleFunc("/app/client/addNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.AddClientNote))).Methods("POST")
 	router.HandleFunc("/app/client/editNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.EditClientNote))).Methods("POST")
+	router.HandleFunc("/app/client/deleteClient", middlew.CheckDB(middlew.ValidateJWTAdmin(client.DeleteClient))).Methods("DELETE")
 
 	router.HandleFunc("/app/address/addAddress", middlew.CheckDB(middlew.ValidateJWT(address.AddAddress))).Methods("POST")
 	router.HandleFunc("/app/address/editAddress", middlew.CheckDB(middlew.ValidateJWT(address.UpdateAddress))).Methods("PUT")
@@ -93,10 +94,16 @@ func Routes(publicDir string) {
 
 	router.HandleFunc("/app/order/uploadOrder", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("POST")
 	router.HandleFunc("/app/order/getOrderByID", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderById))).Methods("GET")
-	router.HandleFunc("/app/order/getOrderViewer", middlew.CheckDB(middlew.ValidateJWT(order.GetAllOrder))).Methods("GET")
+	router.HandleFunc("/app/order/getOrderViewer", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderViewer))).Methods("GET")
 	router.HandleFunc("/app/order/getOrderByIdClient", middlew.CheckDB(middlew.ValidateJWTAdmin(order.GetOrderByIdClient))).Methods("GET")
 	router.HandleFunc("/app/order/updateDayOrderAddress", middlew.CheckDB(middlew.ValidateJWT(order.UpdateDayOrderAddress))).Methods("GET")
 	router.HandleFunc("/app/order/getOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(order.GetOrders))).Methods("POST")
+	router.HandleFunc("/app/order/getTotal", middlew.CheckDB(middlew.ValidateJWT(order.CalcPriceOrder))).Methods("POST")
+	router.HandleFunc("/app/order/getAllOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(order.GetAllOrders))).Methods("POST")
+	router.HandleFunc("/app/order/paid", middlew.CheckDB(middlew.ValidateJWTAdmin(order.PaidOrder))).Methods("GET")
+	router.HandleFunc("/app/order/cancel", middlew.CheckDB(middlew.ValidateJWTAdmin(order.CancelOrder))).Methods("GET")
+	router.HandleFunc("/app/order/cancelDayOrder", middlew.CheckDB(middlew.ValidateJWTAdmin(order.CancelOrderDayOrder))).Methods("GET")
+	router.HandleFunc("/app/order/finishedOrders", middlew.CheckDB(order.FinishedOrders)).Methods("GET")
 
 	router.HandleFunc("/app/deliveryDriver/addDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UploadDeliveryDriver))).Methods("POST")
 	router.HandleFunc("/app/deliveryDriver/getDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.GetAllDeliveryDriver))).Methods("GET")
@@ -116,9 +123,11 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/setting/deleteDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteDiscount))).Methods("DELETE")
 
 	router.HandleFunc("/app/setting/addZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadZone))).Methods("POST")
-	router.HandleFunc("/app/setting/getZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.GetAllZone))).Methods("GET")
+	router.HandleFunc("/app/setting/getZone", middlew.CheckDB((setting.GetAllZone))).Methods("GET")
 	router.HandleFunc("/app/setting/editZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateZone))).Methods("PUT")
 	router.HandleFunc("/app/setting/deleteZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteZone))).Methods("DELETE")
+	router.HandleFunc("/app/setting/getAddressTakeAway", middlew.CheckDB((setting.GetAddressTakeAway))).Methods("GET")
+	router.HandleFunc("/app/setting/editAddressTakeAway", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.AddressTakeAway))).Methods("POST")
 
 	var turnMenuModel models.TurnMenu
 	var turnModel models.Turn
@@ -129,9 +138,29 @@ func Routes(publicDir string) {
 
 	var tandaAddModel models.TandaAddress
 
+	var orderModel models.Order
+
+	var dOrderModel models.DayOrder
+
+	db.ExistTable(orderModel)
+
+	db.ExistTable(dOrderModel)
+
 	db.ExistTable(tandaAddModel)
 
 	db.ExistTable(pathologyModel)
+
+	var discountModel models.Discount
+
+	db.ExistTable(discountModel)
+
+	var zoneModel models.Zone
+
+	db.ExistTable(zoneModel)
+
+	var notesClientModel models.ClientNotes
+
+	db.ExistTable(notesClientModel)
 
 	var cityModel models.City
 
@@ -146,6 +175,15 @@ func Routes(publicDir string) {
 		dbc.Create(&turns)
 
 	}
+
+	var modelStatusOrder models.StatusOrder
+
+	if db.ExistTable(modelStatusOrder) {
+		var status = []models.StatusOrder{{ID: 1, Description: "Activa"}, {ID: 2, Description: "Finalizada"}, {ID: 3, Description: "Cancelada"}}
+		dbc.Create(&status)
+
+	}
+
 	db.ExistTable(turnMenuModel)
 	db.ExistTable(dayModel)
 
@@ -169,6 +207,8 @@ func Routes(publicDir string) {
 	handler := cors.AllowAll().Handler(router)
 
 	log.Fatal(http.ListenAndServe(":"+PORT, handler))
+
+	//log.Fatal(http.ListenAndServeTLS(":"+PORT, "C:/Users/Raul/github.com/raulpressel/viandasAppServer/certi.pem", "C:/Users/Raul/github.com/raulpressel/viandasAppServer/privkey.pem", handler))
 
 }
 

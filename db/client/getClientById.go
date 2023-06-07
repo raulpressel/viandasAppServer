@@ -11,7 +11,7 @@ func GetClientById(id int) (models.Client, error) {
 
 	var clientModel models.Client
 
-	err := db.First(&clientModel, id).Error
+	err := db.First(&clientModel, "active = 1 and id = ?", id).Error
 
 	return clientModel, err
 

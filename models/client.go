@@ -17,4 +17,5 @@ type Client struct {
 	PhoneSecondary string
 	Observation    string
 	BornDate       time.Time
+	Active         bool
 }
