@@ -35,18 +35,21 @@ func AddClient(rw http.ResponseWriter, r *http.Request) {
 	clientModel.LastName = registerDto.Client.LastName
 	clientModel.Email = registerDto.Client.Email //ver si validar que sea mail
 
-	valid := isValidEmail(clientModel.Email)
-	if !valid {
-		http.Error(rw, "El email ingresado no es válido ", http.StatusBadRequest)
-	}
+	if len(clientModel.Email) > 0 {
 
-	cli, err := dbClient.GetClientByEmail(clientModel.Email)
-	if err != nil {
-		http.Error(rw, "No fue posible recuperar el cliente con el correo electronico "+err.Error(), http.StatusBadRequest)
-		return
-	}
-	if cli.ID > 0 {
-		http.Error(rw, "El email ingresado ya se encuentra asociado a un cliente ", http.StatusBadRequest)
+		valid := isValidEmail(clientModel.Email)
+		if !valid {
+			http.Error(rw, "El email ingresado no es válido ", http.StatusBadRequest)
+		}
+
+		cli, err := dbClient.GetClientByEmail(clientModel.Email)
+		if err != nil {
+			http.Error(rw, "No fue posible recuperar el cliente con el correo electronico "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		if cli.ID > 0 {
+			http.Error(rw, "El email ingresado ya se encuentra asociado a un cliente ", http.StatusBadRequest)
+		}
 	}
 
 	clientModel.Active = true
