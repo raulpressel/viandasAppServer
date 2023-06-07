@@ -6,6 +6,7 @@ import (
 	"time"
 	dbClient "viandasApp/db/client"
 	"viandasApp/dtos"
+	"viandasApp/handlers"
 	"viandasApp/models"
 )
 
@@ -40,6 +41,12 @@ func UpdateClient(rw http.ResponseWriter, r *http.Request) {
 
 	clientModel.Name = clientDto.Client.Name
 	clientModel.LastName = clientDto.Client.LastName
+
+	usr := handlers.GetUser()
+
+	if usr.Admin && len(clientDto.Client.Email) > 0 {
+		clientModel.Email = clientDto.Client.Email
+	}
 
 	clientModel.BornDate, err = time.Parse(time.RFC3339, clientDto.Client.BornDate)
 	if err != nil {
