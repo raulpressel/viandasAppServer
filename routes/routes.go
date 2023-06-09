@@ -86,6 +86,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/client/addNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.AddClientNote))).Methods("POST")
 	router.HandleFunc("/app/client/editNote", middlew.CheckDB(middlew.ValidateJWTAdmin(client.EditClientNote))).Methods("POST")
 	router.HandleFunc("/app/client/deleteClient", middlew.CheckDB(middlew.ValidateJWTAdmin(client.DeleteClient))).Methods("DELETE")
+	router.HandleFunc("/app/client/addClient", middlew.CheckDB(middlew.ValidateJWTAdmin(client.AddClient))).Methods("POST")
 
 	router.HandleFunc("/app/address/addAddress", middlew.CheckDB(middlew.ValidateJWT(address.AddAddress))).Methods("POST")
 	router.HandleFunc("/app/address/editAddress", middlew.CheckDB(middlew.ValidateJWT(address.UpdateAddress))).Methods("PUT")

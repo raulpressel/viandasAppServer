@@ -12,6 +12,9 @@ type ClientResponse struct {
 
 type ClientRequest struct {
 	ID             int                `json:"id"`
+	Name           string             `json:"name"`
+	LastName       string             `json:"lastName"`
+	Email          string             `json:"email"`
 	PhonePrimary   string             `json:"phonePrimary"`
 	PhoneSecondary string             `json:"phoneSecondary"`
 	ObsClient      string             `json:"observation"`
@@ -46,4 +49,5 @@ type Client struct {
 	Pathologies    []PathologyResponse `json:"pathologies"`
 	Address        []AddressRespone    `json:"addresses"`
 	Note           Note                `json:"note"`
+	IDUserKL       string              `json:"idUserKL"`
 }
