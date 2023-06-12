@@ -44,6 +44,8 @@ func UploadTanda(rw http.ResponseWriter, r *http.Request) {
 	tandaModel.HourStart = tandaDto.Tanda.HourStart
 	tandaModel.HourEnd = tandaDto.Tanda.HourEnd
 
+	tandaModel.DeliveryDriverID = deliDriverModel.ID
+
 	tandaModel.Active = true
 
 	status, err := tandaDb.UploadTanda(tandaModel)
