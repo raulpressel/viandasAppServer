@@ -28,15 +28,16 @@ func GetAllTanda() (*dtos.TandaResponse, error) {
 		var vehicleModel models.Vehicle
 		var cityModel models.City
 		var addressModel models.Address
+		var err error
 
 		if valor.DeliveryDriverID > 0 {
 
-			deliveryDriverModel, err := dbDeliveryDriver.GetDeliveryDriverByID(valor.DeliveryDriverID)
+			deliveryDriverModel, err = dbDeliveryDriver.GetDeliveryDriverByID(valor.DeliveryDriverID)
 			if err != nil {
 				return nil, err
 			}
 
-			addressModel, err := dbAddress.GetAddressById(deliveryDriverModel.AddressID)
+			addressModel, err = dbAddress.GetAddressById(deliveryDriverModel.AddressID)
 			if err != nil {
 				return nil, err
 			}
