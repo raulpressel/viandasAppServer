@@ -41,10 +41,11 @@ func GetOrders(date time.Time) (*dtos.OrdersResponse, error) {
 		var cityModel models.City
 		var addressModel models.Address
 		var tandaRes dtos.TandaRes
+		var err error
 
 		if tanda.ID != 100 {
 
-			deliveryDriverModel, err := dbDeliveryDriver.GetDeliveryDriverByID(tanda.DeliveryDriverID)
+			deliveryDriverModel, err = dbDeliveryDriver.GetDeliveryDriverByID(tanda.DeliveryDriverID)
 			if err != nil {
 				return nil, err
 			}
