@@ -34,7 +34,9 @@ func DeleteMenu(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status, err := db.DeleteTurnMenu(_IDMenu, _IDTurn)
+	//status, err := db.DeleteTurnMenu(_IDMenu, _IDTurn)
+
+	status, err := db.DeleteMenu(_IDMenu, _IDTurn)
 
 	if err != nil {
 		http.Error(rw, "No se pudo borrar el TURN MENU de la base de datos "+err.Error(), http.StatusInternalServerError)

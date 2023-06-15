@@ -40,55 +40,78 @@ func UpdateDayOrderAddress(rw http.ResponseWriter, r *http.Request) {
 
 	usr := handlers.GetUser()
 
-	client, err := dbClient.GetClientByIDUser(usr.ID)
-	if err != nil {
-		http.Error(rw, "Cliente no encontrado", http.StatusBadRequest)
-		return
-	}
+	if !usr.Admin {
 
-	dayOrderModel, err := dbOrder.GetDayOrderById(idDayOrder)
-	if err != nil {
-		http.Error(rw, "no existe la dayorder solicitada", http.StatusBadRequest)
-		return
-	}
-
-	orderModel, err := dbOrder.GetModelOrderById(dayOrderModel.OrderID)
-	if err != nil {
-		http.Error(rw, "la direccion enviada no corresponde al cliente logueado", http.StatusBadRequest)
-		return
-	}
-
-	if orderModel.ClientID != client.Client.ID {
-		http.Error(rw, "la orden no pertenece al cliente logueado", http.StatusBadRequest)
-		return
-	}
-
-	var bandAdd bool
-
-	for _, valor := range client.Client.Address {
-		if valor.ID == idAddress {
-			bandAdd = true
+		client, err := dbClient.GetClientByIDUser(usr.ID)
+		if err != nil {
+			http.Error(rw, "Cliente no encontrado", http.StatusBadRequest)
+			return
 		}
 
-	}
+		dayOrderModel, err := dbOrder.GetDayOrderById(idDayOrder)
+		if err != nil {
+			http.Error(rw, "no existe la dayorder solicitada", http.StatusBadRequest)
+			return
+		}
 
-	if !bandAdd {
-		http.Error(rw, "la direccion enviada no corresponde al cliente logueado", http.StatusBadRequest)
-		return
-	}
+		orderModel, err := dbOrder.GetModelOrderById(dayOrderModel.OrderID)
+		if err != nil {
+			http.Error(rw, "la direccion enviada no corresponde al cliente logueado", http.StatusBadRequest)
+			return
+		}
 
-	dayOrderModel.AddressID = idAddress
+		if orderModel.ClientID != client.Client.ID {
+			http.Error(rw, "la orden no pertenece al cliente logueado", http.StatusBadRequest)
+			return
+		}
 
-	status, err := dbOrder.UpdateDayOrderAddress(dayOrderModel)
+		var bandAdd bool
 
-	if err != nil {
-		http.Error(rw, "Orden no encontrada", http.StatusInternalServerError)
-		return
-	}
+		for _, valor := range client.Client.Address {
+			if valor.ID == idAddress {
+				bandAdd = true
+			}
 
-	if !status {
-		http.Error(rw, "no se ha logrado modificar la direccion de la orden", http.StatusInternalServerError)
-		return
+		}
+
+		if !bandAdd {
+			http.Error(rw, "la direccion enviada no corresponde al cliente logueado", http.StatusBadRequest)
+			return
+		}
+
+		dayOrderModel.AddressID = idAddress
+
+		status, err := dbOrder.UpdateDayOrderAddress(dayOrderModel)
+
+		if err != nil {
+			http.Error(rw, "Orden no encontrada", http.StatusInternalServerError)
+			return
+		}
+
+		if !status {
+			http.Error(rw, "no se ha logrado modificar la direccion de la orden", http.StatusInternalServerError)
+			return
+		}
+
+	} else {
+		dayOrderModel, err := dbOrder.GetDayOrderById(idDayOrder)
+		if err != nil {
+			http.Error(rw, "no existe la dayorder solicitada", http.StatusBadRequest)
+			return
+		}
+		dayOrderModel.AddressID = idAddress
+
+		status, err := dbOrder.UpdateDayOrderAddress(dayOrderModel)
+
+		if err != nil {
+			http.Error(rw, "Orden no encontrada", http.StatusInternalServerError)
+			return
+		}
+
+		if !status {
+			http.Error(rw, "no se ha logrado modificar la direccion de la orden", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	rw.Header().Set("Content-type", "application/json")

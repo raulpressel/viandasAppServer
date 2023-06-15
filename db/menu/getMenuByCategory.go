@@ -30,6 +30,7 @@ func GetMenuByCategory(cat int) (dtos.MenuViewer, error) {
 		Where("? <= date(menus.date_start) and ? >= date(menus.date_end)", date1.Format("2006-01-02"), date2.Format("2006-01-02")).
 		Joins("left JOIN turn_menus on menus.id = turn_menus.menu_id").
 		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
+		Where("menus.active = 1").
 		Order("turns.id asc").
 		Scan(&modelMenu).Error
 

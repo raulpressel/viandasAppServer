@@ -48,7 +48,7 @@ func FinishedOrder() (bool, error) {
 				return false, err
 			}
 
-			if date.After(dateC) {
+			if dateC.After(date) {
 				modelOrder, err := GetModelOrderById(modelOrders[i].ID)
 				if err != nil {
 					return false, err

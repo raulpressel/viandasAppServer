@@ -24,6 +24,7 @@ func GetDayMenuByDate(date time.Time) ([]dtos.DayMenuResponse, error) {
 		Joins("left JOIN foods ON foods.id = day_menus.food_id").
 		Joins("left JOIN location_imgs ON foods.location_id = location_imgs.id").
 		Where(" date(day_menus.date) = ?", date.Format("2006-01-02")).
+		Where(" menus.active = 1").
 		Scan(&dayMenuDto).Error
 
 	for _, valor := range dayMenuDto {

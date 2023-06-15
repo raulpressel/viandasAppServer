@@ -24,6 +24,7 @@ func GetMenuById(idMenu int) (dtos.MenuViewer, error) {
 		Select("menus.id as menuid, menus.date_start as datestart, menus.date_end as dateend, turns.id as turnid, turns.description as descriptionturn   ").
 		Joins("left JOIN turn_menus on menus.id = turn_menus.menu_id").
 		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
+		Where("menus.active = 1").
 		Where("menus.id = ?", idMenu).
 		Order("turns.id asc").
 		Scan(&modelMenu).Error

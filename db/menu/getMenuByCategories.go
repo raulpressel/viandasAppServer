@@ -23,6 +23,7 @@ func GetMenuByCategories(cat []int, dateStart time.Time, dateEnd time.Time) (*dt
 		Where("? BETWEEN date(menus.date_start) and date(menus.date_end) OR ? BETWEEN date(menus.date_start) and date(menus.date_end) OR date(menus.date_start) BETWEEN ? and ? OR date(menus.date_end) BETWEEN ? and ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"), dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")).
 		Joins("left JOIN turn_menus on menus.id = turn_menus.menu_id").
 		Joins("left JOIN turns on turns.id = turn_menus.turn_id").
+		Where("menus.active = 1").
 		Order("turns.id asc").
 		Scan(&modelMenu).Error
 
