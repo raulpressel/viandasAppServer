@@ -14,8 +14,6 @@ func FinishedOrder() (bool, error) {
 
 	date := time.Now()
 
-	date = date.AddDate(0, 0, 1)
-
 	tx := db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -48,7 +46,12 @@ func FinishedOrder() (bool, error) {
 				return false, err
 			}
 
-			if dateC.After(date) {
+			dateC = dateC.AddDate(0, 0, 1)
+
+			//test := date.UnixMilli() - dateC.UnixMilli()
+
+			//if date.Format("2006-01-02") > dateC.Format("2006-01-02")
+			if date.After(dateC) {
 				modelOrder, err := GetModelOrderById(modelOrders[i].ID)
 				if err != nil {
 					return false, err
