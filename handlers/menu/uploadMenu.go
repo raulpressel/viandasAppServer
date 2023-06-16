@@ -61,6 +61,8 @@ func UploadMenu(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		menuModel.Active = true
+
 		for _, day := range menu.DayMenu {
 			/* _idFoodCategory, err := dbFood.GetIdFoodCategory(day.Food, day.Category)
 			if _idFoodCategory < 1 {
