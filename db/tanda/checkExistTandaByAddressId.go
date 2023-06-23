@@ -23,6 +23,6 @@ func CheckExistTandaByAddressId(idAddress int) (int, error) {
 		}
 	}
 
-	return tandaAddressModel.ID, db.Error
+	return tandaAddressModel.TandaID, db.Error
 
 }
