@@ -9,6 +9,8 @@ import (
 	dbClient "viandasApp/db/client"
 	dbMenu "viandasApp/db/menu"
 	dbOrder "viandasApp/db/order"
+	dbSetting "viandasApp/db/setting"
+	dbTanda "viandasApp/db/tanda"
 	"viandasApp/dtos"
 	"viandasApp/models"
 )
@@ -34,6 +36,10 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	var dayOrderModel []models.DayOrder
 
+	var deliveryModel models.Delivery
+
+	var deliverysModel []models.Delivery
+
 	err := json.NewDecoder(r.Body).Decode(&orderDto)
 
 	if err != nil {
@@ -53,11 +59,18 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	auxCalc, valid := ProcessOrder(orderDto)
+
+	if !valid {
+		http.Error(rw, "Ocurrio un error al procesar los calculos de la orden "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	orderModel.ClientID = orderDto.IDClient
 
 	orderModel.Observation = orderDto.Observation
 
-	orderModel.Total = orderDto.Total
+	orderModel.Total = auxCalc.Total
 
 	orderModel.StatusOrderID = 1 //se da de alta orden y queda con estado 1 - Activa
 
@@ -109,12 +122,68 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 			dOrderModel.AddressID = day.IDAddress
 
+			deliveryModel.AddressID = dOrderModel.AddressID
+
+			deliveryModel.Status = false
+
+			categoryModel, err := dbCategories.GetCategoryById(dayMenuModel.CategoryID)
+
+			if err != nil {
+				http.Error(rw, "Ocurrio un error al obtener el ID de la categoria "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			zoneModel, err := dbSetting.GetZoneById(addressModel.IDZone)
+
+			if err != nil {
+				http.Error(rw, "Ocurrio un error al obtener el ID de la Zona "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if deliveryModel.AddressID != 100 {
+
+				priceFactor := PriceFactor(day.Amount)
+
+				deliveryModel.DeliveryPrice = zoneModel.Price * priceFactor
+			}
+
+			deliveryModel.DeliveryMenuPrice = categoryModel.Price * float32(dOrderModel.Amount)
+
+			deliveryModel.DeliveryDate = dayMenuModel.Date
+
+			idTanda, err := dbTanda.CheckExistTandaByAddressId(deliveryModel.AddressID)
+
+			if err != nil {
+				http.Error(rw, "Ocurrio un error al obtener el ID de la Tanda "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if idTanda > 0 {
+				deliveryDriverId, err := dbTanda.GetDeliveryDriverIdByTandaId(idTanda)
+				if err != nil {
+					http.Error(rw, "Ocurrio un error al obtener el ID del Cadete "+err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				tempID := uint(deliveryDriverId)
+
+				deliveryModel.DeliveryDriverID = &tempID
+			} else {
+				deliveryModel.DeliveryDriverID = nil
+			}
+
+			deliveryModel.PercentageDiscount = auxCalc.Percentage
+
 			dayOrderModel = append(dayOrderModel, dOrderModel)
+
+			//if deliveryModel.AddressID != 100 {
+			deliverysModel = append(deliverysModel, deliveryModel)
+			//}
 
 		}
 	}
 
-	status, err, orderId := dbOrder.UploadOrder(orderModel, dayOrderModel)
+	status, err, orderId := dbOrder.UploadOrder(orderModel, dayOrderModel, deliverysModel)
 
 	if err != nil {
 		http.Error(rw, "Ocurrio un error al intentar ingresar el pedido "+err.Error(), http.StatusInternalServerError)

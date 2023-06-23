@@ -111,6 +111,8 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/deliveryDriver/editDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UpdateDeliveryDriver))).Methods("PUT")
 	router.HandleFunc("/app/deliveryDriver/deleteDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.DeleteDeliveryDriver))).Methods("DELETE")
 
+	router.HandleFunc("/app/delivery/getDeliveryByDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.GetDeliveryByDeliveryDriver))).Methods("POST")
+
 	router.HandleFunc("/app/tanda/addTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UploadTanda))).Methods("POST")
 	router.HandleFunc("/app/tanda/getTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.GetAllTanda))).Methods("GET")
 	router.HandleFunc("/app/tanda/editTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UpdateTanda))).Methods("PUT")
@@ -142,6 +144,10 @@ func Routes(publicDir string) {
 	var orderModel models.Order
 
 	var dOrderModel models.DayOrder
+
+	var deliveryModel models.Delivery
+
+	db.ExistTable(deliveryModel)
 
 	db.ExistTable(orderModel)
 
