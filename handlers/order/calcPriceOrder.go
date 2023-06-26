@@ -77,177 +77,6 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/* 	var orderModel models.Order
-
-	   	var dOrderModel models.DayOrder
-
-	   	var response responseTotal
-
-	   	var dates []time.Time
-
-	   	orderModel.ClientID = orderDto.IDClient
-
-	   	orderModel.Observation = orderDto.Observation
-
-
-
-	   	orderModel.StatusOrderID = 1 //se da de alta orden y queda con estado 1 - Activa
-
-	   	orderModel.Paid = false
-
-	   	orderModel.OrderDate, err = time.Parse(time.RFC3339, orderDto.Date)
-	   	if err != nil {
-	   		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
-	   		return
-	   	}
-
-	   	var amount int = 0
-
-	   	var price float32 = 0.0
-
-	   	for _, day := range orderDto.DaysOrderRequest {
-
-	   		if day.Amount > 0 {
-
-	   			dOrderModel.Amount = day.Amount
-
-	   			amount = amount + dOrderModel.Amount
-
-	   			dayMenuModel, err := dbMenu.GetDayMenuById(day.IDDayFood)
-
-	   			if err != nil {
-	   				http.Error(rw, "Ocurrio un error al obtener el ID del menu "+err.Error(), http.StatusInternalServerError)
-	   				return
-	   			}
-
-	   			if dayMenuModel.ID == 0 {
-	   				http.Error(rw, "El Day Menu enviado no existe ", http.StatusBadRequest)
-	   				return
-	   			}
-
-	   			dates = append(dates, dayMenuModel.Date)
-
-	   			cat, _ := dbCategory.GetCategoryById(dayMenuModel.CategoryID)
-
-	   			price = price + (cat.Price * float32(dOrderModel.Amount))
-
-	   			dOrderModel.DayMenuID = day.IDDayFood
-
-	   			dOrderModel.Observation = day.Observation
-
-	   			//dOrderModel.Active = true
-
-	   			dOrderModel.Status = true
-
-	   			if day.IDAddress != 100 {
-
-	   				addressModel, err := dbAddress.GetAddressById(day.IDAddress)
-
-	   				if err != nil {
-	   					http.Error(rw, "Ocurrio un error al obtener el ID de la direccion "+err.Error(), http.StatusInternalServerError)
-	   					return
-	   				}
-
-	   				if addressModel.ID == 0 {
-	   					http.Error(rw, "La direccion enviada no existe ", http.StatusBadRequest)
-	   					return
-	   				}
-
-	   				zoneModel, _ := dbSetting.GetZoneById(addressModel.IDZone)
-
-	   				priceFactor := PriceFactor(dOrderModel.Amount)
-
-	   				zoneModel.Price *= priceFactor
-
-	   				response.Delivery = response.Delivery + zoneModel.Price
-
-	   			}
-
-	   		}
-
-	   	}
-
-	   	discounts, err := dbSetting.GetDiscounts()
-
-	   	response.SubTotal = price
-
-	   	response.Discount = 0.0
-
-	   	var filterDates []time.Time
-
-	   	if len(dates) >= 3 && len(dates) < 5 {
-
-	   		years := make([]int, amount)
-	   		weeks := make([]int, amount)
-
-	   		for i, date := range dates {
-	   			years[i], weeks[i] = date.ISOWeek()
-	   		}
-	   		if allEqual(years) {
-	   			if allEqual(weeks) {
-	   				filterDates = append(filterDates, dates...)
-	   			} else if allEqual(weeks[:3]) {
-	   				if len(weeks[:3]) > 2 {
-	   					filterDates = append(filterDates, dates[:3]...)
-	   				}
-	   			} else if allEqual(weeks[1:]) {
-	   				if len(weeks[:1]) > 2 {
-	   					filterDates = append(filterDates, dates[1:]...)
-	   				}
-	   			}
-	   		}
-
-	   		if len(filterDates) > 0 {
-
-	   			workdays := worksDays(filterDates[0].ISOWeek())
-
-	   			var diff []string
-
-	   			for _, a := range workdays {
-	   				found := false
-	   				for _, b := range filterDates {
-	   					if a.Format("2006-01-02") == b.Format("2006-01-02") {
-	   						found = true
-	   						break
-	   					}
-	   				}
-	   				if !found {
-	   					diff = append(diff, a.Format("2006-01-02"))
-	   				}
-
-	   			}
-
-	   			if len(diff) > 0 {
-
-	   				check, _ := dbMenu.CheckFeriado(diff)
-
-	   				if check {
-	   					amount = amount + len(diff)
-	   				}
-
-	   			}
-	   		}
-
-	   	}
-
-	   	for i := range discounts {
-	   		if amount >= discounts[i].Cant {
-	   			response.Discount = price * (discounts[i].Percentage / 100)
-	   			break
-	   		} else if i < len(discounts)-1 && amount >= discounts[i+1].Cant && amount < discounts[i].Cant {
-	   			response.Discount = price * (discounts[i+1].Percentage / 100)
-	   			break
-	   		}
-	   	}
-
-	   	redon := math.RoundToEven(float64(response.Discount))
-
-	   	response.Discount = float32(redon)
-
-	   	response.Total = (response.SubTotal - response.Discount) + response.Delivery
-
-	*/
-
 	response, valid := ProcessOrder(orderDto)
 
 	if !valid {
@@ -306,6 +135,12 @@ func PriceFactor(amount int) float32 {
 
 }
 
+type auxCalcDeliveryDriver struct {
+	amount    int
+	date      time.Time
+	idAddress int
+}
+
 func ProcessOrder(orderDto dtos.OrderRequest) (responseTotal, bool) {
 
 	var auxCalc responseTotal
@@ -315,6 +150,10 @@ func ProcessOrder(orderDto dtos.OrderRequest) (responseTotal, bool) {
 	var amount int = 0
 
 	var price float32 = 0.0
+
+	var auxsCalcsDD []auxCalcDeliveryDriver
+
+	var auxCalcDD auxCalcDeliveryDriver
 
 	for _, day := range orderDto.DaysOrderRequest {
 
@@ -337,29 +176,25 @@ func ProcessOrder(orderDto dtos.OrderRequest) (responseTotal, bool) {
 
 			price = price + (cat.Price * float32(day.Amount))
 
-			if day.IDAddress != 100 {
+			auxCalcDD.amount = day.Amount
+			auxCalcDD.date = dayMenuModel.Date
+			auxCalcDD.idAddress = day.IDAddress
 
-				addressModel, err := dbAddress.GetAddressById(day.IDAddress)
-
-				if err != nil {
-					return auxCalc, false
-				}
-
-				zoneModel, err := dbSetting.GetZoneById(addressModel.IDZone)
-				if err != nil {
-					return auxCalc, false
-				}
-
-				priceFactor := PriceFactor(day.Amount)
-
-				zoneModel.Price *= priceFactor
-
-				auxCalc.Delivery = auxCalc.Delivery + zoneModel.Price
-
-			}
+			auxsCalcsDD = append(auxsCalcsDD, auxCalcDD)
 
 		}
 
+	}
+
+	if len(auxsCalcsDD) > 0 {
+
+		var valid bool
+
+		auxCalc.Delivery, valid = calcDeliveryPrice(auxsCalcsDD)
+
+		if !valid {
+			return auxCalc, false
+		}
 	}
 
 	discounts, err := dbSetting.GetDiscounts()
@@ -448,4 +283,53 @@ func ProcessOrder(orderDto dtos.OrderRequest) (responseTotal, bool) {
 
 	return auxCalc, true
 
+}
+
+func calcDeliveryPrice(aux []auxCalcDeliveryDriver) (float32, bool) {
+
+	var delivery float32
+
+	accumulatedValues := make(map[time.Time]auxCalcDeliveryDriver)
+
+	for _, delivery := range aux {
+
+		if accumulatedDelivery, ok := accumulatedValues[delivery.date]; ok {
+
+			accumulatedDelivery.amount += delivery.amount
+
+			accumulatedValues[delivery.date] = accumulatedDelivery
+		} else {
+
+			accumulatedValues[delivery.date] = delivery
+		}
+	}
+
+	uniqueDeliveries := make([]auxCalcDeliveryDriver, 0, len(accumulatedValues))
+	for _, accumulatedDelivery := range accumulatedValues {
+		uniqueDeliveries = append(uniqueDeliveries, accumulatedDelivery)
+	}
+
+	for i := range uniqueDeliveries {
+		if uniqueDeliveries[i].idAddress != 100 {
+			addressModel, err := dbAddress.GetAddressById(uniqueDeliveries[i].idAddress)
+
+			if err != nil {
+				return 0.0, false
+			}
+
+			zoneModel, err := dbSetting.GetZoneById(addressModel.IDZone)
+			if err != nil {
+				return 0.0, false
+			}
+
+			priceFactor := PriceFactor(uniqueDeliveries[i].amount)
+
+			zoneModel.Price *= priceFactor
+
+			delivery = delivery + zoneModel.Price
+
+		}
+	}
+
+	return delivery, true
 }

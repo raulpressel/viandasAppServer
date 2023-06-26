@@ -34,11 +34,16 @@ func GetReportDeliveryDriver(id int, dateStart time.Time, dateEnd time.Time) (*d
 
 	var deliveryRes []dtos.DeliveryRes
 
+	var deliRes dtos.DeliveryRes
+
 	for num := range occurrences {
 
-		deliveryDriverModel, _ := GetDeliveryDriverByID(num)
+		deliveryDriverModel, err := GetDeliveryDriverByID(num)
+		if err != nil {
+			return nil, db.Error
+		}
 
-		deliveryDriver := dtos.DeliveryDriverRes{
+		deliRes.DeliveryDriver = dtos.DeliveryByDeliveryDriver{
 
 			ID:       deliveryDriverModel.ID,
 			DNI:      deliveryDriverModel.DNI,
@@ -47,13 +52,9 @@ func GetReportDeliveryDriver(id int, dateStart time.Time, dateEnd time.Time) (*d
 			Phone:    deliveryDriverModel.Phone,
 		}
 
-		var deliveries dtos.DeliveryRes
-
 		for _, delivery := range deliveryModel {
 
 			if delivery.DeliveryDriverID != nil && int(*delivery.DeliveryDriverID) == num {
-
-				//modelOrder, _ := .GetModelOrderById(delivery.OrderID)
 
 				var modelOrder models.Order
 
@@ -96,13 +97,12 @@ func GetReportDeliveryDriver(id int, dateStart time.Time, dateEnd time.Time) (*d
 					},
 				}
 
-				deliveries.Delivery = append(deliveries.Delivery, deli)
+				deliRes.DeliveryDriver.Delivery = append(deliRes.DeliveryDriver.Delivery, deli)
+
 			}
 		}
 
-		deliveries.DeliveryDriverRes = deliveryDriver
-
-		deliveryRes = append(deliveryRes, deliveries)
+		deliveryRes = append(deliveryRes, deliRes)
 
 	}
 
@@ -125,13 +125,3 @@ func countOccurrences(arr []models.Delivery) map[int]int {
 
 	return occurrences
 }
-
-/* select *
-from delivery_drivers
-left join tandas on tandas.delivery_driver_id = delivery_drivers.id
-left join tanda_addresses ON tanda_addresses.tanda_id = tandas.id
-left join day_orders ON day_orders.address_id = tanda_addresses.address_id
-left join day_menus ON day_orders.day_menu_id = day_menus.id
-where  tandas.delivery_driver_id is not null
-AND day_menus.date BETWEEN "2023-06-12" AND "2023-06-16"
-AND delivery_drivers.id = 1; */

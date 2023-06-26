@@ -13,8 +13,16 @@ type DeliveryResponse struct {
 }
 
 type DeliveryRes struct {
-	DeliveryDriverRes DeliveryDriverRes `json:"deliveryDriver"`
-	Delivery          []Delivery        `json:"deliveries"`
+	DeliveryDriver DeliveryByDeliveryDriver `json:"deliveryDriver"`
+}
+
+type DeliveryByDeliveryDriver struct {
+	ID       int        `json:"id"`
+	DNI      int        `json:"dni"`
+	Name     string     `json:"name"`
+	LastName string     `json:"lastName"`
+	Phone    string     `json:"phone"`
+	Delivery []Delivery `json:"deliveries"`
 }
 
 type Delivery struct {

@@ -17,7 +17,8 @@ type Delivery struct {
 	DeliveryDriver     DeliveryDriver `gorm:"foreignKey:DeliveryDriverID"`
 	AddressID          int            //
 	Address            Address        `gorm:"foreignKey:AddressID"`
-	DeliveryMenuPrice  float32        //
+	DeliveryMenuPrice  float32
+	DeliveryMenuAmount int
 	PercentageDiscount float32
 	Status             bool //
 }
