@@ -38,10 +38,15 @@ type Deli struct {
 	Address AddressRespone `json:"address"`
 }
 
-/*
-DeliveryRequest
-{
-    "dateStart": "19/06/2022",
-    "dateEnd": "23/06/2022",
-    "idDeliveryDriver": 4
-} */
+type ResponseExcel struct {
+	IdOrden        int
+	DeliveryDriver string
+	Client         string
+	Address        string
+	Deliverires    []DeliveryExcel
+}
+
+type DeliveryExcel struct {
+	Date  time.Time
+	Price float32
+}

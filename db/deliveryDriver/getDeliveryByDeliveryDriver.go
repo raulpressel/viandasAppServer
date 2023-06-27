@@ -10,7 +10,7 @@ import (
 	"viandasApp/models"
 )
 
-func GetReportDeliveryDriver(id int, dateStart time.Time, dateEnd time.Time) (*dtos.DeliveryResponse, error) {
+func GetDeliveryByDeliveryDriver(id int, dateStart time.Time, dateEnd time.Time) (*dtos.DeliveryResponse, error) {
 
 	db := db.GetDB()
 
@@ -60,11 +60,20 @@ func GetReportDeliveryDriver(id int, dateStart time.Time, dateEnd time.Time) (*d
 
 				db.First(&modelOrder, delivery.OrderID)
 
-				clientModel, _ := dbClient.GetClientById(modelOrder.ClientID)
+				clientModel, err := dbClient.GetClientById(modelOrder.ClientID)
+				if err != nil {
+					return nil, db.Error
+				}
 
-				addressModel, _ := dbAdd.GetAddressById(delivery.AddressID)
+				addressModel, err := dbAdd.GetAddressById(delivery.AddressID)
+				if err != nil {
+					return nil, db.Error
+				}
 
-				cityModel, _ := dbCity.GetCityById(addressModel.CityID)
+				cityModel, err := dbCity.GetCityById(addressModel.CityID)
+				if err != nil {
+					return nil, db.Error
+				}
 
 				deli := dtos.Delivery{
 					Deli: dtos.Deli{

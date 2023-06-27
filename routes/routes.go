@@ -111,7 +111,9 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/deliveryDriver/editDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.UpdateDeliveryDriver))).Methods("PUT")
 	router.HandleFunc("/app/deliveryDriver/deleteDeliveryDriver", middlew.CheckDB(middlew.ValidateJWTAdmin(deliveryDriver.DeleteDeliveryDriver))).Methods("DELETE")
 
-	router.HandleFunc("/app/delivery/getDeliveryByDeliveryDriver", middlew.CheckDB((deliveryDriver.GetDeliveryByDeliveryDriver))).Methods("POST")
+	router.HandleFunc("/app/delivery/getDeliveryByDeliveryDriver", middlew.CheckDB((deliveryDriver.GetDeliveryByDeliveryDriver))).Methods("POST") //agregar middlew JWT
+	router.HandleFunc("/app/delivery/checkEmptyDeliveryDrivers", middlew.CheckDB((deliveryDriver.CheckEmptyDeliveryDrivers))).Methods("GET")      //agregar middlew JWT
+	router.HandleFunc("/app/delivery/getReportDeliveriesByDriver", middlew.CheckDB((deliveryDriver.GetReportDeliveriesByDriver))).Methods("POST") //agregar middle
 
 	router.HandleFunc("/app/tanda/addTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.UploadTanda))).Methods("POST")
 	router.HandleFunc("/app/tanda/getTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.GetAllTanda))).Methods("GET")

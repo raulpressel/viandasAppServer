@@ -1,0 +1,311 @@
+package handlers
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+	"time"
+	addressDB "viandasApp/db/address"
+	clientDB "viandasApp/db/client"
+	deliDriverDB "viandasApp/db/deliveryDriver"
+	orderDB "viandasApp/db/order"
+
+	"viandasApp/dtos"
+	"viandasApp/models"
+
+	"github.com/xuri/excelize/v2"
+)
+
+type response struct {
+	Path string `json:"path"`
+}
+
+func GetReportDeliveriesByDriver(rw http.ResponseWriter, r *http.Request) {
+
+	var deliveryDto dtos.DeliveryRequest
+
+	var deliveryDriverModel models.DeliveryDriver
+
+	err := json.NewDecoder(r.Body).Decode(&deliveryDto)
+
+	if err != nil {
+		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if deliveryDto.DeliveryDriverID == nil {
+		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	deliveryDriverModel, err = deliDriverDB.GetDeliveryDriverByID(*deliveryDto.DeliveryDriverID)
+	if err != nil {
+		http.Error(rw, "Error al obtener el delivery driver", http.StatusInternalServerError)
+		return
+	}
+	if deliveryDriverModel.ID == 0 {
+		http.Error(rw, "No existe un Delivery Driver con ese ID ", http.StatusBadRequest)
+		return
+	}
+
+	dateStart, err := time.Parse(time.RFC3339, deliveryDto.DateStart)
+	if err != nil {
+		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	dateEnd, err := time.Parse(time.RFC3339, deliveryDto.DateEnd)
+	if err != nil {
+		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	deliveries, err := deliDriverDB.GetReportDeliveryDriver(deliveryDriverModel.ID, dateStart, dateEnd)
+
+	if err != nil {
+		http.Error(rw, "Error al recuperar los datos para el reporte  "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	deliveryExcel := processDeliveryOrder(*deliveries)
+
+	path, valid := gerateXLSX(deliveryExcel, dateStart, dateEnd)
+
+	if !valid {
+		http.Error(rw, "Error al generar el reporte  "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var res response
+
+	res.Path = path
+
+	rw.Header().Set("Content-Type", "aplication/json")
+	rw.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(rw).Encode(res)
+}
+
+type DeliveryExcel struct {
+	DeliveryDriver string
+	ClientExcel    ClientExcel
+}
+
+type ClientExcel struct {
+	OrderID        int
+	Client         string
+	AddressExcel   []AddressExcel
+	DatePriceExcel []DatePriceExcel
+}
+
+type AddressExcel struct {
+	Address string
+}
+
+type DatePriceExcel struct {
+	Date  time.Time
+	Price int
+}
+
+func processDeliveryOrder(deliveries []models.Delivery) []DeliveryExcel {
+
+	var deliveriesExcel []DeliveryExcel
+
+	var currentOrderID int
+
+	var currentAddressID int
+
+	for _, delivery := range deliveries {
+		if delivery.OrderID != currentOrderID {
+
+			deliveryDriverModel, _ := deliDriverDB.GetDeliveryDriverByID(int(*delivery.DeliveryDriverID))
+			orderModel, _ := orderDB.GetModelOrderById(delivery.OrderID)
+			clientModel, _ := clientDB.GetClientById(orderModel.ClientID)
+
+			deliveriesExcel = append(deliveriesExcel, DeliveryExcel{
+				DeliveryDriver: deliveryDriverModel.Name + " " + deliveryDriverModel.LastName,
+				ClientExcel: ClientExcel{
+					OrderID:        delivery.OrderID,
+					Client:         clientModel.Name + " " + clientModel.LastName,
+					AddressExcel:   []AddressExcel{},
+					DatePriceExcel: []DatePriceExcel{},
+				},
+			})
+			currentOrderID = delivery.OrderID
+
+			currentAddressID = 0
+		}
+
+		if delivery.AddressID != currentAddressID {
+			addressModel, _ := addressDB.GetAddressById(delivery.AddressID)
+			deliveriesExcel[len(deliveriesExcel)-1].ClientExcel.AddressExcel = append(deliveriesExcel[len(deliveriesExcel)-1].ClientExcel.AddressExcel, AddressExcel{
+				Address: addressModel.Street + " " + addressModel.Number + " " + addressModel.Observation,
+			})
+			currentAddressID = delivery.AddressID
+		}
+
+		// Agregar una nueva DatePrice al último OtroDelivery agregado
+		deliveriesExcel[len(deliveriesExcel)-1].ClientExcel.DatePriceExcel = append(deliveriesExcel[len(deliveriesExcel)-1].ClientExcel.DatePriceExcel, DatePriceExcel{
+			Date:  delivery.DeliveryDate,
+			Price: int(delivery.DeliveryPrice),
+		})
+	}
+
+	return deliveriesExcel
+
+}
+
+func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd time.Time) (string, bool) {
+
+	fileDir := "/var/www/default/htdocs/public/reports"
+
+	if err := os.MkdirAll(fileDir, os.ModePerm); err != nil {
+		return "", false
+	}
+
+	file := excelize.NewFile()
+	defer func() {
+		if err := file.Close(); err != nil {
+			return
+		}
+	}()
+
+	file.SetColWidth("Sheet1", "A", "A", 13)
+	file.SetRowHeight("Sheet1", 1, 20)
+	file.SetColWidth("Sheet1", "B", "B", 40)
+	file.SetRowHeight("Sheet1", 2, 20)
+	file.SetColWidth("Sheet1", "C", "C", 40)
+
+	styleA1, _ := file.NewStyle(&excelize.Style{
+		Font:      &excelize.Font{Size: 14, Bold: true, Color: "070808"},
+		Alignment: &excelize.Alignment{Vertical: "center"},
+		Border: []excelize.Border{
+			{
+				Type:  "left",
+				Color: "#000000",
+				Style: 1,
+			}, {
+				Type:  "top",
+				Color: "#000000",
+				Style: 1,
+			}, {
+				Type:  "bottom",
+				Color: "#000000",
+				Style: 1,
+			}, {
+				Type:  "right",
+				Color: "#000000",
+				Style: 1,
+			},
+		},
+	})
+
+	var cantDays int
+	currentDate := dateStart
+	for currentDate.Before(dateEnd) || currentDate.Equal(dateEnd) {
+		if currentDate.Weekday() != time.Saturday && currentDate.Weekday() != time.Sunday {
+			cantDays++
+		}
+		currentDate = currentDate.AddDate(0, 0, 1)
+	}
+
+	startCell := "A1"
+	endCell, _ := excelize.CoordinatesToCellName(3+cantDays, 2)
+
+	column := string(endCell[0]) + "%d"
+
+	file.SetColWidth("Sheet1", "D", string(endCell[0]), 15)
+
+	file.MergeCell("Sheet1", "A1", fmt.Sprintf(column, 1))
+
+	file.SetCellStyle("Sheet1", startCell, endCell, styleA1)
+
+	dateColumn := dateStart
+
+	fileName := "Reporte " + deliveriesExcel[0].DeliveryDriver + " " + dateStart.Format("02-01") + " al " + dateEnd.Format("02-01")
+
+	//fmt.Println(sheetName)
+
+	file.SetCellValue("Sheet1", "A1", "REPARTIDOR: "+deliveriesExcel[0].DeliveryDriver)
+	file.SetCellValue("Sheet1", "A2", "Nº ORDEN")
+	file.SetCellValue("Sheet1", "B2", "NOMBRE Y APELLIDO")
+	file.SetCellValue("Sheet1", "C2", "DIRECCIÓN")
+	for i := 0; i < cantDays; i++ {
+		cell, _ := excelize.CoordinatesToCellName(4+i, 2)
+
+		formatDate := dateColumn.Format("02/01/2006")
+
+		file.SetCellValue("Sheet1", cell, formatDate)
+
+		dateColumn = dateColumn.AddDate(0, 0, 1)
+
+	}
+
+	for i, delivery := range deliveriesExcel {
+
+		row := i + 3
+
+		file.SetRowHeight("Sheet1", row, 18)
+
+		var fill string
+		if i%2 == 0 {
+			fill = "F3F3F3"
+		} else {
+			fill = "FFFFFF"
+		}
+
+		styleData, _ := file.NewStyle(&excelize.Style{
+			Fill:      excelize.Fill{Type: "pattern", Pattern: 1, Color: []string{fill}},
+			Font:      &excelize.Font{Size: 13, Color: "0a0a0a"},
+			Alignment: &excelize.Alignment{Vertical: "center"},
+			Border: []excelize.Border{
+				{
+					Type:  "left",
+					Color: "#000000",
+					Style: 1,
+				}, {
+					Type:  "top",
+					Color: "#000000",
+					Style: 1,
+				}, {
+					Type:  "bottom",
+					Color: "#000000",
+					Style: 1,
+				}, {
+					Type:  "right",
+					Color: "#000000",
+					Style: 1,
+				},
+			},
+		})
+
+		file.SetCellStyle("Sheet1", fmt.Sprintf("A%d", row), fmt.Sprintf(column, row), styleData)
+
+		dateCompare := dateStart
+		file.SetCellValue("Sheet1", fmt.Sprintf("A%d", row), delivery.ClientExcel.OrderID)
+		file.SetCellValue("Sheet1", fmt.Sprintf("B%d", row), delivery.ClientExcel.Client)
+		file.SetCellValue("Sheet1", fmt.Sprintf("C%d", row), delivery.ClientExcel.AddressExcel[0].Address)
+
+		for i := 0; i < cantDays; i++ {
+			cell, _ := excelize.CoordinatesToCellName(4+i, row)
+			for _, datePrice := range delivery.ClientExcel.DatePriceExcel {
+
+				if dateCompare == datePrice.Date {
+					file.SetCellValue("Sheet1", cell, datePrice.Price)
+				}
+
+			}
+			dateCompare = dateCompare.AddDate(0, 0, 1)
+		}
+
+	}
+
+	fileDir = fileDir + "/" + fileName + ".xlsx"
+
+	if err := file.SaveAs(fileDir); err != nil {
+		return "", false
+	}
+
+	return fileDir, true
+
+}

@@ -46,7 +46,7 @@ func GetDeliveryByDeliveryDriver(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := deliDriver.GetReportDeliveryDriver(deliveryDriverModel.ID, dateStart, dateEnd)
+	response, err := deliDriver.GetDeliveryByDeliveryDriver(deliveryDriverModel.ID, dateStart, dateEnd)
 
 	if err != nil {
 		http.Error(rw, "Ocurrio un error al intentar registrar el cadete "+err.Error(), http.StatusInternalServerError)

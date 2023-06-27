@@ -15,8 +15,6 @@ type daterr struct {
 
 func GetOrders(rw http.ResponseWriter, r *http.Request) {
 
-	//dbOrder.FinishedOrder()
-
 	var dat daterr
 
 	err := json.NewDecoder(r.Body).Decode(&dat)
