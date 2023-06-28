@@ -200,6 +200,35 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 		},
 	})
 
+	styleA2, _ := file.NewStyle(&excelize.Style{
+		Font:      &excelize.Font{Size: 14, Bold: true, Color: "070808"},
+		Alignment: &excelize.Alignment{Vertical: "center", Horizontal: "center"},
+		Border: []excelize.Border{
+			{
+				Type:  "left",
+				Color: "#000000",
+				Style: 1,
+			}, {
+				Type:  "top",
+				Color: "#000000",
+				Style: 1,
+			}, {
+				Type:  "bottom",
+				Color: "#000000",
+				Style: 1,
+			}, {
+				Type:  "right",
+				Color: "#000000",
+				Style: 1,
+			},
+		},
+	})
+
+	styleTotal, _ := file.NewStyle(&excelize.Style{
+		Font:      &excelize.Font{Size: 14, Bold: true, Color: "070808"},
+		Alignment: &excelize.Alignment{Vertical: "center", Horizontal: "right"},
+	})
+
 	var cantDays int
 	currentDate := dateStart
 	for currentDate.Before(dateEnd) || currentDate.Equal(dateEnd) {
@@ -220,11 +249,11 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 
 	file.SetCellStyle("Sheet1", startCell, endCell, styleA1)
 
+	file.SetCellStyle("Sheet1", "A2", endCell, styleA2)
+
 	dateColumn := dateStart
 
 	fileName := "Reporte " + deliveriesExcel[0].DeliveryDriver + " " + dateStart.Format("02-01") + " al " + dateEnd.Format("02-01")
-
-	//fmt.Println(sheetName)
 
 	file.SetCellValue("Sheet1", "A1", "REPARTIDOR: "+deliveriesExcel[0].DeliveryDriver)
 	file.SetCellValue("Sheet1", "A2", "Nº ORDEN")
@@ -241,9 +270,11 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 
 	}
 
+	var row int
+
 	for i, delivery := range deliveriesExcel {
 
-		row := i + 3
+		row = i + 3
 
 		file.SetRowHeight("Sheet1", row, 18)
 
@@ -299,6 +330,51 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 		}
 
 	}
+
+	rowInit := (row - len(deliveriesExcel)) + 1
+
+	for i := 0; i < cantDays; i++ {
+		cell, _ := excelize.CoordinatesToCellName(4+i, row+1)
+
+		cellSum1, _ := excelize.CoordinatesToCellName(4+i, rowInit)
+
+		cellSum2, _ := excelize.CoordinatesToCellName(4+i, row)
+
+		formulaType := excelize.STCellFormulaTypeDataTable
+		if err := file.SetCellFormula("Sheet1", cell, "=SUM("+cellSum1+":"+cellSum2+")",
+			excelize.FormulaOpts{Type: &formulaType}); err != nil {
+			fmt.Println(err)
+
+		}
+
+	}
+	cellTotal, _ := excelize.CoordinatesToCellName(3, row+3)
+
+	file.SetCellValue("Sheet1", cellTotal, "TOTAL: ")
+
+	cell, _ := excelize.CoordinatesToCellName(4, row+3)
+
+	cellSum1, _ := excelize.CoordinatesToCellName(4, row+1)
+
+	cellSum2, _ := excelize.CoordinatesToCellName(3+cantDays, row+1)
+
+	formulaType := excelize.STCellFormulaTypeDataTable
+	if err := file.SetCellFormula("Sheet1", cell, "=SUM("+cellSum1+":"+cellSum2+")",
+		excelize.FormulaOpts{Type: &formulaType}); err != nil {
+		fmt.Println(err)
+
+	}
+
+	file.SetRowHeight("Sheet1", row+1, 20)
+	file.SetCellStyle("Sheet1", cellSum1, cellSum2, styleA1)
+
+	file.SetRowHeight("Sheet1", row+3, 22)
+
+	file.SetCellStyle("Sheet1", cellTotal, cell, styleTotal)
+
+	//cell, _ := excelize.CoordinatesToCellName(4, row+1)
+
+	//file.SetCellFormula("Sheet1", cell, "=SUM(D3,D7)")
 
 	fileDir = fileDir + "/" + fileName + ".xlsx"
 

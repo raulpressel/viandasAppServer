@@ -78,7 +78,7 @@ func GetDeliveryByDeliveryDriver(id int, dateStart time.Time, dateEnd time.Time)
 				deli := dtos.Delivery{
 					Deli: dtos.Deli{
 						ID:      delivery.ID,
-						IdOrden: delivery.OrderID,
+						IdOrder: delivery.OrderID,
 						Price:   delivery.DeliveryPrice,
 						Date:    delivery.DeliveryDate,
 						Client: dtos.Client{

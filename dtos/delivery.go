@@ -32,7 +32,7 @@ type Delivery struct {
 type Deli struct {
 	ID      int            `json:"id"`
 	Date    time.Time      `json:"date"`
-	IdOrden int            `json:"idOrden"`
+	IdOrder int            `json:"idOrder"`
 	Client  Client         `json:"client"`
 	Price   float32        `json:"price"`
 	Address AddressRespone `json:"address"`
