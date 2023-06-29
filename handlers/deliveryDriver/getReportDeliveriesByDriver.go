@@ -382,6 +382,8 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 		return "", false
 	}
 
-	return fileDir, true
+	pathDownload := "/public/reports/" + fileName + ".xlsx"
+
+	return pathDownload, true
 
 }
