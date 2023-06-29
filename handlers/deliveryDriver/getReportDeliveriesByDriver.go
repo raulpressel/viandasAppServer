@@ -321,10 +321,14 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 			cell, _ := excelize.CoordinatesToCellName(4+i, row)
 			for _, datePrice := range delivery.ClientExcel.DatePriceExcel {
 
-				if dateCompare == datePrice.Date {
+				if dateCompare.UTC() == datePrice.Date.UTC() {
 					file.SetCellValue("Sheet1", cell, datePrice.Price)
 				}
 
+			}
+
+			if dateCompare.Weekday() == time.Saturday && dateCompare.Weekday() == time.Sunday {
+				dateCompare = dateCompare.AddDate(0, 0, 1)
 			}
 			dateCompare = dateCompare.AddDate(0, 0, 1)
 		}
