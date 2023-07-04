@@ -230,12 +230,16 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 	})
 
 	var cantDays int
+
+	var cleanDays []time.Time
 	currentDate := dateStart
 	for currentDate.Before(dateEnd) || currentDate.Equal(dateEnd) {
 		if currentDate.Weekday() != time.Saturday && currentDate.Weekday() != time.Sunday {
 			cantDays++
+			cleanDays = append(cleanDays, currentDate)
 		}
 		currentDate = currentDate.AddDate(0, 0, 1)
+
 	}
 
 	startCell := "A1"
@@ -251,23 +255,19 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 
 	file.SetCellStyle("Sheet1", "A2", endCell, styleA2)
 
-	dateColumn := dateStart
-
 	fileName := "Reporte " + deliveriesExcel[0].DeliveryDriver + " " + dateStart.Format("02-01") + " al " + dateEnd.Format("02-01")
 
 	file.SetCellValue("Sheet1", "A1", "REPARTIDOR: "+deliveriesExcel[0].DeliveryDriver)
 	file.SetCellValue("Sheet1", "A2", "Nº ORDEN")
 	file.SetCellValue("Sheet1", "B2", "NOMBRE Y APELLIDO")
 	file.SetCellValue("Sheet1", "C2", "DIRECCIÓN")
-	for i := 0; i < cantDays; i++ {
+
+	for i, day := range cleanDays {
 		cell, _ := excelize.CoordinatesToCellName(4+i, 2)
 
-		formatDate := dateColumn.Format("02/01/2006")
+		formatDate := day.Format("02/01/2006")
 
 		file.SetCellValue("Sheet1", cell, formatDate)
-
-		dateColumn = dateColumn.AddDate(0, 0, 1)
-
 	}
 
 	var row int
@@ -312,25 +312,25 @@ func gerateXLSX(deliveriesExcel []DeliveryExcel, dateStart time.Time, dateEnd ti
 
 		file.SetCellStyle("Sheet1", fmt.Sprintf("A%d", row), fmt.Sprintf(column, row), styleData)
 
-		dateCompare := dateStart
 		file.SetCellValue("Sheet1", fmt.Sprintf("A%d", row), delivery.ClientExcel.OrderID)
 		file.SetCellValue("Sheet1", fmt.Sprintf("B%d", row), delivery.ClientExcel.Client)
 		file.SetCellValue("Sheet1", fmt.Sprintf("C%d", row), delivery.ClientExcel.AddressExcel[0].Address)
 
-		for i := 0; i < cantDays; i++ {
+		for i, day := range cleanDays {
+			cell2, _ := excelize.CoordinatesToCellName(4+i, 2)
+
+			formatDate := day.Format("02/01/2006")
+
+			file.SetCellValue("Sheet1", cell2, formatDate)
+
 			cell, _ := excelize.CoordinatesToCellName(4+i, row)
 			for _, datePrice := range delivery.ClientExcel.DatePriceExcel {
 
-				if dateCompare.UTC() == datePrice.Date.UTC() {
+				if day.UTC() == datePrice.Date.UTC() {
 					file.SetCellValue("Sheet1", cell, datePrice.Price)
 				}
 
 			}
-
-			if dateCompare.Weekday() == time.Saturday && dateCompare.Weekday() == time.Sunday {
-				dateCompare = dateCompare.AddDate(0, 0, 1)
-			}
-			dateCompare = dateCompare.AddDate(0, 0, 1)
 		}
 
 	}

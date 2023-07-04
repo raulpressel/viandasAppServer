@@ -6,7 +6,7 @@ type Address struct {
 	Address               AddressRequest `json:"address"`
 	IDClient              int            `json:"idClient"`
 	IDNewFavouriteAddress int            `json:"idNewFavouriteAddress"`
-	IDOldFavouriteAddress int            `json:"idOldFavouriteAddress"`
+	IDOldFavouriteAddress *int            `json:"idOldFavouriteAddress"`
 }
 
 type AddressRequest struct {

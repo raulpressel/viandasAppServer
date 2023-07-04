@@ -1,9 +1,17 @@
+# github.com/fogleman/gg v1.3.0
+## explicit
 # github.com/go-sql-driver/mysql v1.6.0
 ## explicit; go 1.10
 github.com/go-sql-driver/mysql
 # github.com/golang-jwt/jwt v3.2.2+incompatible
 ## explicit
 github.com/golang-jwt/jwt
+# github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+## explicit
+# github.com/golang/geo v0.0.0-20230421003525-6adc56603217
+## explicit; go 1.18
+# github.com/google/uuid v1.1.1
+## explicit
 # github.com/gorilla/mux v1.8.0
 ## explicit; go 1.12
 github.com/gorilla/mux
@@ -19,6 +27,12 @@ github.com/joho/godotenv
 # github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
 ## explicit
 github.com/mohae/deepcopy
+# github.com/paulmach/orb v0.9.2
+## explicit; go 1.15
+github.com/paulmach/orb
+github.com/paulmach/orb/geojson
+github.com/paulmach/orb/internal/length
+github.com/paulmach/orb/planar
 # github.com/richardlehane/mscfb v1.0.4
 ## explicit
 github.com/richardlehane/mscfb
@@ -28,6 +42,10 @@ github.com/richardlehane/msoleps/types
 # github.com/rs/cors v1.8.2
 ## explicit; go 1.13
 github.com/rs/cors
+# github.com/twpayne/go-geom v1.5.2
+## explicit; go 1.18
+# github.com/uber/h3-go/v4 v4.1.0
+## explicit; go 1.18
 # github.com/xuri/efp v0.0.0-20220603152613-6918739fd470
 ## explicit; go 1.11
 github.com/xuri/efp
@@ -37,10 +55,23 @@ github.com/xuri/excelize/v2
 # github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22
 ## explicit; go 1.15
 github.com/xuri/nfp
+# go.mongodb.org/mongo-driver v1.11.4
+## explicit; go 1.13
+go.mongodb.org/mongo-driver/bson
+go.mongodb.org/mongo-driver/bson/bsoncodec
+go.mongodb.org/mongo-driver/bson/bsonoptions
+go.mongodb.org/mongo-driver/bson/bsonrw
+go.mongodb.org/mongo-driver/bson/bsontype
+go.mongodb.org/mongo-driver/bson/primitive
+go.mongodb.org/mongo-driver/x/bsonx/bsoncore
+# go.opencensus.io v0.22.3
+## explicit; go 1.13
 # golang.org/x/crypto v0.8.0
 ## explicit; go 1.17
 golang.org/x/crypto/md4
 golang.org/x/crypto/ripemd160
+# golang.org/x/image v0.5.0
+## explicit; go 1.12
 # golang.org/x/net v0.9.0
 ## explicit; go 1.17
 golang.org/x/net/html
@@ -73,6 +104,10 @@ golang.org/x/text/message
 golang.org/x/text/message/catalog
 golang.org/x/text/runes
 golang.org/x/text/transform
+# golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
+## explicit
+# googlemaps.github.io/maps v1.5.0
+## explicit; go 1.14
 # gorm.io/driver/mysql v1.4.4
 ## explicit; go 1.14
 gorm.io/driver/mysql
