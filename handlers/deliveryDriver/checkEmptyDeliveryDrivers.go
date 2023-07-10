@@ -1,12 +1,20 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	deliDriver "viandasApp/db/deliveryDriver"
 	dbTanda "viandasApp/db/tanda"
 )
 
+type responseEmptyDrivers struct {
+	Status bool  `json:"status"`
+	Error  error `json:"error"`
+}
+
 func CheckEmptyDeliveryDrivers(rw http.ResponseWriter, r *http.Request) {
+
+	var response responseEmptyDrivers
 
 	deliveriesModel, err := deliDriver.CheckEmptyDeliveryDrivers()
 
@@ -42,21 +50,12 @@ func CheckEmptyDeliveryDrivers(rw http.ResponseWriter, r *http.Request) {
 
 		}
 
-		status, err := deliDriver.UpdateDriversInDeliveries(deliveriesModel)
-
-		if err != nil {
-			http.Error(rw, "Ocurrio un error al actualizar los deliveries "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if !status {
-			http.Error(rw, "no se ha logrado actualizar los deliveries ", http.StatusInternalServerError)
-			return
-		}
+		response.Status, response.Error = deliDriver.UpdateDriversInDeliveries(deliveriesModel)
 
 	}
 
-	rw.Header().Set("Content-type", "application/json")
-	rw.WriteHeader(http.StatusCreated)
+	rw.Header().Set("Content-Type", "aplication/json")
+	rw.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(rw).Encode(response)
 
 }

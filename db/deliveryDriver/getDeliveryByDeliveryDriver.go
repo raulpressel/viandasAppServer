@@ -18,7 +18,7 @@ func GetDeliveryByDeliveryDriver(id int, dateStart time.Time, dateEnd time.Time)
 
 	query := db.Model(&deliveryModel)
 
-	query = query.Where("deliveries.delivery_date BETWEEN ? AND ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"))
+	query = query.Where("date(deliveries.delivery_date) BETWEEN ? AND ?", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02"))
 
 	query = query.Where("address_id <> 100")
 

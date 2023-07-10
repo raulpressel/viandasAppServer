@@ -42,6 +42,11 @@ func CancelOrder(modelOrder models.Order) (bool, error) {
 		return false, err
 	}
 
+	if err := tx.Exec("DELETE FROM deliveries WHERE order_id = ?", modelOrder.ID).Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
 	return true, tx.Commit().Error
 
 }
