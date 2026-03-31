@@ -7,7 +7,7 @@ import (
 	"viandasApp/models"
 )
 
-func UploadOrder(orderModel models.Order, dayOrderModel []models.DayOrder) (bool, error, *dtos.SaveOrderResponse) {
+func UploadOrder(orderModel models.Order, dayOrderModel []models.DayOrder, deliveryModel []models.Delivery) (bool, error, *dtos.SaveOrderResponse) {
 
 	var response dtos.SaveOrderResponse
 
@@ -51,6 +51,19 @@ func UploadOrder(orderModel models.Order, dayOrderModel []models.DayOrder) (bool
 		tx.Rollback()
 		return false, err, nil
 	}
+
+	//if len(deliveryModel) > 0 {
+
+	for i := range deliveryModel {
+
+		deliveryModel[i].OrderID = orderModel.ID
+	}
+
+	if err := tx.CreateInBatches(&deliveryModel, len(deliveryModel)).Error; err != nil {
+		tx.Rollback()
+		return false, err, nil
+	}
+	//}
 
 	response.IDOrder = orderModel.ID
 
