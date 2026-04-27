@@ -18,6 +18,9 @@ import (
 	menu "viandasApp/handlers/menu"
 	order "viandasApp/handlers/order"
 	pathology "viandasApp/handlers/pathologies"
+	product "viandasApp/handlers/product"
+	productCategory "viandasApp/handlers/productCategory"
+	productOrder "viandasApp/handlers/productOrder"
 	setting "viandasApp/handlers/setting"
 	tanda "viandasApp/handlers/tanda"
 
@@ -118,6 +121,21 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/tanda/removeAddressToTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.RemoveAddressToTanda))).Methods("POST")
 	router.HandleFunc("/app/tanda/deleteTanda", middlew.CheckDB(middlew.ValidateJWTAdmin(tanda.DeleteTanda))).Methods("DELETE")
 
+	router.HandleFunc("/app/productCategory/getProductCategories", middlew.CheckDB(middlew.ValidateJWTAdmin(productCategory.GetAllProductCategories))).Methods("GET")
+	router.HandleFunc("/app/productCategory/uploadProductCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(productCategory.UploadProductCategory))).Methods("POST")
+	router.HandleFunc("/app/productCategory/editProductCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(productCategory.UpdateProductCategory))).Methods("PUT")
+	router.HandleFunc("/app/productCategory/deleteProductCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(productCategory.DeleteProductCategory))).Methods("DELETE")
+
+	router.HandleFunc("/app/product/getProducts", middlew.CheckDB(product.GetAllProducts)).Methods("GET")
+	router.HandleFunc("/app/product/uploadProduct", middlew.CheckDB(middlew.ValidateJWTAdmin(product.UploadProduct))).Methods("POST")
+	router.HandleFunc("/app/product/editProduct", middlew.CheckDB(middlew.ValidateJWTAdmin(product.UpdateProduct))).Methods("PUT")
+	router.HandleFunc("/app/product/deleteProduct", middlew.CheckDB(middlew.ValidateJWTAdmin(product.DeleteProduct))).Methods("DELETE")
+
+	router.HandleFunc("/app/productOrder/getAllProductOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(productOrder.GetAllProductOrders))).Methods("GET")
+	router.HandleFunc("/app/productOrder/getProductOrdersByDate", middlew.CheckDB(middlew.ValidateJWTAdmin(productOrder.GetProductOrdersByDate))).Methods("GET")
+	router.HandleFunc("/app/productOrder/addProductOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(productOrder.UploadProductOrders))).Methods("POST")
+	router.HandleFunc("/app/productOrder/updateOrderStatus", middlew.CheckDB(middlew.ValidateJWTAdmin(productOrder.UpdateProductOrderStatus))).Methods("GET")
+
 	router.HandleFunc("/app/setting/addDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadDiscount))).Methods("POST")
 	router.HandleFunc("/app/setting/getDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.GetAllDiscount))).Methods("GET")
 	router.HandleFunc("/app/setting/editDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateDiscount))).Methods("PUT")
@@ -197,6 +215,14 @@ func Routes(publicDir string) {
 	db.ExistTable(addModel)
 	db.ExistTable(cPModel)
 	db.ExistTable(addcliModel)
+
+	var productCategoryModel models.ProductCategory
+	var productModel models.Product
+	var productOrderModel models.ProductOrder
+
+	db.ExistTable(productCategoryModel)
+	db.ExistTable(productModel)
+	db.ExistTable(productOrderModel)
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
