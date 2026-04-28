@@ -5,22 +5,20 @@ import (
 	"viandasApp/models"
 )
 
-func UploadProductOrders(orders []models.ProductOrder) ([]models.ProductOrder, error) {
-	db := db.GetDB()
-	tx := db.Begin()
+func UploadProductOrder(order models.ProductOrder) (models.ProductOrder, error) {
+	dbc := db.GetDB()
+	tx := dbc.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
 		}
 	}()
 	if err := tx.Error; err != nil {
-		return nil, err
+		return models.ProductOrder{}, err
 	}
-	for i := range orders {
-		if err := tx.Save(&orders[i]).Error; err != nil {
-			tx.Rollback()
-			return nil, err
-		}
+	if err := tx.Create(&order).Error; err != nil {
+		tx.Rollback()
+		return models.ProductOrder{}, err
 	}
-	return orders, tx.Commit().Error
+	return order, tx.Commit().Error
 }

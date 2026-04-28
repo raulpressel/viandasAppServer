@@ -133,7 +133,7 @@ func Routes(publicDir string) {
 
 	router.HandleFunc("/app/productOrder/getAllProductOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(productOrder.GetAllProductOrders))).Methods("GET")
 	router.HandleFunc("/app/productOrder/getProductOrdersByDate", middlew.CheckDB(middlew.ValidateJWTAdmin(productOrder.GetProductOrdersByDate))).Methods("GET")
-	router.HandleFunc("/app/productOrder/addProductOrders", middlew.CheckDB(middlew.ValidateJWTAdmin(productOrder.UploadProductOrders))).Methods("POST")
+	router.HandleFunc("/app/productOrder/addProductOrder", middlew.CheckDB(productOrder.UploadProductOrder)).Methods("POST")
 	router.HandleFunc("/app/productOrder/updateOrderStatus", middlew.CheckDB(middlew.ValidateJWTAdmin(productOrder.UpdateProductOrderStatus))).Methods("GET")
 
 	router.HandleFunc("/app/setting/addDiscount", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadDiscount))).Methods("POST")
@@ -219,10 +219,12 @@ func Routes(publicDir string) {
 	var productCategoryModel models.ProductCategory
 	var productModel models.Product
 	var productOrderModel models.ProductOrder
+	var productOrderItemModel models.ProductOrderItem
 
 	db.ExistTable(productCategoryModel)
 	db.ExistTable(productModel)
 	db.ExistTable(productOrderModel)
+	db.ExistTable(productOrderItemModel)
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
