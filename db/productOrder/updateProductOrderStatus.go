@@ -5,14 +5,14 @@ import (
 	"viandasApp/models"
 )
 
-func GetProductOrderById(id int) (models.ProductOrder, error) {
-	db := db.GetDB()
-	var model models.ProductOrder
-	err := db.First(&model, id).Error
+func GetProductOrderItemById(id int) (models.ProductOrderItem, error) {
+	dbc := db.GetDB()
+	var model models.ProductOrderItem
+	err := dbc.First(&model, id).Error
 	return model, err
 }
 
-func UpdateProductOrderStatus(model models.ProductOrder) (bool, error) {
+func UpdateProductOrderItemStatus(model models.ProductOrderItem) (bool, error) {
 	dbc := db.GetDB()
 	err := dbc.Model(&model).Update("status", model.Status).Error
 	return err == nil, err

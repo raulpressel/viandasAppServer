@@ -20,9 +20,11 @@ func GetProductOrdersByDate(date time.Time) ([]dtos.ProductOrderResponse, error)
 		var items []dtos.ProductOrderItemResponse
 		for _, p := range o.Products {
 			items = append(items, dtos.ProductOrderItemResponse{
+				ID:                   p.ID,
 				ProductTitle:         p.ProductTitle,
 				ProductCategoryTitle: p.ProductCategoryTitle,
 				Cant:                 p.Cant,
+				Status:               p.Status,
 			})
 		}
 		result = append(result, dtos.ProductOrderResponse{

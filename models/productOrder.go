@@ -12,6 +12,7 @@ type ProductOrderItem struct {
 	ProductTitle         string
 	ProductCategoryTitle string
 	Cant                 int
+	Status               string
 }
 
 type ProductOrder struct {

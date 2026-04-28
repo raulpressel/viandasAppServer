@@ -3,9 +3,11 @@ package dtos
 import "time"
 
 type ProductOrderItemResponse struct {
+	ID                   uint   `json:"id"`
 	ProductTitle         string `json:"productTitle"`
 	ProductCategoryTitle string `json:"productCategoryTitle"`
 	Cant                 int    `json:"cant"`
+	Status               string `json:"status"`
 }
 
 type ProductOrderResponse struct {
@@ -21,6 +23,7 @@ type ProductOrderItemRequest struct {
 	ProductTitle         string `json:"productTitle"`
 	ProductCategoryTitle string `json:"productCategoryTitle"`
 	Cant                 int    `json:"cant"`
+	Status               string `json:"status"`
 }
 
 type ProductOrderRequest struct {
