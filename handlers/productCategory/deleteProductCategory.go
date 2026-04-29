@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	dbProduct "viandasApp/db/product"
 	db "viandasApp/db/productCategory"
 )
 
@@ -17,6 +18,16 @@ func DeleteProductCategory(rw http.ResponseWriter, r *http.Request) {
 	model, err := db.GetProductCategoryById(id)
 	if err != nil {
 		http.Error(rw, "no fue posible recuperar la categoria por ID", http.StatusInternalServerError)
+		return
+	}
+
+	count, err := dbProduct.CountProductsByCategory(id)
+	if err != nil {
+		http.Error(rw, "no fue posible verificar los productos de la categoria", http.StatusInternalServerError)
+		return
+	}
+	if count > 0 {
+		http.Error(rw, "no se puede eliminar una categoria que tiene productos asociados", http.StatusConflict)
 		return
 	}
 

@@ -127,6 +127,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/productCategory/deleteProductCategory", middlew.CheckDB(middlew.ValidateJWTAdmin(productCategory.DeleteProductCategory))).Methods("DELETE")
 
 	router.HandleFunc("/app/product/getProducts", middlew.CheckDB(product.GetAllProducts)).Methods("GET")
+	router.HandleFunc("/app/product/getProductsAdmin", middlew.CheckDB(middlew.ValidateJWTAdmin(product.GetAllProductsAdmin))).Methods("GET")
 	router.HandleFunc("/app/product/uploadProduct", middlew.CheckDB(middlew.ValidateJWTAdmin(product.UploadProduct))).Methods("POST")
 	router.HandleFunc("/app/product/editProduct", middlew.CheckDB(middlew.ValidateJWTAdmin(product.UpdateProduct))).Methods("PUT")
 	router.HandleFunc("/app/product/deleteProduct", middlew.CheckDB(middlew.ValidateJWTAdmin(product.DeleteProduct))).Methods("DELETE")
