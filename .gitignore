@@ -18,3 +18,4 @@ local.env
 privkey.pem
 .gitignore
 certi.pem
+*.md
