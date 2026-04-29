@@ -7,11 +7,11 @@ import (
 )
 
 func UpdateProductOrderStatus(rw http.ResponseWriter, r *http.Request) {
-	ID := r.URL.Query().Get("idProductOrder")
+	ID := r.URL.Query().Get("idProductOrderItem")
 	status := r.URL.Query().Get("status")
 
 	if len(ID) < 1 {
-		http.Error(rw, "debe enviar el parametro idProductOrder", http.StatusBadRequest)
+		http.Error(rw, "debe enviar el parametro idProductOrderItem", http.StatusBadRequest)
 		return
 	}
 	if status != "pendiente" && status != "entregado" {
@@ -20,17 +20,17 @@ func UpdateProductOrderStatus(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	id, _ := strconv.Atoi(ID)
-	model, err := db.GetProductOrderById(id)
+	model, err := db.GetProductOrderItemById(id)
 	if err != nil {
-		http.Error(rw, "no fue posible recuperar la orden por ID", http.StatusInternalServerError)
+		http.Error(rw, "no fue posible recuperar el ítem de orden por ID", http.StatusInternalServerError)
 		return
 	}
 
 	model.Status = status
 
-	ok, err := db.UpdateProductOrderStatus(model)
+	ok, err := db.UpdateProductOrderItemStatus(model)
 	if err != nil || !ok {
-		http.Error(rw, "No se pudo actualizar el estado de la orden", http.StatusInternalServerError)
+		http.Error(rw, "No se pudo actualizar el estado del ítem", http.StatusInternalServerError)
 		return
 	}
 

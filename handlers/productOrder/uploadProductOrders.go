@@ -8,47 +8,55 @@ import (
 	"viandasApp/models"
 )
 
-func UploadProductOrders(rw http.ResponseWriter, r *http.Request) {
-	var req []dtos.ProductOrderRequest
+func UploadProductOrder(rw http.ResponseWriter, r *http.Request) {
+	var req dtos.ProductOrderRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(rw, "Error en los datos recibidos "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	var orders []models.ProductOrder
-	for _, item := range req {
-		orders = append(orders, models.ProductOrder{
-			ClientName:           item.ClientName,
-			ClientLastName:       item.ClientLastName,
-			ProductCategoryTitle: item.ProductCategoryTitle,
-			ProductTitle:         item.ProductTitle,
-			Cant:                 item.Cant,
-			Date:                 item.Date,
-			Status:               item.Status,
+	var items []models.ProductOrderItem
+	for _, p := range req.Products {
+		items = append(items, models.ProductOrderItem{
+			ProductTitle:         p.ProductTitle,
+			ProductCategoryTitle: p.ProductCategoryTitle,
+			Cant:                 p.Cant,
 		})
 	}
 
-	saved, err := db.UploadProductOrders(orders)
+	order := models.ProductOrder{
+		ClientName:     req.ClientName,
+		ClientLastName: req.ClientLastName,
+		Date:           req.Date,
+		Status:         req.Status,
+		Products:       items,
+	}
+
+	saved, err := db.UploadProductOrder(order)
 	if err != nil {
-		http.Error(rw, "No se pudo guardar las ordenes de productos", http.StatusBadRequest)
+		http.Error(rw, "No se pudo guardar la orden de productos", http.StatusBadRequest)
 		return
 	}
 
-	var responseModel []dtos.AllProductOrderResponse
-	for _, o := range saved {
-		responseModel = append(responseModel, dtos.AllProductOrderResponse{
-			ID:                   o.ID,
-			ClientName:           o.ClientName,
-			ClientLastName:       o.ClientLastName,
-			ProductCategoryTitle: o.ProductCategoryTitle,
-			ProductTitle:         o.ProductTitle,
-			Cant:                 o.Cant,
-			Date:                 o.Date,
-			Status:               o.Status,
+	var itemsResponse []dtos.ProductOrderItemResponse
+	for _, p := range saved.Products {
+		itemsResponse = append(itemsResponse, dtos.ProductOrderItemResponse{
+			ProductTitle:         p.ProductTitle,
+			ProductCategoryTitle: p.ProductCategoryTitle,
+			Cant:                 p.Cant,
 		})
 	}
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
-	json.NewEncoder(rw).Encode(map[string]interface{}{"productOrders": responseModel})
+	json.NewEncoder(rw).Encode(map[string]interface{}{
+		"productOrder": dtos.ProductOrderResponse{
+			ID:             saved.ID,
+			ClientName:     saved.ClientName,
+			ClientLastName: saved.ClientLastName,
+			Date:           saved.Date,
+			Status:         saved.Status,
+			Products:       itemsResponse,
+		},
+	})
 }
