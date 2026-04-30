@@ -322,10 +322,6 @@ func calcDeliveryPrice(aux []auxCalcDeliveryDriver) (float32, bool) {
 				return 0.0, false
 			}
 
-			priceFactor := PriceFactor(uniqueDeliveries[i].amount)
-
-			zoneModel.Price *= priceFactor
-
 			delivery = delivery + zoneModel.Price
 
 		}

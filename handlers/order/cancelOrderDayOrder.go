@@ -61,8 +61,6 @@ func CancelOrderDayOrder(rw http.ResponseWriter, r *http.Request) {
 
 		modelDelivery.DeliveryMenuAmount = modelDelivery.DeliveryMenuAmount - cant
 
-		priceFactor := PriceFactor(modelDelivery.DeliveryMenuAmount)
-
 		modelCategory, err := dbCategory.GetCategoryById(modelDayMenu.CategoryID)
 		if err != nil {
 			http.Error(rw, "Category no encontrada con el ID solicitado", http.StatusBadRequest)
@@ -84,7 +82,7 @@ func CancelOrderDayOrder(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		modelDelivery.DeliveryPrice = zoneModel.Price * priceFactor
+		modelDelivery.DeliveryPrice = zoneModel.Price
 
 		delete = false
 
