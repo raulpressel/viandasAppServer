@@ -317,8 +317,7 @@ func processDeliveryOrder(deliverysModel []models.Delivery) ([]models.Delivery, 
 			if err != nil {
 
 			}
-			priceFactor := PriceFactor(uniqueDeliveries[i].DeliveryMenuAmount)
-			uniqueDeliveries[i].DeliveryPrice = zoneModel.Price * priceFactor
+			uniqueDeliveries[i].DeliveryPrice = zoneModel.Price
 		}
 
 	}
