@@ -19,3 +19,4 @@ privkey.pem
 .gitignore
 certi.pem
 *.md
+.claude/
