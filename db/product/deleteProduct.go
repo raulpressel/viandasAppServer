@@ -16,7 +16,7 @@ func DeleteProduct(model models.Product) (bool, error) {
 	if err := tx.Error; err != nil {
 		return false, err
 	}
-	if err := tx.Save(&model).Error; err != nil {
+	if err := tx.Delete(&model).Error; err != nil {
 		tx.Rollback()
 		return false, err
 	}

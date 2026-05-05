@@ -20,7 +20,15 @@ func DeleteProduct(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model.Available = false
+	hasOrders, err := db.HasProductOrders(model.Title)
+	if err != nil {
+		http.Error(rw, "no fue posible verificar los pedidos del producto", http.StatusInternalServerError)
+		return
+	}
+	if hasOrders {
+		http.Error(rw, "no se puede eliminar un producto que tiene pedidos asociados", http.StatusConflict)
+		return
+	}
 
 	status, err := db.DeleteProduct(model)
 	if err != nil || !status {
