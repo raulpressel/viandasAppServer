@@ -20,22 +20,26 @@ func SetFavouriteAddress(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	oldFavAddressModel, err = dbAddress.GetAddressById(addressDto.IDOldFavouriteAddress)
-	oldFavAddressModel.Favourite = false
+	if addressDto.IDOldFavouriteAddress != nil {
+
+		oldFavAddressModel, err = dbAddress.GetAddressById(*addressDto.IDOldFavouriteAddress)
+		oldFavAddressModel.Favourite = false
+
+		statusOld, err := dbAddress.UpdateAddress(oldFavAddressModel)
+		if err != nil {
+			http.Error(rw, "Ocurrio un error al modificar la dirección "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if !statusOld {
+			http.Error(rw, "no se ha logrado modificar la dirección en la BD", http.StatusInternalServerError)
+			return
+		}
+
+	}
 
 	newFavAddressModel, err = dbAddress.GetAddressById(addressDto.IDNewFavouriteAddress)
 	newFavAddressModel.Favourite = true
-
-	statusOld, err := dbAddress.UpdateAddress(oldFavAddressModel)
-	if err != nil {
-		http.Error(rw, "Ocurrio un error al modificar la dirección "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if !statusOld {
-		http.Error(rw, "no se ha logrado modificar la dirección en la BD", http.StatusInternalServerError)
-		return
-	}
 
 	statusNew, err := dbAddress.UpdateAddress(newFavAddressModel)
 	if err != nil {

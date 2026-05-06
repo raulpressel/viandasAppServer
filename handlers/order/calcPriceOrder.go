@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"math"
 	"net/http"
-	"sort"
 	"time"
 
 	dbAddress "viandasApp/db/address"
@@ -13,7 +12,6 @@ import (
 	dbMenu "viandasApp/db/menu"
 	dbSetting "viandasApp/db/setting"
 	"viandasApp/dtos"
-	"viandasApp/models"
 )
 
 var priceTable = []struct {
@@ -49,23 +47,16 @@ var priceTable = []struct {
 }
 
 type responseTotal struct {
-	SubTotal float32 `json:"subTotal"`
-	Discount float32 `json:"discount"`
-	Total    float32 `json:"total"`
-	Delivery float32 `json:"delivery"`
+	SubTotal   float32 `json:"subTotal"`
+	Discount   float32 `json:"discount"`
+	Percentage float32 `json:"percentage"`
+	Total      float32 `json:"total"`
+	Delivery   float32 `json:"delivery"`
 }
 
 func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 	var orderDto dtos.OrderRequest
-
-	var orderModel models.Order
-
-	var dOrderModel models.DayOrder
-
-	var response responseTotal
-
-	var dates []time.Time
 
 	err := json.NewDecoder(r.Body).Decode(&orderDto)
 
@@ -86,103 +77,134 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orderModel.ClientID = orderDto.IDClient
+	response, valid := ProcessOrder(orderDto)
 
-	orderModel.Observation = orderDto.Observation
-
-	//orderModel.Total = orderDto.Total
-
-	orderModel.StatusOrderID = 1 //se da de alta orden y queda con estado 1 - Activa
-
-	orderModel.Paid = false
-
-	orderModel.OrderDate, err = time.Parse(time.RFC3339, orderDto.Date)
-	if err != nil {
-		http.Error(rw, "Error en el formato de fecha recibido "+err.Error(), http.StatusBadRequest)
+	if !valid {
+		http.Error(rw, "Ocurrio un error al procesar los calculos de la orden "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	rw.Header().Set("Content-type", "application/json")
+	rw.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(rw).Encode(response)
+
+}
+
+func allEqual(arr []int) bool {
+	for i := 1; i < len(arr); i++ {
+		if arr[i] != arr[0] {
+			return false
+		}
+	}
+	return true
+}
+
+func isWeekday(t time.Time) bool {
+	return t.Weekday() >= time.Monday && t.Weekday() <= time.Friday
+}
+
+func worksDays(year, week int) []time.Time {
+
+	t := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
+
+	daysToAdd := time.Duration((week-1)*7-int(t.Weekday())) * 24 * time.Hour
+
+	firstDay := t.Add(daysToAdd)
+
+	weekdays := make([]time.Time, 0)
+	for i := 0; i < 7; i++ {
+		if isWeekday(firstDay) {
+			weekdays = append(weekdays, firstDay)
+		}
+		firstDay = firstDay.AddDate(0, 0, 1)
+	}
+	return weekdays
+
+}
+
+func PriceFactor(amount int) float32 {
+	var priceFactor float32 = 1.0
+	for _, entry := range priceTable {
+		if amount >= entry.MinAmount && amount <= entry.MaxAmount {
+			priceFactor = entry.PriceFactor
+			break
+		}
+	}
+
+	return priceFactor
+
+}
+
+type auxCalcDeliveryDriver struct {
+	amount    int
+	date      time.Time
+	idAddress int
+}
+
+func ProcessOrder(orderDto dtos.OrderRequest) (responseTotal, bool) {
+
+	var auxCalc responseTotal
+
+	var dates []time.Time
 
 	var amount int = 0
 
 	var price float32 = 0.0
 
+	var auxsCalcsDD []auxCalcDeliveryDriver
+
+	var auxCalcDD auxCalcDeliveryDriver
+
 	for _, day := range orderDto.DaysOrderRequest {
 
 		if day.Amount > 0 {
 
-			dOrderModel.Amount = day.Amount
-
-			amount = amount + dOrderModel.Amount
+			amount = amount + day.Amount
 
 			dayMenuModel, err := dbMenu.GetDayMenuById(day.IDDayFood)
 
 			if err != nil {
-				http.Error(rw, "Ocurrio un error al obtener el ID del menu "+err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			if dayMenuModel.ID == 0 {
-				http.Error(rw, "El Day Menu enviado no existe ", http.StatusBadRequest)
-				return
+				return auxCalc, false
 			}
 
 			dates = append(dates, dayMenuModel.Date)
 
-			cat, _ := dbCategory.GetCategoryById(dayMenuModel.CategoryID)
-
-			price = price + (cat.Price * float32(dOrderModel.Amount))
-
-			dOrderModel.DayMenuID = day.IDDayFood
-
-			dOrderModel.Observation = day.Observation
-
-			//dOrderModel.Active = true
-
-			dOrderModel.Status = true
-
-			if day.IDAddress != 100 {
-
-				addressModel, err := dbAddress.GetAddressById(day.IDAddress)
-
-				if err != nil {
-					http.Error(rw, "Ocurrio un error al obtener el ID de la direccion "+err.Error(), http.StatusInternalServerError)
-					return
-				}
-
-				if addressModel.ID == 0 {
-					http.Error(rw, "La direccion enviada no existe ", http.StatusBadRequest)
-					return
-				}
-
-				zoneModel, _ := dbSetting.GetZoneById(addressModel.IDZone)
-
-				var priceFactor float32 = 1.0
-				for _, entry := range priceTable {
-					if day.Amount >= entry.MinAmount && day.Amount <= entry.MaxAmount {
-						priceFactor = entry.PriceFactor
-						break
-					}
-				}
-
-				zoneModel.Price *= priceFactor
-
-				response.Delivery = response.Delivery + zoneModel.Price
-
+			cat, err := dbCategory.GetCategoryById(dayMenuModel.CategoryID)
+			if err != nil {
+				return auxCalc, false
 			}
+
+			price = price + (cat.Price * float32(day.Amount))
+
+			auxCalcDD.amount = day.Amount
+			auxCalcDD.date = dayMenuModel.Date
+			auxCalcDD.idAddress = day.IDAddress
+
+			auxsCalcsDD = append(auxsCalcsDD, auxCalcDD)
 
 		}
 
 	}
 
-	discounts, _ := dbSetting.GetDiscounts()
+	if len(auxsCalcsDD) > 0 {
 
-	sort.Slice(discounts, func(i, j int) bool {
-		return discounts[i].Cant > discounts[j].Cant
-	})
+		var valid bool
 
-	response.SubTotal = price
+		auxCalc.Delivery, valid = calcDeliveryPrice(auxsCalcsDD)
 
-	response.Discount = 0.0
+		if !valid {
+			return auxCalc, false
+		}
+	}
+
+	discounts, err := dbSetting.GetDiscounts()
+	if err != nil {
+		return auxCalc, false
+	}
+
+	auxCalc.SubTotal = price
+
+	auxCalc.Discount = 0.0
 
 	var filterDates []time.Time
 
@@ -243,54 +265,67 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 
 	for i := range discounts {
 		if amount >= discounts[i].Cant {
-			response.Discount = price * (discounts[i].Percentage / 100)
+			auxCalc.Discount = price * (discounts[i].Percentage / 100)
+			auxCalc.Percentage = discounts[i].Percentage
 			break
 		} else if i < len(discounts)-1 && amount >= discounts[i+1].Cant && amount < discounts[i].Cant {
-			response.Discount = price * (discounts[i+1].Percentage / 100)
+			auxCalc.Discount = price * (discounts[i+1].Percentage / 100)
+			auxCalc.Percentage = discounts[i+1].Percentage
 			break
 		}
 	}
 
-	redon := math.RoundToEven(float64(response.Discount))
+	redon := math.RoundToEven(float64(auxCalc.Discount))
 
-	response.Discount = float32(redon)
+	auxCalc.Discount = float32(redon)
 
-	response.Total = (response.SubTotal - response.Discount) + response.Delivery
+	auxCalc.Total = (auxCalc.SubTotal - auxCalc.Discount) + auxCalc.Delivery
 
-	rw.Header().Set("Content-type", "application/json")
-	rw.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(rw).Encode(response)
+	return auxCalc, true
 
 }
 
-func allEqual(arr []int) bool {
-	for i := 1; i < len(arr); i++ {
-		if arr[i] != arr[0] {
-			return false
+func calcDeliveryPrice(aux []auxCalcDeliveryDriver) (float32, bool) {
+
+	var delivery float32
+
+	accumulatedValues := make(map[time.Time]auxCalcDeliveryDriver)
+
+	for _, delivery := range aux {
+
+		if accumulatedDelivery, ok := accumulatedValues[delivery.date]; ok {
+
+			accumulatedDelivery.amount += delivery.amount
+
+			accumulatedValues[delivery.date] = accumulatedDelivery
+		} else {
+
+			accumulatedValues[delivery.date] = delivery
 		}
 	}
-	return true
-}
 
-func isWeekday(t time.Time) bool {
-	return t.Weekday() >= time.Monday && t.Weekday() <= time.Friday
-}
-
-func worksDays(year, week int) []time.Time {
-
-	t := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
-
-	daysToAdd := time.Duration((week-1)*7-int(t.Weekday())) * 24 * time.Hour
-
-	firstDay := t.Add(daysToAdd)
-
-	weekdays := make([]time.Time, 0)
-	for i := 0; i < 7; i++ {
-		if isWeekday(firstDay) {
-			weekdays = append(weekdays, firstDay)
-		}
-		firstDay = firstDay.AddDate(0, 0, 1)
+	uniqueDeliveries := make([]auxCalcDeliveryDriver, 0, len(accumulatedValues))
+	for _, accumulatedDelivery := range accumulatedValues {
+		uniqueDeliveries = append(uniqueDeliveries, accumulatedDelivery)
 	}
-	return weekdays
 
+	for i := range uniqueDeliveries {
+		if uniqueDeliveries[i].idAddress != 100 {
+			addressModel, err := dbAddress.GetAddressById(uniqueDeliveries[i].idAddress)
+
+			if err != nil {
+				return 0.0, false
+			}
+
+			zoneModel, err := dbSetting.GetZoneById(addressModel.IDZone)
+			if err != nil {
+				return 0.0, false
+			}
+
+			delivery = delivery + zoneModel.Price
+
+		}
+	}
+
+	return delivery, true
 }

@@ -43,7 +43,10 @@ func GetAllClientNotInTandas() (*[]dtos.Client, error) {
 		clientResponse.BornDate = client.BornDate
 		clientResponse.Email = client.Email
 
-		notesClientModel, _ := GetNoteByClientId(client.ID)
+		notesClientModel, err := GetNoteByClientId(client.ID)
+		if err != nil {
+			return nil, err
+		}
 
 		clientResponse.Note.ID = notesClientModel.ID
 		clientResponse.Note.Note = notesClientModel.Note

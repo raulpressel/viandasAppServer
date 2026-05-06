@@ -13,4 +13,5 @@ type Menu struct {
 	ID        int `gorm:"primary_key"`
 	DateStart time.Time
 	DateEnd   time.Time
+	Active    bool
 }

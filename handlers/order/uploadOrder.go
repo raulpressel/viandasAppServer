@@ -9,6 +9,8 @@ import (
 	dbClient "viandasApp/db/client"
 	dbMenu "viandasApp/db/menu"
 	dbOrder "viandasApp/db/order"
+	dbSetting "viandasApp/db/setting"
+	dbTanda "viandasApp/db/tanda"
 	"viandasApp/dtos"
 	"viandasApp/models"
 )
@@ -34,6 +36,10 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	var dayOrderModel []models.DayOrder
 
+	var deliveryModel models.Delivery
+
+	var deliverysModel []models.Delivery
+
 	err := json.NewDecoder(r.Body).Decode(&orderDto)
 
 	if err != nil {
@@ -53,11 +59,18 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	auxCalc, valid := ProcessOrder(orderDto)
+
+	if !valid {
+		http.Error(rw, "Ocurrio un error al procesar los calculos de la orden "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	orderModel.ClientID = orderDto.IDClient
 
 	orderModel.Observation = orderDto.Observation
 
-	orderModel.Total = orderDto.Total
+	orderModel.Total = auxCalc.Total
 
 	orderModel.StatusOrderID = 1 //se da de alta orden y queda con estado 1 - Activa
 
@@ -74,6 +87,8 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		if day.Amount > 0 {
 
 			dOrderModel.Amount = day.Amount
+
+			deliveryModel.DeliveryMenuAmount = day.Amount
 
 			dayMenuModel, err := dbMenu.GetDayMenuById(day.IDDayFood)
 
@@ -109,12 +124,61 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 			dOrderModel.AddressID = day.IDAddress
 
+			deliveryModel.AddressID = dOrderModel.AddressID
+
+			deliveryModel.Status = false
+
+			categoryModel, err := dbCategories.GetCategoryById(dayMenuModel.CategoryID)
+
+			if err != nil {
+				http.Error(rw, "Ocurrio un error al obtener el ID de la categoria "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			deliveryModel.DeliveryMenuPrice = categoryModel.Price * float32(dOrderModel.Amount)
+
+			deliveryModel.DeliveryDate = dayMenuModel.Date
+
+			idTanda, err := dbTanda.CheckExistTandaByAddressId(deliveryModel.AddressID)
+
+			if err != nil {
+				http.Error(rw, "Ocurrio un error al obtener el ID de la Tanda "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if idTanda > 0 {
+				deliveryDriverId, err := dbTanda.GetDeliveryDriverIdByTandaId(idTanda)
+				if err != nil {
+					http.Error(rw, "Ocurrio un error al obtener el ID del Cadete "+err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				tempID := uint(deliveryDriverId)
+
+				deliveryModel.DeliveryDriverID = &tempID
+			} else {
+				deliveryModel.DeliveryDriverID = nil
+			}
+
+			deliveryModel.PercentageDiscount = auxCalc.Percentage
+
 			dayOrderModel = append(dayOrderModel, dOrderModel)
+
+			//if deliveryModel.AddressID != 100 {
+			deliverysModel = append(deliverysModel, deliveryModel)
+			//}
 
 		}
 	}
 
-	status, err, orderId := dbOrder.UploadOrder(orderModel, dayOrderModel)
+	deliveriesModel, valid := processDeliveryOrder(deliverysModel)
+
+	if !valid {
+		http.Error(rw, "Ocurrio un error al calcular los valores del delivery order", http.StatusInternalServerError)
+		return
+	}
+
+	status, err, orderId := dbOrder.UploadOrder(orderModel, dayOrderModel, deliveriesModel)
 
 	if err != nil {
 		http.Error(rw, "Ocurrio un error al intentar ingresar el pedido "+err.Error(), http.StatusInternalServerError)
@@ -126,7 +190,9 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	categoriesCant, cantDelivery := calcAmounts(dayOrderModel)
+	categoriesCant := calcAmountsCategories(dayOrderModel)
+
+	cantDelivery := calcCantDeliveries(deliveriesModel)
 
 	res := response{
 		OrderId:      orderId.IDOrder,
@@ -141,22 +207,33 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 }
 
-func calcAmounts(dayOrderModel []models.DayOrder) (*[]dtos.CategoryTable, int) {
+func calcCantDeliveries(deliveriesModel []models.Delivery) int {
+
+	var cantDeliveries int
+
+	for _, deli := range deliveriesModel {
+
+		if deli.AddressID != 100 {
+			cantDeliveries++
+		}
+
+	}
+
+	return cantDeliveries
+}
+
+func calcAmountsCategories(dayOrderModel []models.DayOrder) *[]dtos.CategoryTable {
 
 	var arr []int
-	var cantEnvios int
 
 	var categories []dtos.CategoryTable
 
 	for _, day := range dayOrderModel {
-		if day.AddressID != 100 {
-			cantEnvios++
-		}
 
 		dayMenu, err := dbMenu.GetDayMenuById(day.DayMenuID)
 
 		if err != nil {
-			return nil, cantEnvios
+			return nil
 		}
 
 		if day.Amount > 1 {
@@ -173,7 +250,7 @@ func calcAmounts(dayOrderModel []models.DayOrder) (*[]dtos.CategoryTable, int) {
 	for num, count := range counts {
 		categoryModel, err := dbCategories.GetCategoryById(num)
 		if err != nil {
-			return nil, cantEnvios
+			return nil
 		}
 		category := dtos.CategoryTable{
 			Cant: count,
@@ -185,7 +262,7 @@ func calcAmounts(dayOrderModel []models.DayOrder) (*[]dtos.CategoryTable, int) {
 		categories = append(categories, category)
 	}
 
-	return &categories, cantEnvios
+	return &categories
 
 }
 
@@ -203,4 +280,47 @@ func multiplyElement(element, multiplier int) []int {
 		arr[i] = element
 	}
 	return arr
+}
+
+func processDeliveryOrder(deliverysModel []models.Delivery) ([]models.Delivery, bool) {
+
+	accumulatedValues := make(map[time.Time]models.Delivery)
+
+	// Recorrer el array de deliveries
+	for _, delivery := range deliverysModel {
+		// Verificar si la fecha ya existe en el map
+		if accumulatedDelivery, ok := accumulatedValues[delivery.DeliveryDate]; ok {
+			// La fecha ya existe, acumular los valores
+			accumulatedDelivery.DeliveryMenuPrice += delivery.DeliveryMenuPrice
+			accumulatedDelivery.DeliveryMenuAmount += delivery.DeliveryMenuAmount
+			accumulatedValues[delivery.DeliveryDate] = accumulatedDelivery
+		} else {
+			// La fecha no existe, agregar el delivery completo al map
+			accumulatedValues[delivery.DeliveryDate] = delivery
+		}
+	}
+
+	// Crear un nuevo array con los valores acumulados
+	uniqueDeliveries := make([]models.Delivery, 0, len(accumulatedValues))
+	for _, accumulatedDelivery := range accumulatedValues {
+		uniqueDeliveries = append(uniqueDeliveries, accumulatedDelivery)
+	}
+
+	for i := range uniqueDeliveries {
+		if uniqueDeliveries[i].AddressID != 100 {
+			addressModel, err := dbAddress.GetAddressById(uniqueDeliveries[i].AddressID)
+
+			if err != nil {
+				return uniqueDeliveries, false
+			}
+			zoneModel, err := dbSetting.GetZoneById(addressModel.IDZone)
+			if err != nil {
+
+			}
+			uniqueDeliveries[i].DeliveryPrice = zoneModel.Price
+		}
+
+	}
+
+	return uniqueDeliveries, true
 }

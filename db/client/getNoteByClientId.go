@@ -1,8 +1,11 @@
 package db
 
 import (
+	"errors"
 	"viandasApp/db"
 	"viandasApp/models"
+
+	"gorm.io/gorm"
 )
 
 func GetNoteByClientId(idClient int) (*models.ClientNotes, error) {
@@ -13,6 +16,11 @@ func GetNoteByClientId(idClient int) (*models.ClientNotes, error) {
 
 	err := db.First(&clientNotesModel, "client_id = ?", idClient).Error
 
-	return &clientNotesModel, err
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		clientNotesModel.ClientID = idClient
+		AddClientNote(clientNotesModel)
+	}
+
+	return &clientNotesModel, nil
 
 }
