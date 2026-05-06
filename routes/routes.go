@@ -227,7 +227,15 @@ func Routes(publicDir string) {
 	db.ExistTable(cPModel)
 	db.ExistTable(addcliModel)
 
-	db.GetDB().AutoMigrate(&models.ProductCategory{}, &models.Product{}, &models.ProductOrder{}, &models.ProductOrderItem{})
+	var productCategory models.ProductCategory
+	var product models.Product
+	var productOrder models.ProductOrder
+	var productOrderItem models.ProductOrderItem
+
+	db.ExistTable(productCategory)
+	db.ExistTable(product)
+	db.ExistTable(productOrder)
+	db.ExistTable(productOrderItem)
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
