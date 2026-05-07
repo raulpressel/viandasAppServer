@@ -10,4 +10,6 @@ type Product struct {
 	Available         bool
 	ProductCategoryID int
 	ProductCategory   ProductCategory `gorm:"foreignKey:ProductCategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	LocationID        *int
+	LocationImg       LocationImg `gorm:"foreignKey:LocationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

@@ -7,6 +7,7 @@ type AllProductResponse struct {
 	Price             float32 `json:"price"`
 	Available         bool    `json:"available"`
 	ProductCategoryID int     `json:"productCategoryId"`
+	UrlImage          string  `json:"urlImage"`
 }
 
 type ProductRequest struct {
