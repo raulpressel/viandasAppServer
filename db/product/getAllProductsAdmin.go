@@ -6,11 +6,12 @@ import (
 )
 
 func GetAllProductsAdmin() ([]dtos.AllProductResponse, error) {
-	db := db.GetDB()
+	conn := db.GetDB()
 	var responseModel []dtos.AllProductResponse
-	err := db.Table("products").
-		Select("id, title, description, price, available, product_category_id").
-		Where("deleted_at IS NULL").
+	err := conn.Table("products").
+		Select("products.id, products.title, products.description, products.price, products.available, products.product_category_id, COALESCE(location_imgs.location, '') as url_image").
+		Joins("LEFT JOIN location_imgs ON location_imgs.id = products.location_id").
+		Where("products.deleted_at IS NULL").
 		Scan(&responseModel).Error
 	return responseModel, err
 }
