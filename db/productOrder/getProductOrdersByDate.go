@@ -10,7 +10,7 @@ import (
 func GetProductOrdersByDate(date time.Time) ([]dtos.ProductOrderResponse, error) {
 	dbc := db.GetDB()
 	var orders []models.ProductOrder
-	err := dbc.Preload("Products").Where("DATE(date) = DATE(?)", date).Find(&orders).Error
+	err := dbc.Preload("Products").Where("DATE(date) = DATE(?) AND status != ?", date, "deleted").Find(&orders).Error
 	if err != nil {
 		return nil, err
 	}
@@ -19,12 +19,16 @@ func GetProductOrdersByDate(date time.Time) ([]dtos.ProductOrderResponse, error)
 	for _, o := range orders {
 		var items []dtos.ProductOrderItemResponse
 		for _, p := range o.Products {
+			status := p.Status
+			if status == "" || status == "pendiente" {
+				status = "pending"
+			}
 			items = append(items, dtos.ProductOrderItemResponse{
 				ID:                   p.ID,
 				ProductTitle:         p.ProductTitle,
 				ProductCategoryTitle: p.ProductCategoryTitle,
 				Cant:                 p.Cant,
-				Status:               p.Status,
+				Status:               status,
 			})
 		}
 		result = append(result, dtos.ProductOrderResponse{

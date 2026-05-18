@@ -21,6 +21,7 @@ func UploadProductOrder(rw http.ResponseWriter, r *http.Request) {
 			ProductTitle:         p.ProductTitle,
 			ProductCategoryTitle: p.ProductCategoryTitle,
 			Cant:                 p.Cant,
+			Status:               "pending",
 		})
 	}
 
@@ -28,7 +29,7 @@ func UploadProductOrder(rw http.ResponseWriter, r *http.Request) {
 		ClientName:     req.ClientName,
 		ClientLastName: req.ClientLastName,
 		Date:           req.Date,
-		Status:         req.Status,
+		Status:         "pending",
 		Products:       items,
 	}
 
