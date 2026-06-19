@@ -14,8 +14,8 @@ func UpdateProductOrderStatus(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "debe enviar el parametro idProductOrderItem", http.StatusBadRequest)
 		return
 	}
-	if status != "pendiente" && status != "entregado" {
-		http.Error(rw, "status debe ser 'pendiente' o 'entregado'", http.StatusBadRequest)
+	if status != "pending" && status != "entregado" {
+		http.Error(rw, "status debe ser 'pending' o 'entregado'", http.StatusBadRequest)
 		return
 	}
 
