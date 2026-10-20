@@ -69,20 +69,26 @@ func CancelOrderDayOrder(rw http.ResponseWriter, r *http.Request) {
 
 		modelDelivery.DeliveryMenuPrice = modelDelivery.DeliveryMenuPrice - (modelCategory.Price * float32(cant))
 
-		addressModel, err := dbAddress.GetAddressById(modelDelivery.AddressID)
+		// el retiro en local (direccion 100) no paga envio
+		modelDelivery.DeliveryPrice = 0
 
-		if err != nil {
-			http.Error(rw, "Adress no encontrada con el ID solicitado", http.StatusBadRequest)
-			return
+		if modelDelivery.AddressID != 100 {
+
+			addressModel, err := dbAddress.GetAddressById(modelDelivery.AddressID)
+
+			if err != nil {
+				http.Error(rw, "Adress no encontrada con el ID solicitado", http.StatusBadRequest)
+				return
+			}
+
+			zoneModel, err := dbSetting.GetZoneById(addressModel.IDZone)
+			if err != nil {
+				http.Error(rw, "Zone no encontrada con el ID solicitado", http.StatusBadRequest)
+				return
+			}
+
+			modelDelivery.DeliveryPrice = zoneModel.Price
 		}
-
-		zoneModel, err := dbSetting.GetZoneById(addressModel.IDZone)
-		if err != nil {
-			http.Error(rw, "Zone no encontrada con el ID solicitado", http.StatusBadRequest)
-			return
-		}
-
-		modelDelivery.DeliveryPrice = zoneModel.Price
 
 		delete = false
 

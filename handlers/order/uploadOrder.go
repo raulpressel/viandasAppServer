@@ -62,7 +62,7 @@ func UploadOrder(rw http.ResponseWriter, r *http.Request) {
 	auxCalc, valid := ProcessOrder(orderDto)
 
 	if !valid {
-		http.Error(rw, "Ocurrio un error al procesar los calculos de la orden "+err.Error(), http.StatusInternalServerError)
+		http.Error(rw, "Ocurrio un error al procesar los calculos de la orden", http.StatusInternalServerError)
 		return
 	}
 
@@ -290,6 +290,10 @@ func processDeliveryOrder(deliverysModel []models.Delivery) ([]models.Delivery, 
 	for _, delivery := range deliverysModel {
 		// Verificar si la fecha ya existe en el map
 		if accumulatedDelivery, ok := accumulatedValues[delivery.DeliveryDate]; ok {
+			// Hay un solo envio por fecha, no puede tener dos direcciones
+			if accumulatedDelivery.AddressID != delivery.AddressID {
+				return nil, false
+			}
 			// La fecha ya existe, acumular los valores
 			accumulatedDelivery.DeliveryMenuPrice += delivery.DeliveryMenuPrice
 			accumulatedDelivery.DeliveryMenuAmount += delivery.DeliveryMenuAmount
@@ -315,7 +319,7 @@ func processDeliveryOrder(deliverysModel []models.Delivery) ([]models.Delivery, 
 			}
 			zoneModel, err := dbSetting.GetZoneById(addressModel.IDZone)
 			if err != nil {
-
+				return uniqueDeliveries, false
 			}
 			uniqueDeliveries[i].DeliveryPrice = zoneModel.Price
 		}

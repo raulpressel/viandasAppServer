@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"viandasApp/dtos"
+	"viandasApp/handlers"
 	"viandasApp/models"
 
 	dbAddress "viandasApp/db/address"
@@ -32,6 +33,10 @@ func UpdateAddress(rw http.ResponseWriter, r *http.Request) {
 	addressModel.IDZone = addressDto.Address.IDZone
 	addressModel.Lat = addressDto.Address.Lat
 	addressModel.Lng = addressDto.Address.Lng
+
+	if idZone, ok := handlers.GetZoneByLatLng(addressModel.Lat, addressModel.Lng); ok {
+		addressModel.IDZone = idZone
+	}
 
 	status, err := dbAddress.UpdateAddress(addressModel)
 	if err != nil {

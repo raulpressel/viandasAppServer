@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"viandasApp/dtos"
+	"viandasApp/handlers"
 
 	dbAddress "viandasApp/db/address"
 )
@@ -21,7 +22,10 @@ func AddAddress(rw http.ResponseWriter, r *http.Request) {
 
 	address := addressDto.ToModelAddress()
 
-	
+	if idZone, ok := handlers.GetZoneByLatLng(address.Lat, address.Lng); ok {
+		address.IDZone = idZone
+	}
+
 	address.Active = true
 	address.CityID = 1
 
