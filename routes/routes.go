@@ -96,7 +96,7 @@ func Routes(publicDir string) {
 	router.HandleFunc("/app/address/deleteAddress", middlew.CheckDB(middlew.ValidateJWT(address.DeleteAddress))).Methods("DELETE")
 	router.HandleFunc("/app/address/setFavouriteAddress", middlew.CheckDB(middlew.ValidateJWT(address.SetFavouriteAddress))).Methods("POST")
 
-	router.HandleFunc("/app/address/updateZoneAddress", middlew.CheckDB(address.UpdateZoneAddress)).Methods("GET")
+	router.HandleFunc("/app/address/updateZoneAddress", middlew.CheckDB(middlew.ValidateJWTAdmin(address.UpdateZoneAddress))).Methods("POST")
 
 	router.HandleFunc("/app/order/uploadOrder", middlew.CheckDB(middlew.ValidateJWT(order.UploadOrder))).Methods("POST")
 	router.HandleFunc("/app/order/getOrderByID", middlew.CheckDB(middlew.ValidateJWT(order.GetOrderById))).Methods("GET")
@@ -151,6 +151,7 @@ func Routes(publicDir string) {
 
 	router.HandleFunc("/app/setting/addZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UploadZone))).Methods("POST")
 	router.HandleFunc("/app/setting/getZone", middlew.CheckDB((setting.GetAllZone))).Methods("GET")
+	router.HandleFunc("/app/setting/getZonePolygons", middlew.CheckDB((setting.GetZonePolygons))).Methods("GET")
 	router.HandleFunc("/app/setting/editZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.UpdateZone))).Methods("PUT")
 	router.HandleFunc("/app/setting/deleteZone", middlew.CheckDB(middlew.ValidateJWTAdmin(setting.DeleteZone))).Methods("DELETE")
 	router.HandleFunc("/app/setting/getAddressTakeAway", middlew.CheckDB((setting.GetAddressTakeAway))).Methods("GET")

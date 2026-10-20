@@ -91,6 +91,9 @@ func RegisterClient(rw http.ResponseWriter, r *http.Request) {
 			addModel.IDZone = addr.IDZone
 			addModel.Lat = addr.Lat
 			addModel.Lng = addr.Lng
+			if idZone, ok := handlers.GetZoneByLatLng(addr.Lat, addr.Lng); ok {
+				addModel.IDZone = idZone
+			}
 			addModel.CityID = 1
 			addModel.Favourite = true
 			addModel.Active = true
