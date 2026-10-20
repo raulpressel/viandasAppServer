@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math"
 	"net/http"
+	"sort"
 	"time"
 
 	dbAddress "viandasApp/db/address"
@@ -80,7 +81,7 @@ func CalcPriceOrder(rw http.ResponseWriter, r *http.Request) {
 	response, valid := ProcessOrder(orderDto)
 
 	if !valid {
-		http.Error(rw, "Ocurrio un error al procesar los calculos de la orden "+err.Error(), http.StatusInternalServerError)
+		http.Error(rw, "Ocurrio un error al procesar los calculos de la orden", http.StatusInternalServerError)
 		return
 	}
 
@@ -97,6 +98,20 @@ func allEqual(arr []int) bool {
 		}
 	}
 	return true
+}
+
+func uniqueSortedDates(dates []time.Time) []time.Time {
+	seen := make(map[string]bool)
+	var days []time.Time
+	for _, date := range dates {
+		key := date.Format("2006-01-02")
+		if !seen[key] {
+			seen[key] = true
+			days = append(days, date)
+		}
+	}
+	sort.Slice(days, func(i, j int) bool { return days[i].Before(days[j]) })
+	return days
 }
 
 func isWeekday(t time.Time) bool {
@@ -208,24 +223,27 @@ func ProcessOrder(orderDto dtos.OrderRequest) (responseTotal, bool) {
 
 	var filterDates []time.Time
 
-	if len(dates) >= 3 && len(dates) < 5 {
+	// un mismo dia puede tener varias categorias, para los feriados se cuentan dias distintos
+	days := uniqueSortedDates(dates)
 
-		years := make([]int, amount)
-		weeks := make([]int, amount)
+	if len(days) >= 3 && len(days) < 5 {
 
-		for i, date := range dates {
+		years := make([]int, len(days))
+		weeks := make([]int, len(days))
+
+		for i, date := range days {
 			years[i], weeks[i] = date.ISOWeek()
 		}
 		if allEqual(years) {
 			if allEqual(weeks) {
-				filterDates = append(filterDates, dates...)
+				filterDates = append(filterDates, days...)
 			} else if allEqual(weeks[:3]) {
 				if len(weeks[:3]) > 2 {
-					filterDates = append(filterDates, dates[:3]...)
+					filterDates = append(filterDates, days[:3]...)
 				}
 			} else if allEqual(weeks[1:]) {
-				if len(weeks[:1]) > 2 {
-					filterDates = append(filterDates, dates[1:]...)
+				if len(weeks[1:]) > 2 {
+					filterDates = append(filterDates, days[1:]...)
 				}
 			}
 		}
@@ -294,6 +312,11 @@ func calcDeliveryPrice(aux []auxCalcDeliveryDriver) (float32, bool) {
 	for _, delivery := range aux {
 
 		if accumulatedDelivery, ok := accumulatedValues[delivery.date]; ok {
+
+			// hay un solo envio por fecha, no puede tener dos direcciones
+			if accumulatedDelivery.idAddress != delivery.idAddress {
+				return 0.0, false
+			}
 
 			accumulatedDelivery.amount += delivery.amount
 
